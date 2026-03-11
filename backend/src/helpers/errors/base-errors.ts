@@ -9,7 +9,7 @@ export class BaseErrors extends Error
         this.statusCode = statusCode;
     }
     
-    static throwMissing(field: string) 
+    static throwMissing(field: string): never
     {
         throw new BaseErrors(`O campo ${field} é obrigatório e não foi fornecido.`, 400);
     }
