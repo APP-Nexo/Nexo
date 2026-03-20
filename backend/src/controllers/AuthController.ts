@@ -20,19 +20,18 @@ export class AuthController
         AuthErrors.ensureRegister({ name, email, password, confirmPassword })
         await AuthErrors.ensureUserNotExists(userQuery, email)
 
-        const user = {
+        const createdUser = await userQuery.create({
             name,
             email,
             password: await encryptPassword(password),
             access: 'user'
-        }
+        }) as UserPayload
 
-        await userQuery.create(user)
+        const token = await JwtToken.create(createdUser, reply)
 
-        const { password: _, ...userPayload } = user as UserPayload
-        const token = await JwtToken.create(userPayload as UserTokenPayload, reply)
+        const { password: _, ...userPayload } = createdUser as UserTokenPayload
 
-        return reply.status(201).send({ "user": userPayload, token })
+        return reply.status(201).send({ user: userPayload, token })
     }
 
     static async login(req: FastifyRequest, reply: FastifyReply)

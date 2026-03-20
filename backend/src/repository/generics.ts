@@ -8,7 +8,7 @@ export class GenericQueries<T> {
         {
             return await this.model.create({ data })
         } catch(e) {
-            console.error('Erro no create:', e)
+            console.error('Erro in create:', e)
             DatabaseErrors.throwQueryFailed()
         }
     }
@@ -28,27 +28,27 @@ export class GenericQueries<T> {
         {
             return await this.model.findUnique({ where })
         } catch(e) {
-            console.error('Erro no findUnique:', e)
+            console.error('Erro in findUnique:', e)
             DatabaseErrors.throwQueryFailed()
         }
     }
 
-    async update(id: string, data: any): Promise<T> {
+    async update(id: string | number, data: any): Promise<T> {
         try 
         {
             return await this.model.update({ where: { id }, data })
         } catch(e) {
-            console.error('Erro no update:', e)
+            console.error('Erro in update:', e)
             DatabaseErrors.throwQueryFailed()
         }
     }
 
-    async delete(id: string): Promise<T> {
+    async delete(id: string | number): Promise<T> {
         try 
         {
             return await this.model.delete({ where: { id } })
         } catch(e) {
-            console.error('Erro no delete:', e)
+            console.error('Erro in delete:', e)
             DatabaseErrors.throwQueryFailed()
         }
     }

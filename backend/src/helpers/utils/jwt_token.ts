@@ -1,6 +1,8 @@
 import '@fastify/jwt'
 import type { FastifyReply, FastifyRequest } from 'fastify'
 
+import { TokenErrors } from '../errors/token-erros.js'
+
 import { app } from '../../conf.js'
 
 import type { UserTokenPayload } from '../interfaces/I-Jwt.js'
@@ -13,6 +15,7 @@ export class JwtToken
         {
             const token = app.jwt.sign(
                 {
+                    id: user.id,
                     name: user.name,
                     email: user.email,
                     access: user.access,
@@ -22,25 +25,25 @@ export class JwtToken
 
             return token
         } catch(e) {
-            reply.status(500).send({ status: 500, message: 'Falha ao criar token.' })
+            TokenErrors.throwCreationFailed()
         }
     }
 
-    static async get(req: FastifyRequest, reply: FastifyReply)
+    static async get(req: FastifyRequest)
     {
         try
         {
             const token = req.headers.authorization?.replace('Bearer ', '')
 
-            if(!token) return reply.status(401).send({ message: 'Token não informado.' })
+            if(!token) TokenErrors.throwMissing()
                 
             return token
         } catch(e) {
-            reply.status(500).send({ status: 500, message: 'Falha ao obter token.' })
+            TokenErrors.throwInvalid()
         }
     }
 
-    static async getByUser(req: FastifyRequest, reply: FastifyReply)
+    static async getByUser(req: FastifyRequest)
     {
         try {
             await req.jwtVerify()
@@ -49,7 +52,7 @@ export class JwtToken
 
             return user
         } catch (e) {
-            reply.status(401).send({ message: 'Token inválido ou expirado.' })
+            TokenErrors.throwInvalid()
         }
     }
 }
