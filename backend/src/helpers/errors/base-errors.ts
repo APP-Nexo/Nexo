@@ -13,4 +13,8 @@ export class BaseErrors extends Error
     {
         throw new BaseErrors(`O campo ${field} é obrigatório e não foi fornecido.`, 400);
     }
+
+    static throwPasswordMismatch() {
+        throw new BaseErrors('As senhas não coincidem.', 400)
+    }
 }

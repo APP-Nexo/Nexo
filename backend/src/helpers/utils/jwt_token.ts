@@ -4,7 +4,6 @@ import type { FastifyReply, FastifyRequest } from 'fastify'
 import { app } from '../../conf.js'
 
 import type { UserTokenPayload } from '../interfaces/I-Jwt.js'
-import { use } from 'react'
 
 export class JwtToken 
 {
@@ -14,10 +13,9 @@ export class JwtToken
         {
             const token = app.jwt.sign(
                 {
-                    id: user.id,
-                    nome: user.nome,
+                    name: user.name,
                     email: user.email,
-                    acesso: user.acesso,
+                    access: user.access,
                 },
                 { expiresIn: '7d' }
             )
@@ -32,7 +30,7 @@ export class JwtToken
     {
         try
         {
-            const token = req.headers.authorization?.replace('Barer', '')
+            const token = req.headers.authorization?.replace('Bearer ', '')
 
             if(!token) return reply.status(401).send({ message: 'Token não informado.' })
                 

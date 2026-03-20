@@ -1,6 +1,5 @@
 export interface UserTokenPayload {
-    id: number
-    nome: string
+    name: string
     email: string
-    acesso: string
+    access: string
 }
