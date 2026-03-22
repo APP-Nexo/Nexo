@@ -10,7 +10,8 @@
     "start": "nodemon --watch src --exec tsx src/server.ts",
     "dev": "nodemon --watch src --exec tsx src/server.ts",
     "migrate": "npx prisma migrate dev --name up_migrate",
-    "generate": "npx prisma generate"
+    "generate": "npx prisma generate",
+    "dbpush": "npx prisma db push"
   },
   "keywords": [],
   "author": "",

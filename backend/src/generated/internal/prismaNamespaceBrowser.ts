@@ -52,7 +52,9 @@ export const AnyNull = runtime.AnyNull
 
 export const ModelName = {
   User: 'User',
-  UserProfile: 'UserProfile'
+  UserProfile: 'UserProfile',
+  VwUserPublic: 'VwUserPublic',
+  VwUsersStatusSummary: 'VwUsersStatusSummary'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -93,6 +95,28 @@ export const UserProfileScalarFieldEnum = {
 } as const
 
 export type UserProfileScalarFieldEnum = (typeof UserProfileScalarFieldEnum)[keyof typeof UserProfileScalarFieldEnum]
+
+
+export const VwUserPublicScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  email: 'email',
+  createdAt: 'createdAt',
+  photo: 'photo',
+  banner: 'banner',
+  config: 'config'
+} as const
+
+export type VwUserPublicScalarFieldEnum = (typeof VwUserPublicScalarFieldEnum)[keyof typeof VwUserPublicScalarFieldEnum]
+
+
+export const VwUsersStatusSummaryScalarFieldEnum = {
+  totalAtivos: 'totalAtivos',
+  totalInativos: 'totalInativos',
+  totalGeral: 'totalGeral'
+} as const
+
+export type VwUsersStatusSummaryScalarFieldEnum = (typeof VwUsersStatusSummaryScalarFieldEnum)[keyof typeof VwUsersStatusSummaryScalarFieldEnum]
 
 
 export const SortOrder = {

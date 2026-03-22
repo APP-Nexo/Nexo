@@ -27,3 +27,13 @@ export type User = Prisma.UserModel
  * 
  */
 export type UserProfile = Prisma.UserProfileModel
+/**
+ * Model VwUserPublic
+ * 
+ */
+export type VwUserPublic = Prisma.VwUserPublicModel
+/**
+ * Model VwUsersStatusSummary
+ * 
+ */
+export type VwUsersStatusSummary = Prisma.VwUsersStatusSummaryModel

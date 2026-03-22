@@ -7,6 +7,7 @@
 generator client {
   provider = "prisma-client"
   output   = "../src/generated"
+  previewFeatures = ["views"]
 }
 
 datasource db {
@@ -32,4 +33,26 @@ model UserProfile {
   config   Json?
   userId   Int     @unique
   user     User    @relation(fields: [userId], references: [id])
+}
+
+// views
+
+view VwUserPublic {
+  id        Int      @unique
+  name      String
+  email     String
+  createdAt DateTime
+  photo     String?
+  banner    String?
+  config    Json?
+
+  @@map("vw_user_public")
+}
+
+view VwUsersStatusSummary {
+  totalAtivos   Int @map("total_ativos")
+  totalInativos Int @map("total_inativos")
+  totalGeral    Int @map("total_geral")
+
+  @@map("vw_users_status_summary")
 }

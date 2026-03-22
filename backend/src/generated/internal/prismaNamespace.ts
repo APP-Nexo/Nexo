@@ -385,7 +385,9 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 
 export const ModelName = {
   User: 'User',
-  UserProfile: 'UserProfile'
+  UserProfile: 'UserProfile',
+  VwUserPublic: 'VwUserPublic',
+  VwUsersStatusSummary: 'VwUsersStatusSummary'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -401,7 +403,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "userProfile"
+    modelProps: "user" | "userProfile" | "vwUserPublic" | "vwUsersStatusSummary"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -553,6 +555,74 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    VwUserPublic: {
+      payload: Prisma.$VwUserPublicPayload<ExtArgs>
+      fields: Prisma.VwUserPublicFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.VwUserPublicFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VwUserPublicPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.VwUserPublicFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VwUserPublicPayload>
+        }
+        findFirst: {
+          args: Prisma.VwUserPublicFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VwUserPublicPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.VwUserPublicFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VwUserPublicPayload>
+        }
+        findMany: {
+          args: Prisma.VwUserPublicFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VwUserPublicPayload>[]
+        }
+        aggregate: {
+          args: Prisma.VwUserPublicAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateVwUserPublic>
+        }
+        groupBy: {
+          args: Prisma.VwUserPublicGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.VwUserPublicGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.VwUserPublicCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.VwUserPublicCountAggregateOutputType> | number
+        }
+      }
+    }
+    VwUsersStatusSummary: {
+      payload: Prisma.$VwUsersStatusSummaryPayload<ExtArgs>
+      fields: Prisma.VwUsersStatusSummaryFieldRefs
+      operations: {
+        findFirst: {
+          args: Prisma.VwUsersStatusSummaryFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VwUsersStatusSummaryPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.VwUsersStatusSummaryFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VwUsersStatusSummaryPayload>
+        }
+        findMany: {
+          args: Prisma.VwUsersStatusSummaryFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VwUsersStatusSummaryPayload>[]
+        }
+        aggregate: {
+          args: Prisma.VwUsersStatusSummaryAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateVwUsersStatusSummary>
+        }
+        groupBy: {
+          args: Prisma.VwUsersStatusSummaryGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.VwUsersStatusSummaryGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.VwUsersStatusSummaryCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.VwUsersStatusSummaryCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -614,6 +684,28 @@ export const UserProfileScalarFieldEnum = {
 } as const
 
 export type UserProfileScalarFieldEnum = (typeof UserProfileScalarFieldEnum)[keyof typeof UserProfileScalarFieldEnum]
+
+
+export const VwUserPublicScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  email: 'email',
+  createdAt: 'createdAt',
+  photo: 'photo',
+  banner: 'banner',
+  config: 'config'
+} as const
+
+export type VwUserPublicScalarFieldEnum = (typeof VwUserPublicScalarFieldEnum)[keyof typeof VwUserPublicScalarFieldEnum]
+
+
+export const VwUsersStatusSummaryScalarFieldEnum = {
+  totalAtivos: 'totalAtivos',
+  totalInativos: 'totalInativos',
+  totalGeral: 'totalGeral'
+} as const
+
+export type VwUsersStatusSummaryScalarFieldEnum = (typeof VwUsersStatusSummaryScalarFieldEnum)[keyof typeof VwUsersStatusSummaryScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -836,6 +928,8 @@ export type PrismaClientOptions = ({
 export type GlobalOmitConfig = {
   user?: Prisma.UserOmit
   userProfile?: Prisma.UserProfileOmit
+  vwUserPublic?: Prisma.VwUserPublicOmit
+  vwUsersStatusSummary?: Prisma.VwUsersStatusSummaryOmit
 }
 
 /* Types for Logging */

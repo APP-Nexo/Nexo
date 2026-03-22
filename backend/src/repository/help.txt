@@ -1,0 +1,5 @@
+// npx prisma migrate dev --name create_views --create-only
+// npx prisma migrate dev --name up_migrate
+// npx prisma generate
+// npx prisma db push
+// checar versão node 22 (nvm install 22, nvm use 22)
