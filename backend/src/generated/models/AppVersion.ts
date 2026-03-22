@@ -219,13 +219,14 @@ export type AppVersionOrderByWithRelationInput = {
 
 export type AppVersionWhereUniqueInput = Prisma.AtLeast<{
   id?: number
+  appVersion_dbVersion?: Prisma.AppVersionAppVersionDbVersionCompoundUniqueInput
   AND?: Prisma.AppVersionWhereInput | Prisma.AppVersionWhereInput[]
   OR?: Prisma.AppVersionWhereInput[]
   NOT?: Prisma.AppVersionWhereInput | Prisma.AppVersionWhereInput[]
   appVersion?: Prisma.StringFilter<"AppVersion"> | string
   dbVersion?: Prisma.StringFilter<"AppVersion"> | string
   createdAt?: Prisma.DateTimeFilter<"AppVersion"> | Date | string
-}, "id">
+}, "id" | "appVersion_dbVersion">
 
 export type AppVersionOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -293,6 +294,11 @@ export type AppVersionUncheckedUpdateManyInput = {
   appVersion?: Prisma.StringFieldUpdateOperationsInput | string
   dbVersion?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type AppVersionAppVersionDbVersionCompoundUniqueInput = {
+  appVersion: string
+  dbVersion: string
 }
 
 export type AppVersionCountOrderByAggregateInput = {

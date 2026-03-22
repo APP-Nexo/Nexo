@@ -20,8 +20,11 @@ model AppVersion {
   appVersion String   
   dbVersion  String   
   createdAt  DateTime @default(now()) 
+
+  @@unique([appVersion, dbVersion])
 }
 
+// application
 model User {
   id        Int          @id @default(autoincrement())
   name      String
@@ -45,7 +48,6 @@ model UserProfile {
 }
 
 // views
-
 view VwUserPublic {
   id        Int      @unique
   name      String

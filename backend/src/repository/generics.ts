@@ -58,12 +58,14 @@ export class GenericQueries<T> {
         }
     }
 
-    async findFirst(filter = {}): Promise<T | null> 
+    async findLatest(): Promise<T | null> 
     {
         try {
-            return await this.model.findFirst({ where: filter })
+            return await this.model.findFirst({
+            orderBy: { createdAt: 'desc' }
+            })
         } catch(e) {
-            console.error('Erro in findFirst:', e)
+            console.error('Erro in findLatest:', e)
             DatabaseErrors.throwQueryFailed()
         }
     }

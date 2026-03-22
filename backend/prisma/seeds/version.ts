@@ -7,14 +7,17 @@ const versionQuery = new GenericQueries(prisma.appVersion)
 
 
 export async function seedVersion() {
-    const existing = await versionQuery.findFirst({ 
-        appVersion: APP_VERSION, 
-        dbVersion: DB_VERSION 
+    const existing = await versionQuery.findUnique({ 
+        appVersion_dbVersion: 
+        {
+            appVersion: APP_VERSION,
+            dbVersion: DB_VERSION
+        }
     })
 
     if (existing) {
         const { id: _, ...versionData } = existing as any
-        Logs.write({ version: versionData }, `Version already up to date | app: ${APP_VERSION} | db: ${DB_VERSION}`, 'info', true)
+        Logs.write({ version: versionData }, `Version already up to date | app: ${APP_VERSION} | db: ${DB_VERSION}`, 'info', true, false)
         return
     }
 

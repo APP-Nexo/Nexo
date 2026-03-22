@@ -41,14 +41,15 @@ export class Logs
         });
     }
 
-    static write(data: object, message: string, type: Level, pretty = false)
+    static write(data: object, message: string, type: Level, pretty = false, file = true)
     {
         const keys = Object.keys(data);
         const logFilename: any = keys.length > 0 ? keys[0] : 'default';
 
-        const logger = this.createLogger(logFilename);
-        logger[type](data, message);
-
+        if (file) {
+            const logger = this.createLogger(logFilename);
+            logger[type](data, message);
+        }
 
         if (pretty) {
         const prettyLogger = this.createPrettyLogger();
