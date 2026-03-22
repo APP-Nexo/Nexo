@@ -35,7 +35,11 @@ export class UserController
         UserErrors.ensureDelete(email, tokenUser)
         await UserErrors.ensureUserActive(userQuery, tokenUser.id)
 
-        await userQuery.update(tokenUser.id, { activate: false, email: `deleted_${tokenUser.id}_${tokenUser.email}` })
+        await userQuery.update(tokenUser.id, { 
+            activate: false, 
+            email: `deleted_${tokenUser.id}_${tokenUser.email}`,
+            deletedAt: new Date()
+        })
 
         return reply.status(200).send({ message: 'Conta deletada.' })
     }

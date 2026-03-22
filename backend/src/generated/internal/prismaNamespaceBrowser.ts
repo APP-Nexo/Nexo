@@ -51,6 +51,7 @@ export const AnyNull = runtime.AnyNull
 
 
 export const ModelName = {
+  AppVersion: 'AppVersion',
   User: 'User',
   UserProfile: 'UserProfile',
   VwUserPublic: 'VwUserPublic',
@@ -73,12 +74,23 @@ export const TransactionIsolationLevel = runtime.makeStrictEnum({
 export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
 
 
+export const AppVersionScalarFieldEnum = {
+  id: 'id',
+  appVersion: 'appVersion',
+  dbVersion: 'dbVersion',
+  createdAt: 'createdAt'
+} as const
+
+export type AppVersionScalarFieldEnum = (typeof AppVersionScalarFieldEnum)[keyof typeof AppVersionScalarFieldEnum]
+
+
 export const UserScalarFieldEnum = {
   id: 'id',
   name: 'name',
   email: 'email',
   password: 'password',
   createdAt: 'createdAt',
+  deletedAt: 'deletedAt',
   activate: 'activate',
   access: 'access'
 } as const
@@ -111,9 +123,9 @@ export type VwUserPublicScalarFieldEnum = (typeof VwUserPublicScalarFieldEnum)[k
 
 
 export const VwUsersStatusSummaryScalarFieldEnum = {
-  totalAtivos: 'totalAtivos',
-  totalInativos: 'totalInativos',
-  totalGeral: 'totalGeral'
+  totalActive: 'totalActive',
+  totalDeactivated: 'totalDeactivated',
+  totalUsers: 'totalUsers'
 } as const
 
 export type VwUsersStatusSummaryScalarFieldEnum = (typeof VwUsersStatusSummaryScalarFieldEnum)[keyof typeof VwUsersStatusSummaryScalarFieldEnum]
@@ -143,6 +155,14 @@ export const QueryMode = {
 export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
 
 
+export const NullsOrder = {
+  first: 'first',
+  last: 'last'
+} as const
+
+export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
 export const JsonNullValueFilter = {
   DbNull: DbNull,
   JsonNull: JsonNull,
@@ -150,12 +170,4 @@ export const JsonNullValueFilter = {
 } as const
 
 export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
-
-
-export const NullsOrder = {
-  first: 'first',
-  last: 'last'
-} as const
-
-export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
 

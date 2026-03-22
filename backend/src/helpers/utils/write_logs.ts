@@ -26,12 +26,33 @@ export class Logs
         );
     }
 
-    static write(data: object, message: string, type: Level)
+    private static createPrettyLogger() 
+    {
+        return pino({
+            transport: {
+            target: 'pino-pretty',
+            options: {
+                colorize: true,
+                translateTime: 'SYS:dd/mm/yyyy HH:MM:ss',
+                ignore: 'pid,hostname',
+                levelFirst: true,
+            }
+            }
+        });
+    }
+
+    static write(data: object, message: string, type: Level, pretty = false)
     {
         const keys = Object.keys(data);
         const logFilename: any = keys.length > 0 ? keys[0] : 'default';
 
         const logger = this.createLogger(logFilename);
         logger[type](data, message);
+
+
+        if (pretty) {
+        const prettyLogger = this.createPrettyLogger();
+        prettyLogger[type](data, message);
+        }
     }
 }

@@ -5,7 +5,7 @@ SELECT
     u.id,
     u.name,
     u.email,
-    u.createdAt,
+    u."createdAt",
     p.photo,
     p.banner,
     p.config
@@ -18,8 +18,8 @@ WHERE u.activate = true;
 CREATE OR REPLACE VIEW vw_users_status_summary
 WITH (security_barrier = true) AS
 SELECT
-    COUNT(*) FILTER (WHERE activate = true)  AS total_ativos,
-    COUNT(*) FILTER (WHERE activate = false) AS total_inativos,
-    COUNT(*)                                  AS total_geral
+    COUNT(*) FILTER (WHERE activate = true)  AS "totalActive",
+    COUNT(*) FILTER (WHERE activate = false) AS "totalDeactivated",
+    COUNT(*)                                  AS "totalUsers"
 FROM "User";
 -- DROP VIEW IF EXISTS vw_users_status_summary;

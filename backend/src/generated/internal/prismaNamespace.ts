@@ -384,6 +384,7 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 
 
 export const ModelName = {
+  AppVersion: 'AppVersion',
   User: 'User',
   UserProfile: 'UserProfile',
   VwUserPublic: 'VwUserPublic',
@@ -403,10 +404,84 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "userProfile" | "vwUserPublic" | "vwUsersStatusSummary"
+    modelProps: "appVersion" | "user" | "userProfile" | "vwUserPublic" | "vwUsersStatusSummary"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
+    AppVersion: {
+      payload: Prisma.$AppVersionPayload<ExtArgs>
+      fields: Prisma.AppVersionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.AppVersionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AppVersionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.AppVersionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AppVersionPayload>
+        }
+        findFirst: {
+          args: Prisma.AppVersionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AppVersionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.AppVersionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AppVersionPayload>
+        }
+        findMany: {
+          args: Prisma.AppVersionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AppVersionPayload>[]
+        }
+        create: {
+          args: Prisma.AppVersionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AppVersionPayload>
+        }
+        createMany: {
+          args: Prisma.AppVersionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.AppVersionCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AppVersionPayload>[]
+        }
+        delete: {
+          args: Prisma.AppVersionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AppVersionPayload>
+        }
+        update: {
+          args: Prisma.AppVersionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AppVersionPayload>
+        }
+        deleteMany: {
+          args: Prisma.AppVersionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.AppVersionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.AppVersionUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AppVersionPayload>[]
+        }
+        upsert: {
+          args: Prisma.AppVersionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AppVersionPayload>
+        }
+        aggregate: {
+          args: Prisma.AppVersionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateAppVersion>
+        }
+        groupBy: {
+          args: Prisma.AppVersionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AppVersionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.AppVersionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AppVersionCountAggregateOutputType> | number
+        }
+      }
+    }
     User: {
       payload: Prisma.$UserPayload<ExtArgs>
       fields: Prisma.UserFieldRefs
@@ -662,12 +737,23 @@ export const TransactionIsolationLevel = runtime.makeStrictEnum({
 export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
 
 
+export const AppVersionScalarFieldEnum = {
+  id: 'id',
+  appVersion: 'appVersion',
+  dbVersion: 'dbVersion',
+  createdAt: 'createdAt'
+} as const
+
+export type AppVersionScalarFieldEnum = (typeof AppVersionScalarFieldEnum)[keyof typeof AppVersionScalarFieldEnum]
+
+
 export const UserScalarFieldEnum = {
   id: 'id',
   name: 'name',
   email: 'email',
   password: 'password',
   createdAt: 'createdAt',
+  deletedAt: 'deletedAt',
   activate: 'activate',
   access: 'access'
 } as const
@@ -700,9 +786,9 @@ export type VwUserPublicScalarFieldEnum = (typeof VwUserPublicScalarFieldEnum)[k
 
 
 export const VwUsersStatusSummaryScalarFieldEnum = {
-  totalAtivos: 'totalAtivos',
-  totalInativos: 'totalInativos',
-  totalGeral: 'totalGeral'
+  totalActive: 'totalActive',
+  totalDeactivated: 'totalDeactivated',
+  totalUsers: 'totalUsers'
 } as const
 
 export type VwUsersStatusSummaryScalarFieldEnum = (typeof VwUsersStatusSummaryScalarFieldEnum)[keyof typeof VwUsersStatusSummaryScalarFieldEnum]
@@ -732,6 +818,14 @@ export const QueryMode = {
 export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
 
 
+export const NullsOrder = {
+  first: 'first',
+  last: 'last'
+} as const
+
+export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
 export const JsonNullValueFilter = {
   DbNull: DbNull,
   JsonNull: JsonNull,
@@ -739,14 +833,6 @@ export const JsonNullValueFilter = {
 } as const
 
 export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
-
-
-export const NullsOrder = {
-  first: 'first',
-  last: 'last'
-} as const
-
-export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
 
 
 
@@ -926,6 +1012,7 @@ export type PrismaClientOptions = ({
   comments?: runtime.SqlCommenterPlugin[]
 }
 export type GlobalOmitConfig = {
+  appVersion?: Prisma.AppVersionOmit
   user?: Prisma.UserOmit
   userProfile?: Prisma.UserProfileOmit
   vwUserPublic?: Prisma.VwUserPublicOmit

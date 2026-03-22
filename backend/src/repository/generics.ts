@@ -3,7 +3,8 @@ import { DatabaseErrors } from "../helpers/errors/database-errors.js"
 export class GenericQueries<T> {
     constructor(private model: any) {}
 
-    async create(data: any): Promise<T> {
+    async create(data: any): Promise<T> 
+    {
         try 
         {
             return await this.model.create({ data })
@@ -13,7 +14,8 @@ export class GenericQueries<T> {
         }
     }
 
-    async findMany(filter = {}): Promise<T[]> {
+    async findMany(filter = {}): Promise<T[]> 
+    {
         try 
         {
             return await this.model.findMany({ where: filter })
@@ -23,7 +25,8 @@ export class GenericQueries<T> {
         }
     }
 
-    async findUnique(where: any): Promise<T | null> {
+    async findUnique(where: any): Promise<T | null> 
+    {
         try 
         {
             return await this.model.findUnique({ where })
@@ -33,7 +36,8 @@ export class GenericQueries<T> {
         }
     }
 
-    async update(id: string | number, data: any): Promise<T> {
+    async update(id: string | number, data: any): Promise<T> 
+    {
         try 
         {
             return await this.model.update({ where: { id }, data })
@@ -43,12 +47,23 @@ export class GenericQueries<T> {
         }
     }
 
-    async delete(id: string | number): Promise<T> {
+    async delete(id: string | number): Promise<T> 
+    {
         try 
         {
             return await this.model.delete({ where: { id } })
         } catch(e) {
             console.error('Erro in delete:', e)
+            DatabaseErrors.throwQueryFailed()
+        }
+    }
+
+    async findFirst(filter = {}): Promise<T | null> 
+    {
+        try {
+            return await this.model.findFirst({ where: filter })
+        } catch(e) {
+            console.error('Erro in findFirst:', e)
             DatabaseErrors.throwQueryFailed()
         }
     }

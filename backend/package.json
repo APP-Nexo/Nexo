@@ -11,7 +11,12 @@
     "dev": "nodemon --watch src --exec tsx src/server.ts",
     "migrate": "npx prisma migrate dev --name",
     "generate": "npx prisma generate",
-    "dbpush": "npx prisma db push"
+    "dbpush": "npx prisma db push",
+    "sync:version": "tsx prisma/seeds/version.ts",
+    "sync:seeds": "npx prisma db seed"
+  },
+  "prisma": {
+    "seed": ""  
   },
   "keywords": [],
   "author": "",
