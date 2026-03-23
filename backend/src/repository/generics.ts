@@ -14,13 +14,27 @@ export class GenericQueries<T> {
         }
     }
 
+    async createMany(data: any[]): Promise<void> 
+    {
+        try 
+        {
+            await this.model.createMany({
+            data,
+            skipDuplicates: true,
+            })
+        } catch(e) {
+            console.error('Erro in createMany:', e)
+            DatabaseErrors.throwQueryFailed()
+        }
+    }
+
     async findMany(filter = {}): Promise<T[]> 
     {
         try 
         {
             return await this.model.findMany({ where: filter })
         } catch(e) {
-            console.error('Erro no findMany:', e)
+            console.error('Erro in findMany:', e)
             DatabaseErrors.throwQueryFailed()
         }
     }

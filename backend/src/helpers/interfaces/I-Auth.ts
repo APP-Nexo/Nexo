@@ -10,5 +10,5 @@ export interface UserPayload {
     name: string
     email: string
     password: string
-    access: string
+    roleId: number
 }

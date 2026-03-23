@@ -3,5 +3,5 @@ export interface UserTokenPayload {
     name: string
     email: string
     password?: string
-    access: string
+    roleId: number
 }

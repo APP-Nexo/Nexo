@@ -28,6 +28,11 @@ export type AppVersion = Prisma.AppVersionModel
  */
 export type User = Prisma.UserModel
 /**
+ * Model Role
+ * 
+ */
+export type Role = Prisma.RoleModel
+/**
  * Model UserProfile
  * 
  */

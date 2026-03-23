@@ -33,9 +33,17 @@ model User {
   createdAt DateTime     @default(now())
   deletedAt DateTime?   
   activate  Boolean      @default(true)
-  access    String
+  roleId    Int
 
+  role      Role         @relation(fields: [roleId], references: [id])
   profile   UserProfile?
+}
+
+model Role {
+  id    Int    @id @default(autoincrement())
+  role  String @unique
+  
+  users User[]
 }
 
 model UserProfile {
@@ -44,6 +52,7 @@ model UserProfile {
   banner   String?
   config   Json?
   userId   Int     @unique
+  
   user     User    @relation(fields: [userId], references: [id])
 }
 

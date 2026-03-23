@@ -6,10 +6,12 @@ import { encryptPassword } from '../helpers/utils/encrypt_password.js';
 
 import type { RegisterPayload, UserPayload } from '../helpers/interfaces/I-Auth.js';
 import type { UserTokenPayload } from '../helpers/interfaces/I-Jwt.js';
+import type { Role } from '../generated/client.js'
 
 import { GenericQueries } from '../repository/generics.js';
 import prisma from '../helpers/utils/prisma_conn.js';
 const userQuery = new GenericQueries(prisma.user)
+const roleQuery = new GenericQueries<Role>(prisma.role)
 
 export class AuthController 
 {
@@ -20,11 +22,13 @@ export class AuthController
         AuthErrors.ensureRegister({ name, email, password, confirmPassword })
         await AuthErrors.ensureUserNotExists(userQuery, email)
 
+        const defaultRole = await roleQuery.findUnique({ role: 'user' })
+
         const createdUser = await userQuery.create({
             name,
             email,
             password: await encryptPassword(password),
-            access: 'user'
+            roleId: defaultRole?.id
         }) as UserPayload
 
         const token = await JwtToken.create(createdUser, reply)

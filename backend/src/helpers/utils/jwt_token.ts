@@ -18,7 +18,7 @@ export class JwtToken
                     id: user.id,
                     name: user.name,
                     email: user.email,
-                    access: user.access,
+                    roleId: user.roleId,
                 },
                 { expiresIn: '7d' }
             )

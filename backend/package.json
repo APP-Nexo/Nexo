@@ -13,7 +13,9 @@
     "generate": "npx prisma generate",
     "dbpush": "npx prisma db push",
     "sync:version": "tsx prisma/seeds/version.ts",
-    "sync:seeds": "npx prisma db seed"
+    "sync:roles": "tsx prisma/seeds/roles.ts",
+    "sync:seeds": "tsx prisma/seeds/index.ts",
+    "start:prod": "npx prisma migrate deploy && npm start"
   },
   "prisma": {
     "seed": ""  

@@ -30,4 +30,7 @@ export async function seedVersion() {
     Logs.write({ version: versionData }, `version: app ${APP_VERSION} | db ${DB_VERSION}`, 'info', true)
 }
 
-seedVersion().catch(console.error).finally(() => prisma.$disconnect())
+if (process.argv[1]?.includes('version')) 
+{
+    seedVersion().catch(console.error).finally(() => prisma.$disconnect())
+}
