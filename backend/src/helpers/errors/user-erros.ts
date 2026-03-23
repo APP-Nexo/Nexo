@@ -10,8 +10,10 @@ export class UserErrors extends BaseErrors {
         if (email !== tokenUser.email) throw new BaseErrors('Email incorreto.', 401)
     }
 
-    static async ensureUserActive(query: GenericQueries<any>, id: number) {
+    static async ensureUserActive(query: GenericQueries<any>, id: number) 
+    {
         const user = await query.findUnique({ id }) 
         if (!user.activate) throw new BaseErrors('Esta conta ja está desativada.', 403)
     }
+
 }

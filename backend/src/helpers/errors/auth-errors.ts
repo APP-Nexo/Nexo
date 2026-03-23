@@ -16,8 +16,4 @@ export class AuthErrors extends BaseErrors {
         if(password != confirmPassword) this.throwPasswordMismatch()
     }
 
-    static async ensureUserNotExists(query: GenericQueries<any>, email: string) {
-        const user = await query.findUnique({ email })
-        if (user) throw new BaseErrors('Este email já está em uso.', 409)
-    }
 }

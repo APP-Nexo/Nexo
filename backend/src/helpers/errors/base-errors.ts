@@ -1,3 +1,4 @@
+import { GenericQueries } from "../../repository/generics.js";
 export class BaseErrors extends Error 
 {
     public statusCode: number;
@@ -16,5 +17,18 @@ export class BaseErrors extends Error
 
     static throwPasswordMismatch() {
         throw new BaseErrors('As senhas não coincidem.', 400)
+    }
+
+    static async ensureUserExist(query: GenericQueries<any>, id: number) 
+    {
+        const user = await query.findUnique({ id })
+        if (!user) throw new BaseErrors('Usuário não existe.', 404)
+        return user
+    }
+
+    static async ensureUserNotExist(query: GenericQueries<any>, email: string) 
+    {
+        const user = await query.findUnique({ email })
+        if (user) throw new BaseErrors('Este email já está em uso.', 409)
     }
 }

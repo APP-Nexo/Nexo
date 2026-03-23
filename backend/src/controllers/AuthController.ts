@@ -20,7 +20,7 @@ export class AuthController
         const { name, email, password, confirmPassword } = req.body as RegisterPayload
 
         AuthErrors.ensureRegister({ name, email, password, confirmPassword })
-        await AuthErrors.ensureUserNotExists(userQuery, email)
+        await AuthErrors.ensureUserNotExist(userQuery, email)
 
         const defaultRole = await roleQuery.findUnique({ role: 'user' })
 
