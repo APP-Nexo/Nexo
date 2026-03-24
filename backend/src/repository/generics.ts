@@ -39,6 +39,17 @@ export class GenericQueries<T> {
         }
     }
 
+    async findManyWithOptions(options: any): Promise<T[]> 
+    {
+        try 
+        {
+            return await this.model.findMany(options)
+        } catch(e) {
+            console.error('Erro in findManyWithOptions:', e)
+            DatabaseErrors.throwQueryFailed()
+        }
+    }
+
     async findUnique(where: any): Promise<T | null> 
     {
         try 
@@ -46,6 +57,28 @@ export class GenericQueries<T> {
             return await this.model.findUnique({ where })
         } catch(e) {
             console.error('Erro in findUnique:', e)
+            DatabaseErrors.throwQueryFailed()
+        }
+    }
+
+    async findFirst(filter = {}): Promise<T | null> 
+    {
+        try {
+            return await this.model.findFirst({ where: filter })
+        } catch(e) {
+            console.error('Erro in findFirst:', e)
+            DatabaseErrors.throwQueryFailed()
+        }
+    }
+
+    async findLatest(): Promise<T | null> 
+    {
+        try {
+            return await this.model.findFirst({
+            orderBy: { createdAt: 'desc' }
+            })
+        } catch(e) {
+            console.error('Erro in findLatest:', e)
             DatabaseErrors.throwQueryFailed()
         }
     }
@@ -68,18 +101,6 @@ export class GenericQueries<T> {
             return await this.model.delete({ where: { id } })
         } catch(e) {
             console.error('Erro in delete:', e)
-            DatabaseErrors.throwQueryFailed()
-        }
-    }
-
-    async findLatest(): Promise<T | null> 
-    {
-        try {
-            return await this.model.findFirst({
-            orderBy: { createdAt: 'desc' }
-            })
-        } catch(e) {
-            console.error('Erro in findLatest:', e)
             DatabaseErrors.throwQueryFailed()
         }
     }

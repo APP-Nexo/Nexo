@@ -242,16 +242,16 @@ export type VwUserPublicOrderByWithRelationInput = {
 
 export type VwUserPublicWhereUniqueInput = Prisma.AtLeast<{
   id?: number
+  email?: string
   AND?: Prisma.VwUserPublicWhereInput | Prisma.VwUserPublicWhereInput[]
   OR?: Prisma.VwUserPublicWhereInput[]
   NOT?: Prisma.VwUserPublicWhereInput | Prisma.VwUserPublicWhereInput[]
   name?: Prisma.StringFilter<"VwUserPublic"> | string
-  email?: Prisma.StringFilter<"VwUserPublic"> | string
   createdAt?: Prisma.DateTimeFilter<"VwUserPublic"> | Date | string
   photo?: Prisma.StringNullableFilter<"VwUserPublic"> | string | null
   banner?: Prisma.StringNullableFilter<"VwUserPublic"> | string | null
   config?: Prisma.JsonNullableFilter<"VwUserPublic">
-}, "id">
+}, "id" | "email">
 
 export type VwUserPublicOrderByWithAggregationInput = {
   id?: Prisma.SortOrder

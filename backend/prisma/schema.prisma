@@ -51,6 +51,7 @@ model UserProfile {
   photo    String?
   banner   String?
   config   Json?
+  Bio      String?
   userId   Int     @unique
   
   user     User    @relation(fields: [userId], references: [id])

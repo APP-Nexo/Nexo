@@ -849,6 +849,7 @@ export const UserProfileScalarFieldEnum = {
   photo: 'photo',
   banner: 'banner',
   config: 'config',
+  Bio: 'Bio',
   userId: 'userId'
 } as const
 

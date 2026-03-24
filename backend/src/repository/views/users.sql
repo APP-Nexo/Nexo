@@ -8,6 +8,7 @@ SELECT
     u."createdAt",
     p.photo,
     p.banner,
+    p.bio,
     p.config
 FROM "User" u
 LEFT JOIN "UserProfile" p ON p."userId" = u.id

@@ -8,7 +8,6 @@ import type { VwUserPublic } from '../generated/client.js';
 
 import { GenericQueries } from '../repository/generics.js';
 import prisma from '../helpers/utils/prisma_conn.js';
-import { AuthErrors } from '../helpers/errors/auth-errors.js';
 const userQuery = new GenericQueries(prisma.user)
 const userProfileQuery = new GenericQueries(prisma.userProfile)
 
@@ -17,6 +16,11 @@ const vwUserQuery = new GenericQueries<VwUserPublic>(prisma.vwUserPublic)
 export class UserController 
 {
     static async update(req: FastifyRequest, reply: FastifyReply)
+    {
+
+    }
+
+    static async searchUser(req: FastifyRequest, reply: FastifyReply)
     {
 
     }
@@ -29,12 +33,12 @@ export class UserController
 
         const user = await vwUserQuery.findUnique({ id: Number(id) })
 
-        return reply.status(200).send({ user })
-    }
+        const { photo, banner, config, ...userData } = user as any
 
-    static async getUsers(req: FastifyRequest, reply: FastifyReply)
-    {
-
+        return reply.status(200).send({
+            user: userData,
+            profile: { photo, banner, config }
+        })
     }
 
     static async delete(req: FastifyRequest, reply: FastifyReply)

@@ -17,9 +17,6 @@
     "sync:seeds": "tsx prisma/seeds/index.ts",
     "start:prod": "npx prisma migrate deploy && npm start"
   },
-  "prisma": {
-    "seed": ""  
-  },
   "keywords": [],
   "author": "",
   "license": "ISC",
