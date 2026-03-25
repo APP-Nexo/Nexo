@@ -56,7 +56,7 @@ export class UserController
     {
         const { id } = req.params as { id: string }
 
-        await UserErrors.ensureUserExist(vwUserQuery, Number(id))
+        await UserErrors.ensureUserExistById(vwUserQuery, Number(id))
 
         const user = await vwUserQuery.findUnique({ id: Number(id) })
 

@@ -15,5 +15,4 @@ export class UserErrors extends BaseErrors {
         const user = await query.findUnique({ id }) 
         if (!user.activate) throw new BaseErrors('Esta conta ja está desativada.', 403)
     }
-
 }

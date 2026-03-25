@@ -3,6 +3,7 @@ import type { FastifyRequest, FastifyReply } from 'fastify';
 import { AuthErrors } from '../helpers/errors/auth-errors.js';
 import { JwtToken } from '../helpers/utils/jwt_token.js';
 import { encryptPassword } from '../helpers/utils/encrypt_password.js';
+import { compare } from 'bcrypt';
 
 import type { RegisterPayload, UserPayload } from '../helpers/interfaces/I-Auth.js';
 import type { UserTokenPayload } from '../helpers/interfaces/I-Jwt.js';
@@ -20,7 +21,7 @@ export class AuthController
         const { name, email, password, confirmPassword } = req.body as RegisterPayload
 
         AuthErrors.ensureRegister({ name, email, password, confirmPassword })
-        await AuthErrors.ensureUserNotExist(userQuery, email)
+        await AuthErrors.ensureUserExistByEmail(userQuery, email)
 
         const defaultRole = await roleQuery.findUnique({ role: 'user' })
 
@@ -43,6 +44,19 @@ export class AuthController
 
     static async login(req: FastifyRequest, reply: FastifyReply)
     {
-    
+        const { email, password } = req.body as { email: string, password: string };
+
+        AuthErrors.ensureLogin(email, password)
+        await AuthErrors.ensureUserNotExist(userQuery, email)
+
+        const user = await userQuery.findUnique({ email }) as UserPayload
+        const matchPassword = await compare(password, user.password);
+
+        AuthErrors.ensureMatchPassword(matchPassword)
+
+        const { password: _, ...userPayload } = user as UserPayload;
+        const token = await JwtToken.create(userPayload, reply)
+
+        return reply.status(200).send({ user: userPayload, token });
     }
 }
