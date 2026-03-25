@@ -47,33 +47,39 @@ model Role {
 }
 
 model UserProfile {
-  id       Int     @id @default(autoincrement())
-  photo    String?
-  banner   String?
-  config   Json?
-  Bio      String?
-  userId   Int     @unique
+  id         Int     @id @default(autoincrement())
+  friendlyId String  @unique @default(cuid()) 
+  photo      String?
+  banner     String?
+  config     Json?
+  bio        String?
+  userId     Int     @unique
   
   user     User    @relation(fields: [userId], references: [id])
 }
 
 // views
 view VwUserPublic {
-  id        Int      @unique
-  name      String
-  email     String   @unique
-  createdAt DateTime
-  photo     String?
-  banner    String?
-  config    Json?
+  id         Int      @unique
+  friendlyId String?  @unique 
+  name       String
+  email      String   @unique
+  createdAt  DateTime
+  roleId     Int     
+  photo      String?
+  banner     String?
+  config     Json?
+  bio        String?
 
   @@map("vw_user_public")
 }
 
 view VwUsersStatusSummary {
-  totalActive      Int 
-  totalDeactivated Int 
-  totalUsers       Int 
+  totalUsers        Int 
+  totalActive       Int 
+  totalDeactivated  Int 
+  totalAdmins       Int 
+  totalRegularUsers Int 
 
   @@map("vw_users_status_summary")
 }

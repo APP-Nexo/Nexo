@@ -28,76 +28,98 @@ export type AggregateVwUserPublic = {
 
 export type VwUserPublicAvgAggregateOutputType = {
   id: number | null
+  roleId: number | null
 }
 
 export type VwUserPublicSumAggregateOutputType = {
   id: number | null
+  roleId: number | null
 }
 
 export type VwUserPublicMinAggregateOutputType = {
   id: number | null
+  friendlyId: string | null
   name: string | null
   email: string | null
   createdAt: Date | null
+  roleId: number | null
   photo: string | null
   banner: string | null
+  bio: string | null
 }
 
 export type VwUserPublicMaxAggregateOutputType = {
   id: number | null
+  friendlyId: string | null
   name: string | null
   email: string | null
   createdAt: Date | null
+  roleId: number | null
   photo: string | null
   banner: string | null
+  bio: string | null
 }
 
 export type VwUserPublicCountAggregateOutputType = {
   id: number
+  friendlyId: number
   name: number
   email: number
   createdAt: number
+  roleId: number
   photo: number
   banner: number
   config: number
+  bio: number
   _all: number
 }
 
 
 export type VwUserPublicAvgAggregateInputType = {
   id?: true
+  roleId?: true
 }
 
 export type VwUserPublicSumAggregateInputType = {
   id?: true
+  roleId?: true
 }
 
 export type VwUserPublicMinAggregateInputType = {
   id?: true
+  friendlyId?: true
   name?: true
   email?: true
   createdAt?: true
+  roleId?: true
   photo?: true
   banner?: true
+  bio?: true
 }
 
 export type VwUserPublicMaxAggregateInputType = {
   id?: true
+  friendlyId?: true
   name?: true
   email?: true
   createdAt?: true
+  roleId?: true
   photo?: true
   banner?: true
+  bio?: true
 }
 
 export type VwUserPublicCountAggregateInputType = {
   id?: true
+  friendlyId?: true
   name?: true
   email?: true
   createdAt?: true
+  roleId?: true
   photo?: true
   banner?: true
   config?: true
+  bio?: true
   _all?: true
 }
 
@@ -189,12 +211,15 @@ export type VwUserPublicGroupByArgs<ExtArgs extends runtime.Types.Extensions.Int
 
 export type VwUserPublicGroupByOutputType = {
   id: number
+  friendlyId: string | null
   name: string
   email: string
   createdAt: Date
+  roleId: number
   photo: string | null
   banner: string | null
   config: runtime.JsonValue | null
+  bio: string | null
   _count: VwUserPublicCountAggregateOutputType | null
   _avg: VwUserPublicAvgAggregateOutputType | null
   _sum: VwUserPublicSumAggregateOutputType | null
@@ -222,45 +247,57 @@ export type VwUserPublicWhereInput = {
   OR?: Prisma.VwUserPublicWhereInput[]
   NOT?: Prisma.VwUserPublicWhereInput | Prisma.VwUserPublicWhereInput[]
   id?: Prisma.IntFilter<"VwUserPublic"> | number
+  friendlyId?: Prisma.StringNullableFilter<"VwUserPublic"> | string | null
   name?: Prisma.StringFilter<"VwUserPublic"> | string
   email?: Prisma.StringFilter<"VwUserPublic"> | string
   createdAt?: Prisma.DateTimeFilter<"VwUserPublic"> | Date | string
+  roleId?: Prisma.IntFilter<"VwUserPublic"> | number
   photo?: Prisma.StringNullableFilter<"VwUserPublic"> | string | null
   banner?: Prisma.StringNullableFilter<"VwUserPublic"> | string | null
   config?: Prisma.JsonNullableFilter<"VwUserPublic">
+  bio?: Prisma.StringNullableFilter<"VwUserPublic"> | string | null
 }
 
 export type VwUserPublicOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  friendlyId?: Prisma.SortOrderInput | Prisma.SortOrder
   name?: Prisma.SortOrder
   email?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  roleId?: Prisma.SortOrder
   photo?: Prisma.SortOrderInput | Prisma.SortOrder
   banner?: Prisma.SortOrderInput | Prisma.SortOrder
   config?: Prisma.SortOrderInput | Prisma.SortOrder
+  bio?: Prisma.SortOrderInput | Prisma.SortOrder
 }
 
 export type VwUserPublicWhereUniqueInput = Prisma.AtLeast<{
   id?: number
+  friendlyId?: string
   email?: string
   AND?: Prisma.VwUserPublicWhereInput | Prisma.VwUserPublicWhereInput[]
   OR?: Prisma.VwUserPublicWhereInput[]
   NOT?: Prisma.VwUserPublicWhereInput | Prisma.VwUserPublicWhereInput[]
   name?: Prisma.StringFilter<"VwUserPublic"> | string
   createdAt?: Prisma.DateTimeFilter<"VwUserPublic"> | Date | string
+  roleId?: Prisma.IntFilter<"VwUserPublic"> | number
   photo?: Prisma.StringNullableFilter<"VwUserPublic"> | string | null
   banner?: Prisma.StringNullableFilter<"VwUserPublic"> | string | null
   config?: Prisma.JsonNullableFilter<"VwUserPublic">
-}, "id" | "email">
+  bio?: Prisma.StringNullableFilter<"VwUserPublic"> | string | null
+}, "id" | "friendlyId" | "email">
 
 export type VwUserPublicOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  friendlyId?: Prisma.SortOrderInput | Prisma.SortOrder
   name?: Prisma.SortOrder
   email?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  roleId?: Prisma.SortOrder
   photo?: Prisma.SortOrderInput | Prisma.SortOrder
   banner?: Prisma.SortOrderInput | Prisma.SortOrder
   config?: Prisma.SortOrderInput | Prisma.SortOrder
+  bio?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.VwUserPublicCountOrderByAggregateInput
   _avg?: Prisma.VwUserPublicAvgOrderByAggregateInput
   _max?: Prisma.VwUserPublicMaxOrderByAggregateInput
@@ -273,87 +310,110 @@ export type VwUserPublicScalarWhereWithAggregatesInput = {
   OR?: Prisma.VwUserPublicScalarWhereWithAggregatesInput[]
   NOT?: Prisma.VwUserPublicScalarWhereWithAggregatesInput | Prisma.VwUserPublicScalarWhereWithAggregatesInput[]
   id?: Prisma.IntWithAggregatesFilter<"VwUserPublic"> | number
+  friendlyId?: Prisma.StringNullableWithAggregatesFilter<"VwUserPublic"> | string | null
   name?: Prisma.StringWithAggregatesFilter<"VwUserPublic"> | string
   email?: Prisma.StringWithAggregatesFilter<"VwUserPublic"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"VwUserPublic"> | Date | string
+  roleId?: Prisma.IntWithAggregatesFilter<"VwUserPublic"> | number
   photo?: Prisma.StringNullableWithAggregatesFilter<"VwUserPublic"> | string | null
   banner?: Prisma.StringNullableWithAggregatesFilter<"VwUserPublic"> | string | null
   config?: Prisma.JsonNullableWithAggregatesFilter<"VwUserPublic">
+  bio?: Prisma.StringNullableWithAggregatesFilter<"VwUserPublic"> | string | null
 }
 
 export type VwUserPublicCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  friendlyId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   email?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  roleId?: Prisma.SortOrder
   photo?: Prisma.SortOrder
   banner?: Prisma.SortOrder
   config?: Prisma.SortOrder
+  bio?: Prisma.SortOrder
 }
 
 export type VwUserPublicAvgOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  roleId?: Prisma.SortOrder
 }
 
 export type VwUserPublicMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  friendlyId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   email?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  roleId?: Prisma.SortOrder
   photo?: Prisma.SortOrder
   banner?: Prisma.SortOrder
+  bio?: Prisma.SortOrder
 }
 
 export type VwUserPublicMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  friendlyId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   email?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  roleId?: Prisma.SortOrder
   photo?: Prisma.SortOrder
   banner?: Prisma.SortOrder
+  bio?: Prisma.SortOrder
 }
 
 export type VwUserPublicSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  roleId?: Prisma.SortOrder
 }
 
 
 
 export type VwUserPublicSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  friendlyId?: boolean
   name?: boolean
   email?: boolean
   createdAt?: boolean
+  roleId?: boolean
   photo?: boolean
   banner?: boolean
   config?: boolean
+  bio?: boolean
 }, ExtArgs["result"]["vwUserPublic"]>
 
 
 
 export type VwUserPublicSelectScalar = {
   id?: boolean
+  friendlyId?: boolean
   name?: boolean
   email?: boolean
   createdAt?: boolean
+  roleId?: boolean
   photo?: boolean
   banner?: boolean
   config?: boolean
+  bio?: boolean
 }
 
-export type VwUserPublicOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "email" | "createdAt" | "photo" | "banner" | "config", ExtArgs["result"]["vwUserPublic"]>
+export type VwUserPublicOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "friendlyId" | "name" | "email" | "createdAt" | "roleId" | "photo" | "banner" | "config" | "bio", ExtArgs["result"]["vwUserPublic"]>
 
 export type $VwUserPublicPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "VwUserPublic"
   objects: {}
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
+    friendlyId: string | null
     name: string
     email: string
     createdAt: Date
+    roleId: number
     photo: string | null
     banner: string | null
     config: runtime.JsonValue | null
+    bio: string | null
   }, ExtArgs["result"]["vwUserPublic"]>
   composites: {}
 }
@@ -613,12 +673,15 @@ export interface Prisma__VwUserPublicClient<T, Null = never, ExtArgs extends run
  */
 export interface VwUserPublicFieldRefs {
   readonly id: Prisma.FieldRef<"VwUserPublic", 'Int'>
+  readonly friendlyId: Prisma.FieldRef<"VwUserPublic", 'String'>
   readonly name: Prisma.FieldRef<"VwUserPublic", 'String'>
   readonly email: Prisma.FieldRef<"VwUserPublic", 'String'>
   readonly createdAt: Prisma.FieldRef<"VwUserPublic", 'DateTime'>
+  readonly roleId: Prisma.FieldRef<"VwUserPublic", 'Int'>
   readonly photo: Prisma.FieldRef<"VwUserPublic", 'String'>
   readonly banner: Prisma.FieldRef<"VwUserPublic", 'String'>
   readonly config: Prisma.FieldRef<"VwUserPublic", 'Json'>
+  readonly bio: Prisma.FieldRef<"VwUserPublic", 'String'>
 }
     
 

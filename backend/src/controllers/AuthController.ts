@@ -22,13 +22,16 @@ export class AuthController
         AuthErrors.ensureRegister({ name, email, password, confirmPassword })
         await AuthErrors.ensureUserNotExist(userQuery, email)
 
-        const defaultRole = await roleQuery.findUnique({ role: 'user' })
+        const defaultRole = await roleQuery.findUnique({ role: 'admin' })
 
         const createdUser = await userQuery.create({
             name,
             email,
             password: await encryptPassword(password),
-            roleId: defaultRole?.id
+            roleId: defaultRole?.id,
+            profile: {
+                create: {} 
+            }
         }) as UserPayload
 
         const token = await JwtToken.create(createdUser, reply)

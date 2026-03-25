@@ -14,37 +14,60 @@ export class AdminController
         return reply.status(200).send({ usersStatus: stats })
     }
 
-    static async getUsers(req: FastifyRequest, reply: FastifyReply)
+    static async searchUser(req: FastifyRequest, reply: FastifyReply) 
     {
-        const { page = 1, limit = 10 } = req.query as { page?: number, limit?: number }
+        const { search, cursor } = req.query as { search?: string, cursor?: string }
 
-        const skip = (Number(page) - 1) * Number(limit)
+        if (!search) return reply.status(200).send({ users: [], nextCursor: null })
 
-        const [users, totalUsers] = await Promise.all([
-            vwUserQuery.findManyWithOptions({
-                select: {
-                    id: true,
-                    name: true,
-                    email: true,
-                    photo: true,
-                    createdAt: true
-                },
-                skip,
-                take: Number(limit),
-                orderBy: { createdAt: 'desc' }
-            }),
-            prisma.vwUserPublic.count()
-        ])
+        const take = 11
 
-        return reply.status(200).send({
-            users,
-            pagination: 
-            {
-                totalUsers,
-                page: Number(page),
-                limit: Number(limit),
-                totalPages: Math.ceil(totalUsers / Number(limit))
-            }
+        const users = await vwUserQuery.findManyWithOptions({
+            where: {
+            email: { contains: search, mode: 'insensitive' }
+            },
+            select: {
+            id: true,
+            friendlyId: true,
+            name: true,
+            email: true,
+            photo: true,
+            createdAt: true,
+            roleId: true
+            },
+            orderBy: { id: 'asc' },
+            take,
+            ...(cursor && { cursor: { id: Number(cursor) }, skip: 1 }),
         })
+
+        const nextCursor = users.length === take ? users[10]?.id ?? null : null
+        const data = users.slice(0, 10)
+
+        return reply.status(200).send({ users: data, nextCursor })
+    }
+    
+    static async getUsers(req: FastifyRequest, reply: FastifyReply) {
+        const { cursor, limit = 10 } = req.query as { cursor?: string, limit?: number }
+
+        const take = Number(limit) + 1
+
+        const users = await vwUserQuery.findManyWithOptions({
+            select: {
+                id: true,
+                name: true,
+                email: true,
+                photo: true,
+                createdAt: true,
+                roleId: true
+            },
+            orderBy: { createdAt: 'desc' },
+            take,
+            ...(cursor && { cursor: { id: Number(cursor) }, skip: 1 }),
+        })
+
+        const nextCursor = users.length === take ? users[Number(limit)]?.id ?? null : null
+        const data = users.slice(0, Number(limit))
+
+        return reply.status(200).send({ users: data, nextCursor })
     }
 }

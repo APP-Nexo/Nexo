@@ -846,10 +846,11 @@ export type RoleScalarFieldEnum = (typeof RoleScalarFieldEnum)[keyof typeof Role
 
 export const UserProfileScalarFieldEnum = {
   id: 'id',
+  friendlyId: 'friendlyId',
   photo: 'photo',
   banner: 'banner',
   config: 'config',
-  Bio: 'Bio',
+  bio: 'bio',
   userId: 'userId'
 } as const
 
@@ -858,21 +859,26 @@ export type UserProfileScalarFieldEnum = (typeof UserProfileScalarFieldEnum)[key
 
 export const VwUserPublicScalarFieldEnum = {
   id: 'id',
+  friendlyId: 'friendlyId',
   name: 'name',
   email: 'email',
   createdAt: 'createdAt',
+  roleId: 'roleId',
   photo: 'photo',
   banner: 'banner',
-  config: 'config'
+  config: 'config',
+  bio: 'bio'
 } as const
 
 export type VwUserPublicScalarFieldEnum = (typeof VwUserPublicScalarFieldEnum)[keyof typeof VwUserPublicScalarFieldEnum]
 
 
 export const VwUsersStatusSummaryScalarFieldEnum = {
+  totalUsers: 'totalUsers',
   totalActive: 'totalActive',
   totalDeactivated: 'totalDeactivated',
-  totalUsers: 'totalUsers'
+  totalAdmins: 'totalAdmins',
+  totalRegularUsers: 'totalRegularUsers'
 } as const
 
 export type VwUsersStatusSummaryScalarFieldEnum = (typeof VwUsersStatusSummaryScalarFieldEnum)[keyof typeof VwUsersStatusSummaryScalarFieldEnum]

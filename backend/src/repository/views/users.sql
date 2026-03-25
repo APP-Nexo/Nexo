@@ -3,13 +3,15 @@ CREATE OR REPLACE VIEW vw_user_public
 WITH (security_barrier = true) AS
 SELECT 
     u.id,
+    p."friendlyId",
     u.name,
     u.email,
     u."createdAt",
+    u."roleId" ,
     p.photo,
     p.banner,
-    p.bio,
-    p.config
+    p.config,
+    p."bio"
 FROM "User" u
 LEFT JOIN "UserProfile" p ON p."userId" = u.id
 WHERE u.activate = true;
@@ -19,8 +21,10 @@ WHERE u.activate = true;
 CREATE OR REPLACE VIEW vw_users_status_summary
 WITH (security_barrier = true) AS
 SELECT
-    COUNT(*) FILTER (WHERE activate = true)  AS "totalActive",
-    COUNT(*) FILTER (WHERE activate = false) AS "totalDeactivated",
-    COUNT(*)                                  AS "totalUsers"
+    COUNT(*)                                           AS "totalUsers",
+    COUNT(*) FILTER (WHERE activate = true)            AS "totalActive",
+    COUNT(*) FILTER (WHERE activate = false)           AS "totalDeactivated",
+    COUNT(*) FILTER (WHERE "roleId" = 2)               AS "totalAdmins",
+    COUNT(*) FILTER (WHERE "roleId" = 1)               AS "totalRegularUsers"
 FROM "User";
 -- DROP VIEW IF EXISTS vw_users_status_summary;

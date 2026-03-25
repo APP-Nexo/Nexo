@@ -20,9 +20,36 @@ export class UserController
 
     }
 
-    static async searchUser(req: FastifyRequest, reply: FastifyReply)
+    static async searchUser(req: FastifyRequest, reply: FastifyReply) 
     {
+        const { search, cursor } = req.query as { search?: string, cursor?: string }
 
+        if (!search) return reply.status(200).send({ users: [], nextCursor: null })
+
+        const users = await vwUserQuery.findManyWithOptions({
+            where: {
+            OR: [
+                { name: { startsWith: search, mode: 'insensitive' } },
+                { friendlyId: { equals: search } }
+            ]
+            },
+            select: {
+                id: true,
+                friendlyId: true,
+                createdAt: true,
+                name: true,
+                email: true,
+                photo: true,
+            },
+            orderBy: { name: 'asc' },
+            take: 11,
+            ...(cursor && { cursor: { id: Number(cursor) }, skip: 1 }),
+        })
+
+        const nextCursor = users.length === 11 ? users[10]?.id ?? null : null
+        const data = users.slice(0, 10)
+
+        return reply.status(200).send({ users: data, nextCursor })
     }
     
     static async getUser(req: FastifyRequest, reply: FastifyReply)
@@ -33,11 +60,11 @@ export class UserController
 
         const user = await vwUserQuery.findUnique({ id: Number(id) })
 
-        const { photo, banner, config, ...userData } = user as any
+        const { photo, banner, bio, config, ...userData } = user as any
 
         return reply.status(200).send({
             user: userData,
-            profile: { photo, banner, config }
+            profile: { photo, banner, bio, config }
         })
     }
 

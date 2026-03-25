@@ -27,65 +27,85 @@ export type AggregateVwUsersStatusSummary = {
 }
 
 export type VwUsersStatusSummaryAvgAggregateOutputType = {
+  totalUsers: number | null
   totalActive: number | null
   totalDeactivated: number | null
-  totalUsers: number | null
+  totalAdmins: number | null
+  totalRegularUsers: number | null
 }
 
 export type VwUsersStatusSummarySumAggregateOutputType = {
+  totalUsers: number | null
   totalActive: number | null
   totalDeactivated: number | null
-  totalUsers: number | null
+  totalAdmins: number | null
+  totalRegularUsers: number | null
 }
 
 export type VwUsersStatusSummaryMinAggregateOutputType = {
+  totalUsers: number | null
   totalActive: number | null
   totalDeactivated: number | null
-  totalUsers: number | null
+  totalAdmins: number | null
+  totalRegularUsers: number | null
 }
 
 export type VwUsersStatusSummaryMaxAggregateOutputType = {
+  totalUsers: number | null
   totalActive: number | null
   totalDeactivated: number | null
-  totalUsers: number | null
+  totalAdmins: number | null
+  totalRegularUsers: number | null
 }
 
 export type VwUsersStatusSummaryCountAggregateOutputType = {
+  totalUsers: number
   totalActive: number
   totalDeactivated: number
-  totalUsers: number
+  totalAdmins: number
+  totalRegularUsers: number
   _all: number
 }
 
 
 export type VwUsersStatusSummaryAvgAggregateInputType = {
+  totalUsers?: true
   totalActive?: true
   totalDeactivated?: true
-  totalUsers?: true
+  totalAdmins?: true
+  totalRegularUsers?: true
 }
 
 export type VwUsersStatusSummarySumAggregateInputType = {
+  totalUsers?: true
   totalActive?: true
   totalDeactivated?: true
-  totalUsers?: true
+  totalAdmins?: true
+  totalRegularUsers?: true
 }
 
 export type VwUsersStatusSummaryMinAggregateInputType = {
+  totalUsers?: true
   totalActive?: true
   totalDeactivated?: true
-  totalUsers?: true
+  totalAdmins?: true
+  totalRegularUsers?: true
 }
 
 export type VwUsersStatusSummaryMaxAggregateInputType = {
+  totalUsers?: true
   totalActive?: true
   totalDeactivated?: true
-  totalUsers?: true
+  totalAdmins?: true
+  totalRegularUsers?: true
 }
 
 export type VwUsersStatusSummaryCountAggregateInputType = {
+  totalUsers?: true
   totalActive?: true
   totalDeactivated?: true
-  totalUsers?: true
+  totalAdmins?: true
+  totalRegularUsers?: true
   _all?: true
 }
 
@@ -170,9 +190,11 @@ export type VwUsersStatusSummaryGroupByArgs<ExtArgs extends runtime.Types.Extens
 }
 
 export type VwUsersStatusSummaryGroupByOutputType = {
+  totalUsers: number
   totalActive: number
   totalDeactivated: number
-  totalUsers: number
+  totalAdmins: number
+  totalRegularUsers: number
   _count: VwUsersStatusSummaryCountAggregateOutputType | null
   _avg: VwUsersStatusSummaryAvgAggregateOutputType | null
   _sum: VwUsersStatusSummarySumAggregateOutputType | null
@@ -199,21 +221,27 @@ export type VwUsersStatusSummaryWhereInput = {
   AND?: Prisma.VwUsersStatusSummaryWhereInput | Prisma.VwUsersStatusSummaryWhereInput[]
   OR?: Prisma.VwUsersStatusSummaryWhereInput[]
   NOT?: Prisma.VwUsersStatusSummaryWhereInput | Prisma.VwUsersStatusSummaryWhereInput[]
+  totalUsers?: Prisma.IntFilter<"VwUsersStatusSummary"> | number
   totalActive?: Prisma.IntFilter<"VwUsersStatusSummary"> | number
   totalDeactivated?: Prisma.IntFilter<"VwUsersStatusSummary"> | number
-  totalUsers?: Prisma.IntFilter<"VwUsersStatusSummary"> | number
+  totalAdmins?: Prisma.IntFilter<"VwUsersStatusSummary"> | number
+  totalRegularUsers?: Prisma.IntFilter<"VwUsersStatusSummary"> | number
 }
 
 export type VwUsersStatusSummaryOrderByWithRelationInput = {
+  totalUsers?: Prisma.SortOrder
   totalActive?: Prisma.SortOrder
   totalDeactivated?: Prisma.SortOrder
-  totalUsers?: Prisma.SortOrder
+  totalAdmins?: Prisma.SortOrder
+  totalRegularUsers?: Prisma.SortOrder
 }
 
 export type VwUsersStatusSummaryOrderByWithAggregationInput = {
+  totalUsers?: Prisma.SortOrder
   totalActive?: Prisma.SortOrder
   totalDeactivated?: Prisma.SortOrder
-  totalUsers?: Prisma.SortOrder
+  totalAdmins?: Prisma.SortOrder
+  totalRegularUsers?: Prisma.SortOrder
   _count?: Prisma.VwUsersStatusSummaryCountOrderByAggregateInput
   _avg?: Prisma.VwUsersStatusSummaryAvgOrderByAggregateInput
   _max?: Prisma.VwUsersStatusSummaryMaxOrderByAggregateInput
@@ -225,66 +253,84 @@ export type VwUsersStatusSummaryScalarWhereWithAggregatesInput = {
   AND?: Prisma.VwUsersStatusSummaryScalarWhereWithAggregatesInput | Prisma.VwUsersStatusSummaryScalarWhereWithAggregatesInput[]
   OR?: Prisma.VwUsersStatusSummaryScalarWhereWithAggregatesInput[]
   NOT?: Prisma.VwUsersStatusSummaryScalarWhereWithAggregatesInput | Prisma.VwUsersStatusSummaryScalarWhereWithAggregatesInput[]
+  totalUsers?: Prisma.IntWithAggregatesFilter<"VwUsersStatusSummary"> | number
   totalActive?: Prisma.IntWithAggregatesFilter<"VwUsersStatusSummary"> | number
   totalDeactivated?: Prisma.IntWithAggregatesFilter<"VwUsersStatusSummary"> | number
-  totalUsers?: Prisma.IntWithAggregatesFilter<"VwUsersStatusSummary"> | number
+  totalAdmins?: Prisma.IntWithAggregatesFilter<"VwUsersStatusSummary"> | number
+  totalRegularUsers?: Prisma.IntWithAggregatesFilter<"VwUsersStatusSummary"> | number
 }
 
 export type VwUsersStatusSummaryCountOrderByAggregateInput = {
+  totalUsers?: Prisma.SortOrder
   totalActive?: Prisma.SortOrder
   totalDeactivated?: Prisma.SortOrder
-  totalUsers?: Prisma.SortOrder
+  totalAdmins?: Prisma.SortOrder
+  totalRegularUsers?: Prisma.SortOrder
 }
 
 export type VwUsersStatusSummaryAvgOrderByAggregateInput = {
+  totalUsers?: Prisma.SortOrder
   totalActive?: Prisma.SortOrder
   totalDeactivated?: Prisma.SortOrder
-  totalUsers?: Prisma.SortOrder
+  totalAdmins?: Prisma.SortOrder
+  totalRegularUsers?: Prisma.SortOrder
 }
 
 export type VwUsersStatusSummaryMaxOrderByAggregateInput = {
+  totalUsers?: Prisma.SortOrder
   totalActive?: Prisma.SortOrder
   totalDeactivated?: Prisma.SortOrder
-  totalUsers?: Prisma.SortOrder
+  totalAdmins?: Prisma.SortOrder
+  totalRegularUsers?: Prisma.SortOrder
 }
 
 export type VwUsersStatusSummaryMinOrderByAggregateInput = {
+  totalUsers?: Prisma.SortOrder
   totalActive?: Prisma.SortOrder
   totalDeactivated?: Prisma.SortOrder
-  totalUsers?: Prisma.SortOrder
+  totalAdmins?: Prisma.SortOrder
+  totalRegularUsers?: Prisma.SortOrder
 }
 
 export type VwUsersStatusSummarySumOrderByAggregateInput = {
+  totalUsers?: Prisma.SortOrder
   totalActive?: Prisma.SortOrder
   totalDeactivated?: Prisma.SortOrder
-  totalUsers?: Prisma.SortOrder
+  totalAdmins?: Prisma.SortOrder
+  totalRegularUsers?: Prisma.SortOrder
 }
 
 
 
 export type VwUsersStatusSummarySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  totalUsers?: boolean
   totalActive?: boolean
   totalDeactivated?: boolean
-  totalUsers?: boolean
+  totalAdmins?: boolean
+  totalRegularUsers?: boolean
 }, ExtArgs["result"]["vwUsersStatusSummary"]>
 
 
 
 export type VwUsersStatusSummarySelectScalar = {
+  totalUsers?: boolean
   totalActive?: boolean
   totalDeactivated?: boolean
-  totalUsers?: boolean
+  totalAdmins?: boolean
+  totalRegularUsers?: boolean
 }
 
-export type VwUsersStatusSummaryOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"totalActive" | "totalDeactivated" | "totalUsers", ExtArgs["result"]["vwUsersStatusSummary"]>
+export type VwUsersStatusSummaryOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"totalUsers" | "totalActive" | "totalDeactivated" | "totalAdmins" | "totalRegularUsers", ExtArgs["result"]["vwUsersStatusSummary"]>
 
 export type $VwUsersStatusSummaryPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "VwUsersStatusSummary"
   objects: {}
   scalars: runtime.Types.Extensions.GetPayloadResult<{
+    totalUsers: number
     totalActive: number
     totalDeactivated: number
-    totalUsers: number
+    totalAdmins: number
+    totalRegularUsers: number
   }, ExtArgs["result"]["vwUsersStatusSummary"]>
   composites: {}
 }
@@ -349,8 +395,8 @@ export interface VwUsersStatusSummaryDelegate<ExtArgs extends runtime.Types.Exte
    * // Get first 10 VwUsersStatusSummaries
    * const vwUsersStatusSummaries = await prisma.vwUsersStatusSummary.findMany({ take: 10 })
    * 
-   * // Only select the `totalActive`
-   * const vwUsersStatusSummaryWithTotalActiveOnly = await prisma.vwUsersStatusSummary.findMany({ select: { totalActive: true } })
+   * // Only select the `totalUsers`
+   * const vwUsersStatusSummaryWithTotalUsersOnly = await prisma.vwUsersStatusSummary.findMany({ select: { totalUsers: true } })
    * 
    */
   findMany<T extends VwUsersStatusSummaryFindManyArgs, TakeDependenciesValidator extends "take" extends Prisma.Keys<T> ? {
@@ -528,9 +574,11 @@ export interface Prisma__VwUsersStatusSummaryClient<T, Null = never, ExtArgs ext
  * Fields of the VwUsersStatusSummary model
  */
 export interface VwUsersStatusSummaryFieldRefs {
+  readonly totalUsers: Prisma.FieldRef<"VwUsersStatusSummary", 'Int'>
   readonly totalActive: Prisma.FieldRef<"VwUsersStatusSummary", 'Int'>
   readonly totalDeactivated: Prisma.FieldRef<"VwUsersStatusSummary", 'Int'>
-  readonly totalUsers: Prisma.FieldRef<"VwUsersStatusSummary", 'Int'>
+  readonly totalAdmins: Prisma.FieldRef<"VwUsersStatusSummary", 'Int'>
+  readonly totalRegularUsers: Prisma.FieldRef<"VwUsersStatusSummary", 'Int'>
 }
     
 
