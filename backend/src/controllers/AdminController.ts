@@ -1,11 +1,12 @@
 import type { FastifyRequest, FastifyReply } from 'fastify';
 
-import type { VwUserPublic, VwUsersStatusSummary } from '../generated/client.js';
+import type { VwUserPublic, VwUsersStatusSummary, Role } from '../generated/client.js';
 
 import { GenericQueries } from '../repository/generics.js';
 import prisma from '../helpers/utils/prisma_conn.js';
 const vwUserQuery = new GenericQueries<VwUserPublic>(prisma.vwUserPublic)
 const vwUserStatsQuery = new GenericQueries<VwUsersStatusSummary>(prisma.vwUsersStatusSummary)
+const roleQuery = new GenericQueries<Role>(prisma.role)
 
 export class AdminController
 {
@@ -14,17 +15,30 @@ export class AdminController
         return reply.status(200).send({ usersStatus: stats })
     }
 
+    static async getUsersAdmin(req: FastifyRequest, reply: FastifyReply)
+    {
+        const adminRole = await roleQuery.findUnique({ role: 'admin' })
+        const users = await vwUserQuery.findMany({ roleId: adminRole?.id })
+
+        const data = users.map(({ photo, banner, bio, friendlyId, config, ...userData }) => ({
+        user: userData,
+        profile: { photo, banner, bio, friendlyId, config }
+        }))
+
+        return reply.status(200).send({ users: data })
+    }
+
     static async searchUser(req: FastifyRequest, reply: FastifyReply) 
     {
-        const { search, cursor } = req.query as { search?: string, cursor?: string }
+        const { email, cursor } = req.query as { email?: string, cursor?: string }
 
-        if (!search) return reply.status(200).send({ users: [], nextCursor: null })
+        if (!email) return reply.status(200).send({ users: [], nextCursor: null })
 
         const take = 11
 
         const users = await vwUserQuery.findManyWithOptions({
             where: {
-            email: { contains: search, mode: 'insensitive' }
+            email: { contains: email, mode: 'insensitive' }
             },
             select: {
                 id: true,

@@ -6,7 +6,7 @@ import type { Role } from '../../src/generated/client.js'
 
 const roleQuery = new GenericQueries<Role>(prisma.role)
 
-const DEFAULT_ROLES = ['user', 'admin']
+const DEFAULT_ROLES = ['user', 'admin', 'master']
 
 export async function seedRoles() {
     const existing = await roleQuery.findMany()
@@ -20,7 +20,7 @@ export async function seedRoles() {
     }
 
     await roleQuery.createMany(toCreate.map((role) => ({ role })))
-    Logs.write({ roles: toCreate }, `Roles created | roles: ${toCreate.join(', ')}`, 'info', true)
+    Logs.write({ roles: [...existingRoles, ...toCreate] }, `Roles created | roles: ${toCreate.join(', ')}`, 'info', true)
 }
 
 if (process.argv[1]?.includes('roles')) {
