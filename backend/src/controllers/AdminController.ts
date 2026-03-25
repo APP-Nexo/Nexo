@@ -27,13 +27,13 @@ export class AdminController
             email: { contains: search, mode: 'insensitive' }
             },
             select: {
-            id: true,
-            friendlyId: true,
-            name: true,
-            email: true,
-            photo: true,
-            createdAt: true,
-            roleId: true
+                id: true,
+                friendlyId: true,
+                name: true,
+                email: true,
+                photo: true,
+                createdAt: true,
+                roleId: true
             },
             orderBy: { id: 'asc' },
             take,
@@ -45,7 +45,7 @@ export class AdminController
 
         return reply.status(200).send({ users: data, nextCursor })
     }
-    
+
     static async getUsers(req: FastifyRequest, reply: FastifyReply) {
         const { cursor, limit = 10 } = req.query as { cursor?: string, limit?: number }
 
