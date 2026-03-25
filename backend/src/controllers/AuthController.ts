@@ -22,7 +22,7 @@ export class AuthController
         AuthErrors.ensureRegister({ name, email, password, confirmPassword })
         await AuthErrors.ensureUserNotExist(userQuery, email)
 
-        const defaultRole = await roleQuery.findUnique({ role: 'admin' })
+        const defaultRole = await roleQuery.findUnique({ role: 'user' })
 
         const createdUser = await userQuery.create({
             name,

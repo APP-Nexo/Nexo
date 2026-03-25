@@ -60,11 +60,11 @@ export class UserController
 
         const user = await vwUserQuery.findUnique({ id: Number(id) })
 
-        const { photo, banner, bio, config, ...userData } = user as any
+        const { photo, banner, bio, config, friendlyId, ...userData } = user as any
 
         return reply.status(200).send({
             user: userData,
-            profile: { photo, banner, bio, config }
+            profile: { photo, banner, bio, friendlyId, config }
         })
     }
 

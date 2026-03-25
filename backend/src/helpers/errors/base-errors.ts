@@ -29,6 +29,6 @@ export class BaseErrors extends Error
     static async ensureUserNotExist(query: GenericQueries<any>, email: string) 
     {
         const user = await query.findUnique({ email })
-        if (user) throw new BaseErrors('Este email já está em uso.', 409)
+        if (user) throw new BaseErrors('Email indisponível.', 409)
     }
 }
