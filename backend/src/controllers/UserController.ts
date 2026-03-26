@@ -74,7 +74,8 @@ export class UserController
         const tokenUser = req.user as UserTokenPayload
 
         UserErrors.ensureDelete(email, tokenUser)
-        await UserErrors.ensureUserActive(userQuery, tokenUser.id)
+        await UserErrors.ensureNotMaster(Number(tokenUser.id))
+        await UserErrors.ensureUserExistById(vwUserQuery, tokenUser.id)
 
         await userQuery.update(tokenUser.id, { 
             activate: false, 

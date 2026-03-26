@@ -9,6 +9,7 @@ import prisma from '../helpers/utils/prisma_conn.js';
 const vwUserQuery = new GenericQueries<VwUserPublic>(prisma.vwUserPublic)
 const vwUserStatsQuery = new GenericQueries<VwUsersStatusSummary>(prisma.vwUsersStatusSummary)
 const roleQuery = new GenericQueries<Role>(prisma.role)
+const userQuery = new GenericQueries(prisma.user)
 
 export class AdminController
 {
@@ -24,10 +25,7 @@ export class AdminController
 
         await AdminErrors.ensureRole(Number(id), adminRole.id, 'Usuário ja é admin.')
 
-        await prisma.user.update({
-            where: { id: Number(id) },
-            data: { roleId: adminRole.id }
-        })
+        await userQuery.update(Number(id), { roleId: adminRole.id })
 
         return reply.status(200).send({ message: 'Usuário promovido para admin.' })
     }
@@ -43,10 +41,7 @@ export class AdminController
 
         await AdminErrors.ensureRole(Number(id), userRole.id, 'Usuário ja é user.')
 
-        await prisma.user.update({
-            where: { id: Number(id) },
-            data: { roleId: userRole.id }
-        })
+        await userQuery.update(Number(id), { roleId: userRole.id })
 
         return reply.status(200).send({ message: 'Usuário rebaixado para user.' })
     }
@@ -59,13 +54,10 @@ export class AdminController
 
         const user = await prisma.user.findUnique({ where: { id: Number(id) } })
 
-        await prisma.user.update({
-            where: { id: Number(id) },
-                data: {
-                activate: false,
-                email: `banned_${id}_${user?.email}`,
-                deletedAt: new Date()
-            }
+        await userQuery.update(Number(id), {
+            activate: false,
+            email: `banned_${id}_${user?.email}`,
+            deletedAt: new Date()
         })
 
         return reply.status(200).send({ message: 'Usuário banido.' })

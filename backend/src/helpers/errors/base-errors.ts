@@ -1,4 +1,7 @@
 import { GenericQueries } from "../../repository/generics.js";
+
+import prisma from "../utils/prisma_conn.js";
+
 export class BaseErrors extends Error 
 {
     public statusCode: number;
@@ -36,5 +39,16 @@ export class BaseErrors extends Error
     {
         const user = await query.findUnique({ email })
         if (!user) throw new BaseErrors('Email não cadastrado.', 409)
+    }
+
+    static async ensureNotMaster(id: number) 
+    {
+        const user = await prisma.user.findUnique({
+            where: { id },
+            include: { role: true }
+        })
+        if (user?.role?.role === 'master') {
+            throw new BaseErrors('O usuário master não pode sofrer ações severas na conta.', 403)
+        }
     }
 }
