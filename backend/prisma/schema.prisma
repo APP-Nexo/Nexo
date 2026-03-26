@@ -25,6 +25,13 @@ model AppVersion {
 }
 
 // application
+model Role {
+  id    Int    @id @default(autoincrement())
+  role  String @unique
+  
+  users User[]
+}
+
 model User {
   id        Int          @id @default(autoincrement())
   name      String
@@ -37,13 +44,8 @@ model User {
 
   role      Role         @relation(fields: [roleId], references: [id])
   profile   UserProfile?
-}
-
-model Role {
-  id    Int    @id @default(autoincrement())
-  role  String @unique
-  
-  users User[]
+  following      UserFollow[]   @relation("follower")
+  followers      UserFollow[]   @relation("following")
 }
 
 model UserProfile {
@@ -56,6 +58,18 @@ model UserProfile {
   userId     Int     @unique
   
   user     User    @relation(fields: [userId], references: [id])
+}
+
+model UserFollow {
+  id          Int      @id @default(autoincrement())
+  followerId  Int
+  followingId Int
+  createdAt   DateTime @default(now())
+
+  follower    User @relation("follower", fields: [followerId], references: [id])
+  following   User @relation("following", fields: [followingId], references: [id])
+
+  @@unique([followerId, followingId])
 }
 
 // views

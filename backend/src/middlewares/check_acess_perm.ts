@@ -7,7 +7,7 @@ import prisma from '../helpers/utils/prisma_conn.js'
 
 const roleQuery = new GenericQueries<Role>(prisma.role)
 
-export async function checkAccess(req: FastifyRequest) {
+export async function checkAccessPerm(req: FastifyRequest) {
     if (!req.headers.authorization) TokenErrors.throwMissing()
     
     const user = await JwtToken.getByUser(req)
