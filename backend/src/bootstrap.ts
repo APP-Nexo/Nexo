@@ -4,10 +4,13 @@ import type { AppVersion } from './generated/client.js'
 import { APP_VERSION, DB_VERSION } from '../version.js'
 import { seedVersion } from '../prisma/seeds/version.js'
 import { seedRoles } from '../prisma/seeds/roles.js'
+import { seedMaster } from '../prisma/seeds/master.js'
 
 const versionQuery = new GenericQueries<AppVersion>(prisma.appVersion)
 
 export async function bootstrap() {
+    await seedRoles()
+    await seedMaster()
     await seedVersion()
 
     let version = await versionQuery.findLatest()
@@ -18,8 +21,6 @@ export async function bootstrap() {
             dbVersion: DB_VERSION,
         })
     }
-
-    await seedRoles()
 
     return { version }
 }

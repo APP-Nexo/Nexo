@@ -1,4 +1,3 @@
-// src/server.ts
 import { app } from './conf.js'
 import 'dotenv/config'
 import { bootstrap } from './bootstrap.js'
