@@ -37,9 +37,7 @@ export class AuthController
 
         const token = await JwtToken.create(createdUser, reply)
 
-        const { password: _, ...userPayload } = createdUser as UserTokenPayload
-
-        return reply.status(201).send({ user: userPayload, token })
+        return reply.status(201).send({ token })
     }
 
     static async login(req: FastifyRequest, reply: FastifyReply)

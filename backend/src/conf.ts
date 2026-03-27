@@ -1,6 +1,8 @@
 import 'dotenv/config'
 
 import fastify from "fastify";
+import swaggerUi from '@fastify/swagger-ui'
+import { setupSwagger } from '../documentation/swagger.js';
 import cors from "@fastify/cors";
 
 import { errorHandler } from "./middlewares/error_handler.js";
@@ -10,6 +12,7 @@ export const app = fastify({
     logger: { transport: { target: 'pino-pretty' } }
 });
 
+await setupSwagger(app)
 await app.register(cors);
 app.setErrorHandler(errorHandler);
 await app.register(fastifyJwt, { secret: process.env.SECRET! });
