@@ -17,7 +17,9 @@ export const registerSchemaSwagger =
             201: {
                 type: 'object',
                 properties: {
-                    token: { type: 'string' }
+                    tokenType: { type: 'string'},
+                    token: { type: 'string' },
+                    expiresIn: { type: 'string'}
                 }
             }
         }
@@ -41,7 +43,9 @@ export const loginSchemaSwagger =
             200: {
                 type: 'object',
                 properties: {
-                token: { type: 'string' }
+                    tokenType: { type: 'string'},
+                    token: { type: 'string' },
+                    expiresIn: { type: 'string'},
                 }
             }
         }

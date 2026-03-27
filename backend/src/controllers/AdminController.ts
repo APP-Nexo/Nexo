@@ -36,8 +36,6 @@ export class AdminController
 
         if (!email) return reply.status(200).send({ users: [], nextCursor: null })
 
-        const take = 11
-
         const users = await vwUserQuery.findManyWithOptions({
             where: {
             email: { contains: email, mode: 'insensitive' }
@@ -52,11 +50,11 @@ export class AdminController
                 roleId: true
             },
             orderBy: { id: 'asc' },
-            take,
+            take: 11,
             ...(cursor && { cursor: { id: Number(cursor) }, skip: 1 }),
         })
 
-        const nextCursor = users.length === take ? users[10]?.id ?? null : null
+        const nextCursor = users.length === 11 ? users[10]?.id ?? null : null
         const data = users.slice(0, 10)
 
         return reply.status(200).send({ users: data, nextCursor })

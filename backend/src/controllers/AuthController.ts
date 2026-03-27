@@ -6,7 +6,6 @@ import { encryptPassword } from '../helpers/utils/encrypt_password.js';
 import { compare } from 'bcrypt';
 
 import type { RegisterPayload, UserPayload } from '../helpers/interfaces/I-Auth.js';
-import type { UserTokenPayload } from '../helpers/interfaces/I-Jwt.js';
 import type { Role } from '../generated/client.js'
 
 import { GenericQueries } from '../repository/generics.js';
@@ -37,7 +36,7 @@ export class AuthController
 
         const token = await JwtToken.create(createdUser, reply)
 
-        return reply.status(201).send({ token })
+        return reply.status(201).send({  tokenType: process.env.TOKEN_TYPE!, token, expiresIn: process.env.TOKEN_EXPIRES! })
     }
 
     static async login(req: FastifyRequest, reply: FastifyReply)
@@ -55,6 +54,6 @@ export class AuthController
         const { password: _, ...userPayload } = user as UserPayload;
         const token = await JwtToken.create(userPayload, reply)
 
-        return reply.status(200).send({ user: userPayload, token });
+        return reply.status(200).send({  tokenType: process.env.TOKEN_TYPE!, token, expiresIn: process.env.TOKEN_EXPIRES! });
     }
 }

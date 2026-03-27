@@ -12,6 +12,7 @@ export class AuthErrors extends BaseErrors {
         if (!password) this.throwMissing('password')
         if (!confirmPassword) this.throwMissing('confirmPassword')
         
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new BaseErrors('Email inválido.', 400)
         if (password.length < 5) throw new BaseErrors('A senha deve ter no mínimo 5 caracteres.', 400)
         if (password != confirmPassword) this.throwPasswordMismatch()
     }

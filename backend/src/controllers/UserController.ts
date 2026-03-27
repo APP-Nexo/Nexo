@@ -3,6 +3,7 @@ import type { FastifyRequest, FastifyReply } from 'fastify';
 import { UserErrors } from '../helpers/errors/user-erros.js';
 import { encryptPassword } from '../helpers/utils/encrypt_password.js';
 
+import { Prisma } from '../generated/client.js'
 import type { UserTokenPayload } from '../helpers/interfaces/I-Jwt.js';
 import type { VwUserPublic } from '../generated/client.js';
 
@@ -26,13 +27,16 @@ export class UserController
 
         if (!search) return reply.status(200).send({ users: [], nextCursor: null })
 
-        const users = await vwUserQuery.findManyWithOptions({
-            where: {
+        const where = {
             OR: [
-                { name: { startsWith: search, mode: 'insensitive' } },
+                { name: { startsWith: search, mode: Prisma.QueryMode.insensitive } },
                 { friendlyId: { equals: search } }
             ]
-            },
+        }
+
+        const [users, total] = await Promise.all([
+            vwUserQuery.findManyWithOptions({
+            where,
             select: {
                 id: true,
                 friendlyId: true,
@@ -44,12 +48,14 @@ export class UserController
             orderBy: { name: 'asc' },
             take: 11,
             ...(cursor && { cursor: { id: Number(cursor) }, skip: 1 }),
-        })
+            }),
+            prisma.vwUserPublic.count({ where })
+        ])
 
         const nextCursor = users.length === 11 ? users[10]?.id ?? null : null
         const data = users.slice(0, 10)
 
-        return reply.status(200).send({ users: data, nextCursor })
+        return reply.status(200).send({ users: data, nextCursor, total })
     }
     
     static async getUser(req: FastifyRequest, reply: FastifyReply)
@@ -64,7 +70,7 @@ export class UserController
 
         return reply.status(200).send({
             user: userData,
-            profile: { photo, banner, bio, friendlyId, config }
+            profile: { friendlyId, photo, banner, bio, config }
         })
     }
 
@@ -83,6 +89,6 @@ export class UserController
             deletedAt: new Date()
         })
 
-        return reply.status(200).send({ message: 'Conta deletada.' })
+        return reply.status(200).send({ message: 'Conta deletada.',  deletedAt: new Date().toISOString(), email: tokenUser.email})
     }
 }

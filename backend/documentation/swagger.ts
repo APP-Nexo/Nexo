@@ -9,7 +9,7 @@ export async function setupSwagger(app: FastifyInstance)
         openapi: {
             info: {
                 title: 'Nexo API',
-                description: 'Documentação da API',
+                description: 'Documentation API',
                 version: '1.0.0'
             },
             components: {

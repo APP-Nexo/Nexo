@@ -1,5 +1,6 @@
 import type { FastifyInstance } from 'fastify';
 import { AuthController } from '../controllers/AuthController.js';
+
 import { registerSchemaSwagger, loginSchemaSwagger } from '../../documentation/auth.docs.js';
 
 export async function authRoutes(app: FastifyInstance) 

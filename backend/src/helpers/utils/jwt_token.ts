@@ -1,3 +1,4 @@
+import 'dotenv/config'
 import '@fastify/jwt'
 import type { FastifyReply, FastifyRequest } from 'fastify'
 
@@ -20,7 +21,7 @@ export class JwtToken
                     email: user.email,
                     roleId: user.roleId,
                 },
-                { expiresIn: '7d' }
+                { expiresIn: process.env.TOKEN_EXPIRES! }
             )
 
             return token
