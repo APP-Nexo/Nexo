@@ -16,7 +16,7 @@ export async function seedVersion() {
     })
 
     if (existing) {
-        await versionQuery.update(existing.id, { createdAt: new Date() })
+        await versionQuery.update(existing.id, { timestamp: new Date() })
         const { id: _, ...versionData } = existing as any
         Logs.write({ version: versionData }, `Version already up to date | app: ${APP_VERSION} | db: ${DB_VERSION}`, 'info', true, false)
         return

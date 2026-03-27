@@ -52,9 +52,10 @@ export const AnyNull = runtime.AnyNull
 
 export const ModelName = {
   AppVersion: 'AppVersion',
-  User: 'User',
   Role: 'Role',
+  User: 'User',
   UserProfile: 'UserProfile',
+  UserFollow: 'UserFollow',
   VwUserPublic: 'VwUserPublic',
   VwUsersStatusSummary: 'VwUsersStatusSummary'
 } as const
@@ -79,10 +80,18 @@ export const AppVersionScalarFieldEnum = {
   id: 'id',
   appVersion: 'appVersion',
   dbVersion: 'dbVersion',
-  createdAt: 'createdAt'
+  timestamp: 'timestamp'
 } as const
 
 export type AppVersionScalarFieldEnum = (typeof AppVersionScalarFieldEnum)[keyof typeof AppVersionScalarFieldEnum]
+
+
+export const RoleScalarFieldEnum = {
+  id: 'id',
+  role: 'role'
+} as const
+
+export type RoleScalarFieldEnum = (typeof RoleScalarFieldEnum)[keyof typeof RoleScalarFieldEnum]
 
 
 export const UserScalarFieldEnum = {
@@ -99,14 +108,6 @@ export const UserScalarFieldEnum = {
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
 
 
-export const RoleScalarFieldEnum = {
-  id: 'id',
-  role: 'role'
-} as const
-
-export type RoleScalarFieldEnum = (typeof RoleScalarFieldEnum)[keyof typeof RoleScalarFieldEnum]
-
-
 export const UserProfileScalarFieldEnum = {
   id: 'id',
   friendlyId: 'friendlyId',
@@ -118,6 +119,16 @@ export const UserProfileScalarFieldEnum = {
 } as const
 
 export type UserProfileScalarFieldEnum = (typeof UserProfileScalarFieldEnum)[keyof typeof UserProfileScalarFieldEnum]
+
+
+export const UserFollowScalarFieldEnum = {
+  id: 'id',
+  followerId: 'followerId',
+  followingId: 'followingId',
+  createdAt: 'createdAt'
+} as const
+
+export type UserFollowScalarFieldEnum = (typeof UserFollowScalarFieldEnum)[keyof typeof UserFollowScalarFieldEnum]
 
 
 export const VwUserPublicScalarFieldEnum = {

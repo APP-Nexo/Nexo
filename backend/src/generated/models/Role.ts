@@ -264,11 +264,6 @@ export type RoleUncheckedUpdateManyInput = {
   role?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
-export type RoleScalarRelationFilter = {
-  is?: Prisma.RoleWhereInput
-  isNot?: Prisma.RoleWhereInput
-}
-
 export type RoleCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   role?: Prisma.SortOrder
@@ -290,6 +285,11 @@ export type RoleMinOrderByAggregateInput = {
 
 export type RoleSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
+}
+
+export type RoleScalarRelationFilter = {
+  is?: Prisma.RoleWhereInput
+  isNot?: Prisma.RoleWhereInput
 }
 
 export type RoleCreateNestedOneWithoutUsersInput = {

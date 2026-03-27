@@ -38,21 +38,21 @@ export type AppVersionMinAggregateOutputType = {
   id: number | null
   appVersion: string | null
   dbVersion: string | null
-  createdAt: Date | null
+  timestamp: Date | null
 }
 
 export type AppVersionMaxAggregateOutputType = {
   id: number | null
   appVersion: string | null
   dbVersion: string | null
-  createdAt: Date | null
+  timestamp: Date | null
 }
 
 export type AppVersionCountAggregateOutputType = {
   id: number
   appVersion: number
   dbVersion: number
-  createdAt: number
+  timestamp: number
   _all: number
 }
 
@@ -69,21 +69,21 @@ export type AppVersionMinAggregateInputType = {
   id?: true
   appVersion?: true
   dbVersion?: true
-  createdAt?: true
+  timestamp?: true
 }
 
 export type AppVersionMaxAggregateInputType = {
   id?: true
   appVersion?: true
   dbVersion?: true
-  createdAt?: true
+  timestamp?: true
 }
 
 export type AppVersionCountAggregateInputType = {
   id?: true
   appVersion?: true
   dbVersion?: true
-  createdAt?: true
+  timestamp?: true
   _all?: true
 }
 
@@ -177,7 +177,7 @@ export type AppVersionGroupByOutputType = {
   id: number
   appVersion: string
   dbVersion: string
-  createdAt: Date
+  timestamp: Date
   _count: AppVersionCountAggregateOutputType | null
   _avg: AppVersionAvgAggregateOutputType | null
   _sum: AppVersionSumAggregateOutputType | null
@@ -207,14 +207,14 @@ export type AppVersionWhereInput = {
   id?: Prisma.IntFilter<"AppVersion"> | number
   appVersion?: Prisma.StringFilter<"AppVersion"> | string
   dbVersion?: Prisma.StringFilter<"AppVersion"> | string
-  createdAt?: Prisma.DateTimeFilter<"AppVersion"> | Date | string
+  timestamp?: Prisma.DateTimeFilter<"AppVersion"> | Date | string
 }
 
 export type AppVersionOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   appVersion?: Prisma.SortOrder
   dbVersion?: Prisma.SortOrder
-  createdAt?: Prisma.SortOrder
+  timestamp?: Prisma.SortOrder
 }
 
 export type AppVersionWhereUniqueInput = Prisma.AtLeast<{
@@ -225,14 +225,14 @@ export type AppVersionWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.AppVersionWhereInput | Prisma.AppVersionWhereInput[]
   appVersion?: Prisma.StringFilter<"AppVersion"> | string
   dbVersion?: Prisma.StringFilter<"AppVersion"> | string
-  createdAt?: Prisma.DateTimeFilter<"AppVersion"> | Date | string
+  timestamp?: Prisma.DateTimeFilter<"AppVersion"> | Date | string
 }, "id" | "appVersion_dbVersion">
 
 export type AppVersionOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   appVersion?: Prisma.SortOrder
   dbVersion?: Prisma.SortOrder
-  createdAt?: Prisma.SortOrder
+  timestamp?: Prisma.SortOrder
   _count?: Prisma.AppVersionCountOrderByAggregateInput
   _avg?: Prisma.AppVersionAvgOrderByAggregateInput
   _max?: Prisma.AppVersionMaxOrderByAggregateInput
@@ -247,53 +247,53 @@ export type AppVersionScalarWhereWithAggregatesInput = {
   id?: Prisma.IntWithAggregatesFilter<"AppVersion"> | number
   appVersion?: Prisma.StringWithAggregatesFilter<"AppVersion"> | string
   dbVersion?: Prisma.StringWithAggregatesFilter<"AppVersion"> | string
-  createdAt?: Prisma.DateTimeWithAggregatesFilter<"AppVersion"> | Date | string
+  timestamp?: Prisma.DateTimeWithAggregatesFilter<"AppVersion"> | Date | string
 }
 
 export type AppVersionCreateInput = {
   appVersion: string
   dbVersion: string
-  createdAt?: Date | string
+  timestamp?: Date | string
 }
 
 export type AppVersionUncheckedCreateInput = {
   id?: number
   appVersion: string
   dbVersion: string
-  createdAt?: Date | string
+  timestamp?: Date | string
 }
 
 export type AppVersionUpdateInput = {
   appVersion?: Prisma.StringFieldUpdateOperationsInput | string
   dbVersion?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  timestamp?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type AppVersionUncheckedUpdateInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   appVersion?: Prisma.StringFieldUpdateOperationsInput | string
   dbVersion?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  timestamp?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type AppVersionCreateManyInput = {
   id?: number
   appVersion: string
   dbVersion: string
-  createdAt?: Date | string
+  timestamp?: Date | string
 }
 
 export type AppVersionUpdateManyMutationInput = {
   appVersion?: Prisma.StringFieldUpdateOperationsInput | string
   dbVersion?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  timestamp?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type AppVersionUncheckedUpdateManyInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   appVersion?: Prisma.StringFieldUpdateOperationsInput | string
   dbVersion?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  timestamp?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type AppVersionAppVersionDbVersionCompoundUniqueInput = {
@@ -305,7 +305,7 @@ export type AppVersionCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   appVersion?: Prisma.SortOrder
   dbVersion?: Prisma.SortOrder
-  createdAt?: Prisma.SortOrder
+  timestamp?: Prisma.SortOrder
 }
 
 export type AppVersionAvgOrderByAggregateInput = {
@@ -316,14 +316,14 @@ export type AppVersionMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   appVersion?: Prisma.SortOrder
   dbVersion?: Prisma.SortOrder
-  createdAt?: Prisma.SortOrder
+  timestamp?: Prisma.SortOrder
 }
 
 export type AppVersionMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   appVersion?: Prisma.SortOrder
   dbVersion?: Prisma.SortOrder
-  createdAt?: Prisma.SortOrder
+  timestamp?: Prisma.SortOrder
 }
 
 export type AppVersionSumOrderByAggregateInput = {
@@ -352,31 +352,31 @@ export type AppVersionSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   id?: boolean
   appVersion?: boolean
   dbVersion?: boolean
-  createdAt?: boolean
+  timestamp?: boolean
 }, ExtArgs["result"]["appVersion"]>
 
 export type AppVersionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   appVersion?: boolean
   dbVersion?: boolean
-  createdAt?: boolean
+  timestamp?: boolean
 }, ExtArgs["result"]["appVersion"]>
 
 export type AppVersionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   appVersion?: boolean
   dbVersion?: boolean
-  createdAt?: boolean
+  timestamp?: boolean
 }, ExtArgs["result"]["appVersion"]>
 
 export type AppVersionSelectScalar = {
   id?: boolean
   appVersion?: boolean
   dbVersion?: boolean
-  createdAt?: boolean
+  timestamp?: boolean
 }
 
-export type AppVersionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "appVersion" | "dbVersion" | "createdAt", ExtArgs["result"]["appVersion"]>
+export type AppVersionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "appVersion" | "dbVersion" | "timestamp", ExtArgs["result"]["appVersion"]>
 
 export type $AppVersionPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "AppVersion"
@@ -385,7 +385,7 @@ export type $AppVersionPayload<ExtArgs extends runtime.Types.Extensions.Internal
     id: number
     appVersion: string
     dbVersion: string
-    createdAt: Date
+    timestamp: Date
   }, ExtArgs["result"]["appVersion"]>
   composites: {}
 }
@@ -812,7 +812,7 @@ export interface AppVersionFieldRefs {
   readonly id: Prisma.FieldRef<"AppVersion", 'Int'>
   readonly appVersion: Prisma.FieldRef<"AppVersion", 'String'>
   readonly dbVersion: Prisma.FieldRef<"AppVersion", 'String'>
-  readonly createdAt: Prisma.FieldRef<"AppVersion", 'DateTime'>
+  readonly timestamp: Prisma.FieldRef<"AppVersion", 'DateTime'>
 }
     
 

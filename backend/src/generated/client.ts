@@ -47,20 +47,25 @@ export { Prisma }
  */
 export type AppVersion = Prisma.AppVersionModel
 /**
- * Model User
- * 
- */
-export type User = Prisma.UserModel
-/**
  * Model Role
  * 
  */
 export type Role = Prisma.RoleModel
 /**
+ * Model User
+ * 
+ */
+export type User = Prisma.UserModel
+/**
  * Model UserProfile
  * 
  */
 export type UserProfile = Prisma.UserProfileModel
+/**
+ * Model UserFollow
+ * 
+ */
+export type UserFollow = Prisma.UserFollowModel
 /**
  * Model VwUserPublic
  * 

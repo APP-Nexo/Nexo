@@ -19,7 +19,7 @@ model AppVersion {
   id         Int      @id @default(autoincrement())
   appVersion String   
   dbVersion  String   
-  createdAt  DateTime @default(now()) 
+  timestamp  DateTime @default(now()) 
 
   @@unique([appVersion, dbVersion])
 }
