@@ -2,7 +2,7 @@ import 'dotenv/config'
 
 import fastify from "fastify";
 import swaggerUi from '@fastify/swagger-ui'
-import { setupSwagger } from '../documentation/swagger.js';
+import { setupSwagger } from '../documentation/swagger.setup.js';
 import cors from "@fastify/cors";
 
 import { errorHandler } from "./middlewares/error_handler.js";
