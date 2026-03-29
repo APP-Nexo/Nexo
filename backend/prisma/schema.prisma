@@ -64,7 +64,7 @@ model UserFollow {
   id          Int      @id @default(autoincrement())
   followerId  Int
   followingId Int
-  createdAt   DateTime @default(now())
+  timestamp   DateTime @default(now())
 
   follower    User @relation("follower", fields: [followerId], references: [id])
   following   User @relation("following", fields: [followingId], references: [id])

@@ -936,7 +936,7 @@ export const UserFollowScalarFieldEnum = {
   id: 'id',
   followerId: 'followerId',
   followingId: 'followingId',
-  createdAt: 'createdAt'
+  timestamp: 'timestamp'
 } as const
 
 export type UserFollowScalarFieldEnum = (typeof UserFollowScalarFieldEnum)[keyof typeof UserFollowScalarFieldEnum]
