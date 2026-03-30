@@ -16,7 +16,7 @@ const vwUserQuery = new GenericQueries<VwUserPublic>(prisma.vwUserPublic)
 
 export class UserController 
 {
-    static async update(req: FastifyRequest, reply: FastifyReply)
+    static async update(req: FastifyRequest, reply: FastifyReply) // feature
     {
 
     }

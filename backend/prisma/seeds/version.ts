@@ -28,7 +28,7 @@ export async function seedVersion() {
     })
 
     const { id: _, ...versionData } = version as any
-    Logs.write({ version: versionData }, `version: app ${APP_VERSION} | db ${DB_VERSION}`, 'info', true)
+    Logs.write({ version: versionData }, `version created: app ${APP_VERSION} | db ${DB_VERSION}`, 'info', true)
 }
 
 if (process.argv[1]?.includes('version')) 

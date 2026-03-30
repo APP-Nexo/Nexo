@@ -19,15 +19,20 @@ export class AdminController
 
     static async getUsersAdmin(req: FastifyRequest, reply: FastifyReply)
     {
-        const adminRole = await roleQuery.findUnique({ role: 'admin' })
-        const users = await vwUserQuery.findMany({ roleId: adminRole?.id })
+// No AdminController.ts
+        const users = await prisma.vwUserPublic.findMany({
+            where: { roleId: 2 },
+            select: { 
+                id: true,
+                name: true,
+                email: true,
+                photo: true,
+                createdAt: true,
+                roleId: true
+            }
+        });
 
-        const data = users.map(({ photo, banner, bio, friendlyId, config, ...userData }) => ({
-        user: userData,
-        profile: { photo, banner, bio, friendlyId, config }
-        }))
-
-        return reply.status(200).send({ users: data })
+        return reply.status(200).send({ users: users })
     }
 
     static async searchUser(req: FastifyRequest, reply: FastifyReply) 
@@ -38,7 +43,7 @@ export class AdminController
 
         const users = await vwUserQuery.findManyWithOptions({
             where: {
-            email: { contains: email, mode: 'insensitive' }
+                email: { contains: email, mode: 'insensitive' }
             },
             select: {
                 id: true,
