@@ -9,7 +9,9 @@ import { errorHandler } from "./middlewares/error_handler.js";
 import fastifyJwt from "@fastify/jwt";
 
 export const app = fastify({ 
-    logger: { transport: { target: 'pino-pretty' } }
+    logger: process.env.NODE_ENV !== 'test' 
+    ? { transport: { target: 'pino-pretty' } } 
+    : false
 });
 
 await setupSwagger(app)

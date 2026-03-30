@@ -52,7 +52,7 @@ export const banUserSchemaSwagger =
 {
     schema: {
         tags: ['Master'],
-        summary: 'Ban user',
+        summary: 'Soft ban user',
         security: [{ bearerAuth: [] }],
         params: {
         type: 'object',
