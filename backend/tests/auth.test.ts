@@ -5,7 +5,6 @@ import { app } from '../src/conf.js'
 // ============================================================
 //  MOCKS
 // ============================================================
-
 vi.mock('../src/helpers/utils/prisma_conn.js', () => 
 ({
     default: {
@@ -29,7 +28,6 @@ vi.mock('../src/helpers/utils/prisma_conn.js', () =>
 // ============================================================
 //  TESTS
 // ============================================================
-
 beforeAll(async () => await startApp())
 afterAll(async () => await closeApp())
 
