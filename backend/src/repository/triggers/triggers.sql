@@ -1,23 +1,26 @@
--- Trigger: atualiza contadores de seguidores no UserProfile
+-- 4. Criar a Função do Trigger
 CREATE OR REPLACE FUNCTION update_follow_counts()
 RETURNS TRIGGER AS $$
 BEGIN
     IF TG_OP = 'INSERT' THEN
-        -- Incrementa followers de quem foi seguido
+        -- Incrementa de quem foi seguido e de quem seguiu
         UPDATE "UserProfile" SET "followersCount" = "followersCount" + 1 WHERE "userId" = NEW."followingId";
-        -- Incrementa following de quem seguiu
         UPDATE "UserProfile" SET "followingCount" = "followingCount" + 1 WHERE "userId" = NEW."followerId";
+        RETURN NEW;
     ELSIF TG_OP = 'DELETE' THEN
-        -- Decrementa followers de quem foi desseguido
+        -- Decrementa de quem foi desseguido e de quem desseguiu
         UPDATE "UserProfile" SET "followersCount" = "followersCount" - 1 WHERE "userId" = OLD."followingId";
-        -- Decrementa following de quem desseguiu
         UPDATE "UserProfile" SET "followingCount" = "followingCount" - 1 WHERE "userId" = OLD."followerId";
+        RETURN OLD;
     END IF;
-    RETURN NEW;
+    RETURN NULL;
 END;
 $$ LANGUAGE plpgsql;
 
--- Dispara após INSERT ou DELETE na tabela UserFollow
+-- 5. Garantir que o Trigger não existe antes de criá-lo (Evita erros)
+DROP TRIGGER IF EXISTS follow_count_trigger ON "UserFollow";
+
+-- 6. Recriar o Trigger
 CREATE TRIGGER follow_count_trigger
 AFTER INSERT OR DELETE ON "UserFollow"
 FOR EACH ROW

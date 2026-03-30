@@ -926,7 +926,9 @@ export const UserProfileScalarFieldEnum = {
   banner: 'banner',
   config: 'config',
   bio: 'bio',
-  userId: 'userId'
+  userId: 'userId',
+  followersCount: 'followersCount',
+  followingCount: 'followingCount'
 } as const
 
 export type UserProfileScalarFieldEnum = (typeof UserProfileScalarFieldEnum)[keyof typeof UserProfileScalarFieldEnum]
@@ -952,7 +954,9 @@ export const VwUserPublicScalarFieldEnum = {
   photo: 'photo',
   banner: 'banner',
   config: 'config',
-  bio: 'bio'
+  bio: 'bio',
+  followersCount: 'followersCount',
+  followingCount: 'followingCount'
 } as const
 
 export type VwUserPublicScalarFieldEnum = (typeof VwUserPublicScalarFieldEnum)[keyof typeof VwUserPublicScalarFieldEnum]

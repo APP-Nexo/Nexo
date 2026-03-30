@@ -29,11 +29,15 @@ export type AggregateUserProfile = {
 export type UserProfileAvgAggregateOutputType = {
   id: number | null
   userId: number | null
+  followersCount: number | null
+  followingCount: number | null
 }
 
 export type UserProfileSumAggregateOutputType = {
   id: number | null
   userId: number | null
+  followersCount: number | null
+  followingCount: number | null
 }
 
 export type UserProfileMinAggregateOutputType = {
@@ -43,6 +47,8 @@ export type UserProfileMinAggregateOutputType = {
   banner: string | null
   bio: string | null
   userId: number | null
+  followersCount: number | null
+  followingCount: number | null
 }
 
 export type UserProfileMaxAggregateOutputType = {
@@ -52,6 +58,8 @@ export type UserProfileMaxAggregateOutputType = {
   banner: string | null
   bio: string | null
   userId: number | null
+  followersCount: number | null
+  followingCount: number | null
 }
 
 export type UserProfileCountAggregateOutputType = {
@@ -62,6 +70,8 @@ export type UserProfileCountAggregateOutputType = {
   config: number
   bio: number
   userId: number
+  followersCount: number
+  followingCount: number
   _all: number
 }
 
@@ -69,11 +79,15 @@ export type UserProfileCountAggregateOutputType = {
 export type UserProfileAvgAggregateInputType = {
   id?: true
   userId?: true
+  followersCount?: true
+  followingCount?: true
 }
 
 export type UserProfileSumAggregateInputType = {
   id?: true
   userId?: true
+  followersCount?: true
+  followingCount?: true
 }
 
 export type UserProfileMinAggregateInputType = {
@@ -83,6 +97,8 @@ export type UserProfileMinAggregateInputType = {
   banner?: true
   bio?: true
   userId?: true
+  followersCount?: true
+  followingCount?: true
 }
 
 export type UserProfileMaxAggregateInputType = {
@@ -92,6 +108,8 @@ export type UserProfileMaxAggregateInputType = {
   banner?: true
   bio?: true
   userId?: true
+  followersCount?: true
+  followingCount?: true
 }
 
 export type UserProfileCountAggregateInputType = {
@@ -102,6 +120,8 @@ export type UserProfileCountAggregateInputType = {
   config?: true
   bio?: true
   userId?: true
+  followersCount?: true
+  followingCount?: true
   _all?: true
 }
 
@@ -199,6 +219,8 @@ export type UserProfileGroupByOutputType = {
   config: runtime.JsonValue | null
   bio: string | null
   userId: number
+  followersCount: number
+  followingCount: number
   _count: UserProfileCountAggregateOutputType | null
   _avg: UserProfileAvgAggregateOutputType | null
   _sum: UserProfileSumAggregateOutputType | null
@@ -232,6 +254,8 @@ export type UserProfileWhereInput = {
   config?: Prisma.JsonNullableFilter<"UserProfile">
   bio?: Prisma.StringNullableFilter<"UserProfile"> | string | null
   userId?: Prisma.IntFilter<"UserProfile"> | number
+  followersCount?: Prisma.IntFilter<"UserProfile"> | number
+  followingCount?: Prisma.IntFilter<"UserProfile"> | number
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }
 
@@ -243,6 +267,8 @@ export type UserProfileOrderByWithRelationInput = {
   config?: Prisma.SortOrderInput | Prisma.SortOrder
   bio?: Prisma.SortOrderInput | Prisma.SortOrder
   userId?: Prisma.SortOrder
+  followersCount?: Prisma.SortOrder
+  followingCount?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
 }
 
@@ -257,6 +283,8 @@ export type UserProfileWhereUniqueInput = Prisma.AtLeast<{
   banner?: Prisma.StringNullableFilter<"UserProfile"> | string | null
   config?: Prisma.JsonNullableFilter<"UserProfile">
   bio?: Prisma.StringNullableFilter<"UserProfile"> | string | null
+  followersCount?: Prisma.IntFilter<"UserProfile"> | number
+  followingCount?: Prisma.IntFilter<"UserProfile"> | number
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }, "id" | "friendlyId" | "userId">
 
@@ -268,6 +296,8 @@ export type UserProfileOrderByWithAggregationInput = {
   config?: Prisma.SortOrderInput | Prisma.SortOrder
   bio?: Prisma.SortOrderInput | Prisma.SortOrder
   userId?: Prisma.SortOrder
+  followersCount?: Prisma.SortOrder
+  followingCount?: Prisma.SortOrder
   _count?: Prisma.UserProfileCountOrderByAggregateInput
   _avg?: Prisma.UserProfileAvgOrderByAggregateInput
   _max?: Prisma.UserProfileMaxOrderByAggregateInput
@@ -286,6 +316,8 @@ export type UserProfileScalarWhereWithAggregatesInput = {
   config?: Prisma.JsonNullableWithAggregatesFilter<"UserProfile">
   bio?: Prisma.StringNullableWithAggregatesFilter<"UserProfile"> | string | null
   userId?: Prisma.IntWithAggregatesFilter<"UserProfile"> | number
+  followersCount?: Prisma.IntWithAggregatesFilter<"UserProfile"> | number
+  followingCount?: Prisma.IntWithAggregatesFilter<"UserProfile"> | number
 }
 
 export type UserProfileCreateInput = {
@@ -294,6 +326,8 @@ export type UserProfileCreateInput = {
   banner?: string | null
   config?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   bio?: string | null
+  followersCount?: number
+  followingCount?: number
   user: Prisma.UserCreateNestedOneWithoutProfileInput
 }
 
@@ -305,6 +339,8 @@ export type UserProfileUncheckedCreateInput = {
   config?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   bio?: string | null
   userId: number
+  followersCount?: number
+  followingCount?: number
 }
 
 export type UserProfileUpdateInput = {
@@ -313,6 +349,8 @@ export type UserProfileUpdateInput = {
   banner?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   config?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  followersCount?: Prisma.IntFieldUpdateOperationsInput | number
+  followingCount?: Prisma.IntFieldUpdateOperationsInput | number
   user?: Prisma.UserUpdateOneRequiredWithoutProfileNestedInput
 }
 
@@ -324,6 +362,8 @@ export type UserProfileUncheckedUpdateInput = {
   config?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.IntFieldUpdateOperationsInput | number
+  followersCount?: Prisma.IntFieldUpdateOperationsInput | number
+  followingCount?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type UserProfileCreateManyInput = {
@@ -334,6 +374,8 @@ export type UserProfileCreateManyInput = {
   config?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   bio?: string | null
   userId: number
+  followersCount?: number
+  followingCount?: number
 }
 
 export type UserProfileUpdateManyMutationInput = {
@@ -342,6 +384,8 @@ export type UserProfileUpdateManyMutationInput = {
   banner?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   config?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  followersCount?: Prisma.IntFieldUpdateOperationsInput | number
+  followingCount?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type UserProfileUncheckedUpdateManyInput = {
@@ -352,6 +396,8 @@ export type UserProfileUncheckedUpdateManyInput = {
   config?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.IntFieldUpdateOperationsInput | number
+  followersCount?: Prisma.IntFieldUpdateOperationsInput | number
+  followingCount?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type UserProfileNullableScalarRelationFilter = {
@@ -367,11 +413,15 @@ export type UserProfileCountOrderByAggregateInput = {
   config?: Prisma.SortOrder
   bio?: Prisma.SortOrder
   userId?: Prisma.SortOrder
+  followersCount?: Prisma.SortOrder
+  followingCount?: Prisma.SortOrder
 }
 
 export type UserProfileAvgOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
+  followersCount?: Prisma.SortOrder
+  followingCount?: Prisma.SortOrder
 }
 
 export type UserProfileMaxOrderByAggregateInput = {
@@ -381,6 +431,8 @@ export type UserProfileMaxOrderByAggregateInput = {
   banner?: Prisma.SortOrder
   bio?: Prisma.SortOrder
   userId?: Prisma.SortOrder
+  followersCount?: Prisma.SortOrder
+  followingCount?: Prisma.SortOrder
 }
 
 export type UserProfileMinOrderByAggregateInput = {
@@ -390,11 +442,15 @@ export type UserProfileMinOrderByAggregateInput = {
   banner?: Prisma.SortOrder
   bio?: Prisma.SortOrder
   userId?: Prisma.SortOrder
+  followersCount?: Prisma.SortOrder
+  followingCount?: Prisma.SortOrder
 }
 
 export type UserProfileSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
+  followersCount?: Prisma.SortOrder
+  followingCount?: Prisma.SortOrder
 }
 
 export type UserProfileCreateNestedOneWithoutUserInput = {
@@ -439,6 +495,8 @@ export type UserProfileCreateWithoutUserInput = {
   banner?: string | null
   config?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   bio?: string | null
+  followersCount?: number
+  followingCount?: number
 }
 
 export type UserProfileUncheckedCreateWithoutUserInput = {
@@ -448,6 +506,8 @@ export type UserProfileUncheckedCreateWithoutUserInput = {
   banner?: string | null
   config?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   bio?: string | null
+  followersCount?: number
+  followingCount?: number
 }
 
 export type UserProfileCreateOrConnectWithoutUserInput = {
@@ -472,6 +532,8 @@ export type UserProfileUpdateWithoutUserInput = {
   banner?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   config?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  followersCount?: Prisma.IntFieldUpdateOperationsInput | number
+  followingCount?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type UserProfileUncheckedUpdateWithoutUserInput = {
@@ -481,6 +543,8 @@ export type UserProfileUncheckedUpdateWithoutUserInput = {
   banner?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   config?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  followersCount?: Prisma.IntFieldUpdateOperationsInput | number
+  followingCount?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 
@@ -493,6 +557,8 @@ export type UserProfileSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   config?: boolean
   bio?: boolean
   userId?: boolean
+  followersCount?: boolean
+  followingCount?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["userProfile"]>
 
@@ -504,6 +570,8 @@ export type UserProfileSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   config?: boolean
   bio?: boolean
   userId?: boolean
+  followersCount?: boolean
+  followingCount?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["userProfile"]>
 
@@ -515,6 +583,8 @@ export type UserProfileSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   config?: boolean
   bio?: boolean
   userId?: boolean
+  followersCount?: boolean
+  followingCount?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["userProfile"]>
 
@@ -526,9 +596,11 @@ export type UserProfileSelectScalar = {
   config?: boolean
   bio?: boolean
   userId?: boolean
+  followersCount?: boolean
+  followingCount?: boolean
 }
 
-export type UserProfileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "friendlyId" | "photo" | "banner" | "config" | "bio" | "userId", ExtArgs["result"]["userProfile"]>
+export type UserProfileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "friendlyId" | "photo" | "banner" | "config" | "bio" | "userId" | "followersCount" | "followingCount", ExtArgs["result"]["userProfile"]>
 export type UserProfileInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
@@ -552,6 +624,8 @@ export type $UserProfilePayload<ExtArgs extends runtime.Types.Extensions.Interna
     config: runtime.JsonValue | null
     bio: string | null
     userId: number
+    followersCount: number
+    followingCount: number
   }, ExtArgs["result"]["userProfile"]>
   composites: {}
 }
@@ -983,6 +1057,8 @@ export interface UserProfileFieldRefs {
   readonly config: Prisma.FieldRef<"UserProfile", 'Json'>
   readonly bio: Prisma.FieldRef<"UserProfile", 'String'>
   readonly userId: Prisma.FieldRef<"UserProfile", 'Int'>
+  readonly followersCount: Prisma.FieldRef<"UserProfile", 'Int'>
+  readonly followingCount: Prisma.FieldRef<"UserProfile", 'Int'>
 }
     
 

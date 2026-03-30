@@ -10,3 +10,6 @@
 npm run migrate -- create_views
 npm run migrate -- add_user_table
 npm run migrate -- update_profile
+
+
+npx prisma migrate reset

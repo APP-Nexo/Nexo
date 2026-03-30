@@ -29,11 +29,15 @@ export type AggregateVwUserPublic = {
 export type VwUserPublicAvgAggregateOutputType = {
   id: number | null
   roleId: number | null
+  followersCount: number | null
+  followingCount: number | null
 }
 
 export type VwUserPublicSumAggregateOutputType = {
   id: number | null
   roleId: number | null
+  followersCount: number | null
+  followingCount: number | null
 }
 
 export type VwUserPublicMinAggregateOutputType = {
@@ -46,6 +50,8 @@ export type VwUserPublicMinAggregateOutputType = {
   photo: string | null
   banner: string | null
   bio: string | null
+  followersCount: number | null
+  followingCount: number | null
 }
 
 export type VwUserPublicMaxAggregateOutputType = {
@@ -58,6 +64,8 @@ export type VwUserPublicMaxAggregateOutputType = {
   photo: string | null
   banner: string | null
   bio: string | null
+  followersCount: number | null
+  followingCount: number | null
 }
 
 export type VwUserPublicCountAggregateOutputType = {
@@ -71,6 +79,8 @@ export type VwUserPublicCountAggregateOutputType = {
   banner: number
   config: number
   bio: number
+  followersCount: number
+  followingCount: number
   _all: number
 }
 
@@ -78,11 +88,15 @@ export type VwUserPublicCountAggregateOutputType = {
 export type VwUserPublicAvgAggregateInputType = {
   id?: true
   roleId?: true
+  followersCount?: true
+  followingCount?: true
 }
 
 export type VwUserPublicSumAggregateInputType = {
   id?: true
   roleId?: true
+  followersCount?: true
+  followingCount?: true
 }
 
 export type VwUserPublicMinAggregateInputType = {
@@ -95,6 +109,8 @@ export type VwUserPublicMinAggregateInputType = {
   photo?: true
   banner?: true
   bio?: true
+  followersCount?: true
+  followingCount?: true
 }
 
 export type VwUserPublicMaxAggregateInputType = {
@@ -107,6 +123,8 @@ export type VwUserPublicMaxAggregateInputType = {
   photo?: true
   banner?: true
   bio?: true
+  followersCount?: true
+  followingCount?: true
 }
 
 export type VwUserPublicCountAggregateInputType = {
@@ -120,6 +138,8 @@ export type VwUserPublicCountAggregateInputType = {
   banner?: true
   config?: true
   bio?: true
+  followersCount?: true
+  followingCount?: true
   _all?: true
 }
 
@@ -220,6 +240,8 @@ export type VwUserPublicGroupByOutputType = {
   banner: string | null
   config: runtime.JsonValue | null
   bio: string | null
+  followersCount: number | null
+  followingCount: number | null
   _count: VwUserPublicCountAggregateOutputType | null
   _avg: VwUserPublicAvgAggregateOutputType | null
   _sum: VwUserPublicSumAggregateOutputType | null
@@ -256,6 +278,8 @@ export type VwUserPublicWhereInput = {
   banner?: Prisma.StringNullableFilter<"VwUserPublic"> | string | null
   config?: Prisma.JsonNullableFilter<"VwUserPublic">
   bio?: Prisma.StringNullableFilter<"VwUserPublic"> | string | null
+  followersCount?: Prisma.IntNullableFilter<"VwUserPublic"> | number | null
+  followingCount?: Prisma.IntNullableFilter<"VwUserPublic"> | number | null
 }
 
 export type VwUserPublicOrderByWithRelationInput = {
@@ -269,6 +293,8 @@ export type VwUserPublicOrderByWithRelationInput = {
   banner?: Prisma.SortOrderInput | Prisma.SortOrder
   config?: Prisma.SortOrderInput | Prisma.SortOrder
   bio?: Prisma.SortOrderInput | Prisma.SortOrder
+  followersCount?: Prisma.SortOrderInput | Prisma.SortOrder
+  followingCount?: Prisma.SortOrderInput | Prisma.SortOrder
 }
 
 export type VwUserPublicWhereUniqueInput = Prisma.AtLeast<{
@@ -285,6 +311,8 @@ export type VwUserPublicWhereUniqueInput = Prisma.AtLeast<{
   banner?: Prisma.StringNullableFilter<"VwUserPublic"> | string | null
   config?: Prisma.JsonNullableFilter<"VwUserPublic">
   bio?: Prisma.StringNullableFilter<"VwUserPublic"> | string | null
+  followersCount?: Prisma.IntNullableFilter<"VwUserPublic"> | number | null
+  followingCount?: Prisma.IntNullableFilter<"VwUserPublic"> | number | null
 }, "id" | "friendlyId" | "email">
 
 export type VwUserPublicOrderByWithAggregationInput = {
@@ -298,6 +326,8 @@ export type VwUserPublicOrderByWithAggregationInput = {
   banner?: Prisma.SortOrderInput | Prisma.SortOrder
   config?: Prisma.SortOrderInput | Prisma.SortOrder
   bio?: Prisma.SortOrderInput | Prisma.SortOrder
+  followersCount?: Prisma.SortOrderInput | Prisma.SortOrder
+  followingCount?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.VwUserPublicCountOrderByAggregateInput
   _avg?: Prisma.VwUserPublicAvgOrderByAggregateInput
   _max?: Prisma.VwUserPublicMaxOrderByAggregateInput
@@ -319,6 +349,8 @@ export type VwUserPublicScalarWhereWithAggregatesInput = {
   banner?: Prisma.StringNullableWithAggregatesFilter<"VwUserPublic"> | string | null
   config?: Prisma.JsonNullableWithAggregatesFilter<"VwUserPublic">
   bio?: Prisma.StringNullableWithAggregatesFilter<"VwUserPublic"> | string | null
+  followersCount?: Prisma.IntNullableWithAggregatesFilter<"VwUserPublic"> | number | null
+  followingCount?: Prisma.IntNullableWithAggregatesFilter<"VwUserPublic"> | number | null
 }
 
 export type VwUserPublicCountOrderByAggregateInput = {
@@ -332,11 +364,15 @@ export type VwUserPublicCountOrderByAggregateInput = {
   banner?: Prisma.SortOrder
   config?: Prisma.SortOrder
   bio?: Prisma.SortOrder
+  followersCount?: Prisma.SortOrder
+  followingCount?: Prisma.SortOrder
 }
 
 export type VwUserPublicAvgOrderByAggregateInput = {
   id?: Prisma.SortOrder
   roleId?: Prisma.SortOrder
+  followersCount?: Prisma.SortOrder
+  followingCount?: Prisma.SortOrder
 }
 
 export type VwUserPublicMaxOrderByAggregateInput = {
@@ -349,6 +385,8 @@ export type VwUserPublicMaxOrderByAggregateInput = {
   photo?: Prisma.SortOrder
   banner?: Prisma.SortOrder
   bio?: Prisma.SortOrder
+  followersCount?: Prisma.SortOrder
+  followingCount?: Prisma.SortOrder
 }
 
 export type VwUserPublicMinOrderByAggregateInput = {
@@ -361,11 +399,15 @@ export type VwUserPublicMinOrderByAggregateInput = {
   photo?: Prisma.SortOrder
   banner?: Prisma.SortOrder
   bio?: Prisma.SortOrder
+  followersCount?: Prisma.SortOrder
+  followingCount?: Prisma.SortOrder
 }
 
 export type VwUserPublicSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
   roleId?: Prisma.SortOrder
+  followersCount?: Prisma.SortOrder
+  followingCount?: Prisma.SortOrder
 }
 
 
@@ -381,6 +423,8 @@ export type VwUserPublicSelect<ExtArgs extends runtime.Types.Extensions.Internal
   banner?: boolean
   config?: boolean
   bio?: boolean
+  followersCount?: boolean
+  followingCount?: boolean
 }, ExtArgs["result"]["vwUserPublic"]>
 
 
@@ -396,9 +440,11 @@ export type VwUserPublicSelectScalar = {
   banner?: boolean
   config?: boolean
   bio?: boolean
+  followersCount?: boolean
+  followingCount?: boolean
 }
 
-export type VwUserPublicOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "friendlyId" | "name" | "email" | "createdAt" | "roleId" | "photo" | "banner" | "config" | "bio", ExtArgs["result"]["vwUserPublic"]>
+export type VwUserPublicOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "friendlyId" | "name" | "email" | "createdAt" | "roleId" | "photo" | "banner" | "config" | "bio" | "followersCount" | "followingCount", ExtArgs["result"]["vwUserPublic"]>
 
 export type $VwUserPublicPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "VwUserPublic"
@@ -414,6 +460,8 @@ export type $VwUserPublicPayload<ExtArgs extends runtime.Types.Extensions.Intern
     banner: string | null
     config: runtime.JsonValue | null
     bio: string | null
+    followersCount: number | null
+    followingCount: number | null
   }, ExtArgs["result"]["vwUserPublic"]>
   composites: {}
 }
@@ -682,6 +730,8 @@ export interface VwUserPublicFieldRefs {
   readonly banner: Prisma.FieldRef<"VwUserPublic", 'String'>
   readonly config: Prisma.FieldRef<"VwUserPublic", 'Json'>
   readonly bio: Prisma.FieldRef<"VwUserPublic", 'String'>
+  readonly followersCount: Prisma.FieldRef<"VwUserPublic", 'Int'>
+  readonly followingCount: Prisma.FieldRef<"VwUserPublic", 'Int'>
 }
     
 
