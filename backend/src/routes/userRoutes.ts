@@ -18,5 +18,5 @@ export async function userRoutes(app: FastifyInstance)
     app.get('/search', { ...searchUserSchemaSwagger, preHandler: [checkToken] }, UserController.searchUser)
     app.get('/:id', { ...getUserSchemaSwagger, preHandler: [checkToken] }, UserController.getUser)
 
-    app.delete('/delete/:id', { ...deleteUserSchemaSwagger, preHandler: [checkToken, checkUser] }, UserController.delete)
+    app.patch('/delete/:id', { ...deleteUserSchemaSwagger, preHandler: [checkToken, checkUser] }, UserController.delete)
 }

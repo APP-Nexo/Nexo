@@ -16,11 +16,19 @@ const vwUserQuery = new GenericQueries<VwUserPublic>(prisma.vwUserPublic)
 
 export class UserController 
 {
+    // =========================================================
+    //  promoteUser: @update
+    // =========================================================
     static async update(req: FastifyRequest, reply: FastifyReply) // feature
     {
 
     }
 
+    // ==============================================
+    //  searchUser: @get @req.query: search, cursor
+    //  @returns: { users: data, nextCursor, total }
+    //  @status:  200 OK
+    // ==============================================
     static async searchUser(req: FastifyRequest, reply: FastifyReply) 
     {
         const { search, cursor } = req.query as { search?: string, cursor?: string }
@@ -58,6 +66,11 @@ export class UserController
         return reply.status(200).send({ users: data, nextCursor, total })
     }
     
+    // ================================================================================================================
+    //  getUser: @get 
+    //  @returns: { user: userData, profile: { friendlyId, photo, banner, bio, config, followersCount, followingCount }
+    //  @status:  200 OK
+    // ================================================================================================================
     static async getUser(req: FastifyRequest, reply: FastifyReply)
     {
         const { id } = req.params as { id: string }
@@ -74,6 +87,11 @@ export class UserController
         })
     }
 
+    // ================================================================================================================
+    //  delete: @patch 
+    //  @returns: { message: 'Conta deletada.',  deletedAt: new Date().toISOString(), email: tokenUser.email }
+    //  @status:  200 OK
+    // ================================================================================================================
     static async delete(req: FastifyRequest, reply: FastifyReply)
     {
         const { email } = req.body as { email: string}
@@ -89,6 +107,6 @@ export class UserController
             deletedAt: new Date()
         })
 
-        return reply.status(200).send({ message: 'Conta deletada.',  deletedAt: new Date().toISOString(), email: tokenUser.email})
+        return reply.status(200).send({ message: 'Conta deletada.',  deletedAt: new Date().toISOString(), email: tokenUser.email })
     }
 }

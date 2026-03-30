@@ -12,11 +12,21 @@ const roleQuery = new GenericQueries<Role>(prisma.role)
 
 export class AdminController
 {
+    // ==================================
+    //  getUsersStats: @get
+    //  @returns: { usersStatus: stats }
+    //  @status:  200 OK
+    // ==================================
     static async getUsersStats(req: FastifyRequest, reply: FastifyReply) {
         const stats = await vwUserStatsQuery.findFirst()
         return reply.status(200).send({ usersStatus: stats })
     }
 
+    // ============================
+    //  getUsersAdmin: @get 
+    //  @returns: { users: users }
+    //  @status:  200 OK
+    // ============================
     static async getUsersAdmin(req: FastifyRequest, reply: FastifyReply)
     {
         const users = await prisma.vwUserPublic.findMany({
@@ -34,6 +44,11 @@ export class AdminController
         return reply.status(200).send({ users: users })
     }
 
+    // ======================================
+    //  searchUser: @get @req.query: email, cursor
+    //  @returns: { users: data, nextCursor }
+    //  @status:  200 OK
+    // ======================================
     static async searchUser(req: FastifyRequest, reply: FastifyReply) 
     {
         const { email, cursor } = req.query as { email?: string, cursor?: string }
@@ -64,6 +79,11 @@ export class AdminController
         return reply.status(200).send({ users: data, nextCursor })
     }
 
+    // ======================================
+    //  getUsers: @get @req.query: cursor, limit
+    //  @returns: { users: data, nextCursor }
+    //  @status:  200 OK
+    // ======================================
     static async getUsers(req: FastifyRequest, reply: FastifyReply) {
         const { cursor, limit = 10 } = req.query as { cursor?: string, limit?: number }
 

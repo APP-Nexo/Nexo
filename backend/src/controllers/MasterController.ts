@@ -12,6 +12,11 @@ const userQuery = new GenericQueries(prisma.user)
 
 export class MasterController 
 {
+    // ===========================================================================================
+    //  promoteUser: @patch
+    //  @returns: { message: 'Usuário promovido para admin.', email: user?.email, role: 'admin' }
+    //  @status:  200 
+    // ===========================================================================================
     static async promoteUser(req: FastifyRequest, reply: FastifyReply) 
     {
         const { id } = req.params as { id: string }
@@ -27,13 +32,14 @@ export class MasterController
 
         const user = await vwUserQuery.findUnique({ id: Number(id) })
 
-        return reply.status(200).send({ 
-            message: 'Usuário promovido para admin.',
-            email: user?.email,
-            role: 'admin'
-        })
+        return reply.status(200).send({ message: 'Usuário promovido para admin.', email: user?.email, role: 'admin' })
     }
 
+    // =========================================================================================
+    //  demoteUser: @patch
+    //  @returns: { message: 'Usuário rebaixado para user.', email: user?.email, role: 'user' }
+    //  @status:  200 OK
+    // =========================================================================================
     static async demoteUser(req: FastifyRequest, reply: FastifyReply) 
     {
         const { id } = req.params as { id: string }
@@ -49,13 +55,14 @@ export class MasterController
 
         const user = await vwUserQuery.findUnique({ id: Number(id) })
 
-        return reply.status(200).send({ 
-            message: 'Usuário rebaixado para user.',
-            email: user?.email,
-            role: 'user'
-        })
+        return reply.status(200).send({ message: 'Usuário rebaixado para user.', email: user?.email, role: 'user' })
     }
 
+    // ==================================================================================================
+    //  banUser: @patch
+    //  @returns: { message: 'Usuário banido.', email: user?.email, bannedAt: new Date().toISOString() }
+    //  @status:  200 OK
+    // ==================================================================================================
     static async banUser(req: FastifyRequest, reply: FastifyReply) 
     {
         const { id } = req.params as { id: string }

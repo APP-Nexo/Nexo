@@ -60,7 +60,7 @@ export const deleteUserSchemaSwagger =
 {
     schema: {
         tags: ['User'],
-        summary: 'Delete account',
+        summary: 'Soft delete account',
         security: [{ bearerAuth: [] }],
         body: {
         type: 'object',

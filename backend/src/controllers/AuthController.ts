@@ -15,6 +15,11 @@ const roleQuery = new GenericQueries<Role>(prisma.role)
 
 export class AuthController 
 {
+    // =================================================================================================
+    //  register: @post
+    //  @returns: { tokenType: process.env.TOKEN_TYPE!, token, expiresIn: process.env.TOKEN_EXPIRES! }
+    //  @status:  201 
+    // =================================================================================================
     static async register(req: FastifyRequest, reply: FastifyReply)
     {
         const { name, email, password, confirmPassword } = req.body as RegisterPayload
@@ -36,9 +41,14 @@ export class AuthController
 
         const token = await JwtToken.create(createdUser, reply)
 
-        return reply.status(201).send({  tokenType: process.env.TOKEN_TYPE!, token, expiresIn: process.env.TOKEN_EXPIRES! })
+        return reply.status(201).send({ tokenType: process.env.TOKEN_TYPE!, token, expiresIn: process.env.TOKEN_EXPIRES! })
     }
 
+    // =================================================================================================
+    //  login: @post
+    //  @returns: { tokenType: process.env.TOKEN_TYPE!, token, expiresIn: process.env.TOKEN_EXPIRES! }
+    //  @status:  200 OK
+    // =================================================================================================
     static async login(req: FastifyRequest, reply: FastifyReply)
     {
         const { email, password } = req.body as { email: string, password: string };
@@ -54,6 +64,6 @@ export class AuthController
         const { password: _, ...userPayload } = user as UserPayload;
         const token = await JwtToken.create(userPayload, reply)
 
-        return reply.status(200).send({  tokenType: process.env.TOKEN_TYPE!, token, expiresIn: process.env.TOKEN_EXPIRES! });
+        return reply.status(200).send({ tokenType: process.env.TOKEN_TYPE!, token, expiresIn: process.env.TOKEN_EXPIRES! });
     }
 }
