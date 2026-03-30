@@ -3,7 +3,7 @@ import type { FastifyRequest, FastifyReply } from 'fastify';
 import { AuthErrors } from '../helpers/errors/auth-errors.js';
 import { JwtToken } from '../helpers/utils/jwt_token.js';
 import { encryptPassword } from '../helpers/utils/encrypt_password.js';
-import { compare } from 'bcrypt';
+import { comparePassword } from '../helpers/utils/compare_password.js';
 
 import type { RegisterPayload, UserPayload } from '../helpers/interfaces/I-Auth.js';
 import type { Role } from '../generated/client.js'
@@ -47,7 +47,7 @@ export class AuthController
         await AuthErrors.ensureUserNotExist(userQuery, email)
 
         const user = await userQuery.findUnique({ email }) as UserPayload
-        const matchPassword = await compare(password, user.password);
+        const matchPassword = await comparePassword(password, user.password);
 
         AuthErrors.ensureMatchPassword(matchPassword)
 
