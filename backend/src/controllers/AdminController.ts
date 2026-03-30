@@ -44,11 +44,11 @@ export class AdminController
         return reply.status(200).send({ users: users })
     }
 
-    // ======================================
+    // ===========================================
     //  searchUser: @get @req.query: email, cursor
     //  @returns: { users: data, nextCursor }
     //  @status:  200 OK
-    // ======================================
+    // ===========================================
     static async searchUser(req: FastifyRequest, reply: FastifyReply) 
     {
         const { email, cursor } = req.query as { email?: string, cursor?: string }
@@ -79,11 +79,11 @@ export class AdminController
         return reply.status(200).send({ users: data, nextCursor })
     }
 
-    // ======================================
+    // =========================================
     //  getUsers: @get @req.query: cursor, limit
     //  @returns: { users: data, nextCursor }
     //  @status:  200 OK
-    // ======================================
+    // =========================================
     static async getUsers(req: FastifyRequest, reply: FastifyReply) {
         const { cursor, limit = 10 } = req.query as { cursor?: string, limit?: number }
 
