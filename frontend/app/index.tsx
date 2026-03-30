@@ -1,13 +1,15 @@
 import { Link } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
 
-export default function Home() {
+export default function Index() {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Bem-vindo ao NEXO</Text>
-
       <Link href="/(tabs)/login" style={styles.link}>
         Ir para Login
+      </Link>
+
+      <Link href="/(tabs)/profile" style={styles.link}>
+        Ir para Perfil
       </Link>
     </View>
   );
@@ -16,16 +18,13 @@ export default function Home() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#fff',
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  title: {
-    fontSize: 20,
-    marginBottom: 20,
+    gap: 20,
   },
   link: {
-    fontSize: 16,
+    fontSize: 18,
     color: 'blue',
   },
 });
