@@ -19,7 +19,6 @@ export class AdminController
 
     static async getUsersAdmin(req: FastifyRequest, reply: FastifyReply)
     {
-// No AdminController.ts
         const users = await prisma.vwUserPublic.findMany({
             where: { roleId: 2 },
             select: { 
