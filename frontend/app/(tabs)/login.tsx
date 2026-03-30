@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Logo from '../../components/logo';
 import {
   Alert,
   KeyboardAvoidingView,
@@ -52,11 +53,9 @@ export default function LoginScreen() {
           <View style={styles.container}>
             <View style={styles.card}>
               <View style={styles.logoBox}>
-                <Text style={styles.logoText}>
-                  <Text style={styles.logoBlue}>NE</Text>
-                  <Text style={styles.logoWhite}>X</Text>
-                  <Text style={styles.logoPink}>O</Text>
-                </Text>
+                <View style={styles.logoBox}>
+                    <Logo size={40} />
+                </View>
                 <Text style={styles.tagline}>rate games • own your taste</Text>
               </View>
 
@@ -162,17 +161,10 @@ const styles = StyleSheet.create({
     paddingVertical: SPACING.xl,
   },
   card: {
-    borderWidth: 1,
-    borderColor: COLORS.primary,
     borderRadius: 28,
     backgroundColor: COLORS.background,
     paddingHorizontal: SPACING.lg,
     paddingVertical: 36,
-    shadowColor: COLORS.primary,
-    shadowOpacity: 0.18,
-    shadowRadius: 18,
-    shadowOffset: { width: 0, height: 0 },
-    elevation: 10,
   },
   logoBox: {
     alignItems: 'center',
