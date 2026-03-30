@@ -6,6 +6,6 @@ import { TokenErrors } from '../helpers/errors/token-erros.js'
 
 export async function checkToken(req: FastifyRequest) {
     if (!req.headers.authorization) TokenErrors.throwMissing()
-    
+    await JwtToken.getByUser(req)
     await JwtToken.get(req)
 }

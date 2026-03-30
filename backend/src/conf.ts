@@ -32,7 +32,7 @@ const routes = [
     { route: userRoutes, prefix: 'api/user' },
     { route: masterRoutes, prefix: 'api/master' },
     { route: adminRoutes, prefix: 'api/admin' },
-    { route: followRoutes, prefix: 'api/follow' },
+    { route: followRoutes, prefix: 'api/invite' },
 ];
 
 routes.forEach(({ route, prefix }) => app.register(route, { prefix }));
