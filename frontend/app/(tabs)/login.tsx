@@ -13,12 +13,17 @@ import {
   TextInput,
   View,
 } from 'react-native';
+import { Link } from 'expo-router';
 import { COLORS, SPACING, FONT } from '../../constants';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+
+  function togglePasswordVisibility() {
+    setShowPassword((prev) => !prev);
+  }
 
   function handleLogin() {
     if (!email.trim() || !password.trim()) {
@@ -45,98 +50,84 @@ export default function LoginScreen() {
         style={styles.keyboardArea}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
-        <ScrollView
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
-          keyboardShouldPersistTaps="handled"
-        >
-          <View style={styles.container}>
-            <View style={styles.card}>
-              <View style={styles.logoBox}>
-                <View style={styles.logoBox}>
-                    <Logo size={40} />
-                </View>
-                <Text style={styles.tagline}>rate games • own your taste</Text>
-              </View>
+        <View style={styles.container}>
+          <View style={styles.phoneFrame}>
+              <View style={styles.container}>
+                <View style={styles.card}>
+                  <View style={styles.logoBox}>
+                    <View style={styles.logoBox}>
+                        <Logo size={40} />
+                    </View>
+                  </View>
+                  <View style={styles.form}>
+                    <View style={styles.inputGroup}>
+                      <Text style={styles.label}>USUÁRIO OU E-MAIL</Text>
+                      <TextInput
+                        style={styles.input}
+                        placeholder="seu@email.com"
+                        placeholderTextColor={COLORS.textSecondary}
+                        value={email}
+                        onChangeText={setEmail}
+                        autoCapitalize="none"
+                        keyboardType="email-address"
+                        autoCorrect={false}
+                      />
+                    </View>
+                    <View style={styles.inputGroup}>
+                      <Text style={styles.label}>SENHA</Text>
+                      <View style={styles.passwordWrapper}>
+                        <TextInput
+                          style={styles.passwordInput}
+                          placeholder="••••••••"
+                          placeholderTextColor={COLORS.textSecondary}
+                          value={password}
+                          onChangeText={setPassword}
+                          secureTextEntry={!showPassword}
+                          autoCapitalize="none"
+                          autoCorrect={false}
+                        />
 
-              <View style={styles.form}>
-                <View style={styles.inputGroup}>
-                  <Text style={styles.label}>USUÁRIO OU E-MAIL</Text>
-                  <TextInput
-                    style={styles.input}
-                    placeholder="seu@email.com"
-                    placeholderTextColor={COLORS.textSecondary}
-                    value={email}
-                    onChangeText={setEmail}
-                    autoCapitalize="none"
-                    keyboardType="email-address"
-                    autoCorrect={false}
-                  />
-                </View>
-
-                <View style={styles.inputGroup}>
-                  <Text style={styles.label}>SENHA</Text>
-                  <View style={styles.passwordWrapper}>
-                    <TextInput
-                      style={styles.passwordInput}
-                      placeholder="••••••••"
-                      placeholderTextColor={COLORS.textSecondary}
-                      value={password}
-                      onChangeText={setPassword}
-                      secureTextEntry={!showPassword}
-                      autoCapitalize="none"
-                      autoCorrect={false}
-                    />
-
-                    <Pressable
-                      onPress={() => setShowPassword((prev) => !prev)}
-                      style={styles.showButton}
-                    >
-                      <Text style={styles.showButtonText}>
-                        {showPassword ? 'Ocultar' : 'Mostrar'}
-                      </Text>
+                    <Pressable onPress={togglePasswordVisibility} style={styles.eyeButton}>
+                      <Text style={styles.eyeButtonText}>{showPassword ? 'Ocultar' : '👁'}</Text>
                     </Pressable>
+
+                      </View>
+                    </View>
+                    <Pressable onPress={handleForgotPassword} style={styles.forgotButton}>
+                      <Text style={styles.forgotText}>ESQUECI A SENHA</Text>
+                    </Pressable>
+                    <Pressable onPress={handleLogin} style={styles.primaryButton}>
+                      <Text style={styles.primaryButtonText}>ENTRAR</Text>
+                    </Pressable>
+                    <View style={styles.dividerRow}>
+                      <View style={styles.divider} />
+                      <Text style={styles.dividerText}>OU CONTINUE COM</Text>
+                      <View style={styles.divider} />
+                    </View>
+                    <View style={styles.socialRow}>
+                      <Pressable style={styles.socialButton}>
+                        <Text style={styles.socialButtonText}>GOOGLE</Text>
+                      </Pressable>
+                      <Pressable style={styles.socialButton}>
+                        <Text style={styles.socialButtonText}>DISCORD</Text>
+                      </Pressable>
+                      <Pressable style={styles.socialButton}>
+                        <Text style={styles.socialButtonText}>STEAM</Text>
+                      </Pressable>
+                    </View>
+                    <View style={styles.footer}>
+                      <Text style={styles.footerText}>Novo por aqui?</Text>
+                      <Pressable onPress={handleCreateAccount}>
+                        <Link href="/(tabs)/register">
+                          <Text style={styles.createAccountText}>Criar conta</Text>
+                        </Link>
+                      </Pressable>
+                    </View>
                   </View>
                 </View>
-
-                <Pressable onPress={handleForgotPassword} style={styles.forgotButton}>
-                  <Text style={styles.forgotText}>ESQUECI A SENHA</Text>
-                </Pressable>
-
-                <Pressable onPress={handleLogin} style={styles.primaryButton}>
-                  <Text style={styles.primaryButtonText}>ENTRAR</Text>
-                </Pressable>
-
-                <View style={styles.dividerRow}>
-                  <View style={styles.divider} />
-                  <Text style={styles.dividerText}>OU CONTINUE COM</Text>
-                  <View style={styles.divider} />
-                </View>
-
-                <View style={styles.socialRow}>
-                  <Pressable style={styles.socialButton}>
-                    <Text style={styles.socialButtonText}>GOOGLE</Text>
-                  </Pressable>
-
-                  <Pressable style={styles.socialButton}>
-                    <Text style={styles.socialButtonText}>DISCORD</Text>
-                  </Pressable>
-
-                  <Pressable style={styles.socialButton}>
-                    <Text style={styles.socialButtonText}>STEAM</Text>
-                  </Pressable>
-                </View>
-
-                <View style={styles.footer}>
-                  <Text style={styles.footerText}>Novo por aqui?</Text>
-                  <Pressable onPress={handleCreateAccount}>
-                    <Text style={styles.createAccountText}>Criar conta</Text>
-                  </Pressable>
-                </View>
               </View>
-            </View>
           </View>
-        </ScrollView>
+        </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -144,22 +135,27 @@ export default function LoginScreen() {
 
 const styles = StyleSheet.create({
   safeArea: {
-    flex: 1,
-    backgroundColor: COLORS.background,
-  },
-  keyboardArea: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-  },
-  container: {
-    flex: 1,
-    backgroundColor: COLORS.background,
-    justifyContent: 'center',
-    paddingHorizontal: SPACING.lg,
-    paddingVertical: SPACING.xl,
-  },
+  flex: 1,
+  backgroundColor: COLORS.background,
+},
+keyboardArea: {
+  flex: 1,
+},
+container: {
+  flex: 1,
+  justifyContent: 'center',
+  backgroundColor: COLORS.background,
+  paddingHorizontal: SPACING.md,
+  paddingVertical: SPACING.lg,
+},
+  phoneFrame: {
+  flex: 1,
+  backgroundColor: COLORS.background,
+  paddingHorizontal: 0,
+  paddingTop: 40,
+  paddingBottom: 28,
+  justifyContent: 'center',
+},
   card: {
     borderRadius: 28,
     backgroundColor: COLORS.background,
@@ -227,13 +223,13 @@ const styles = StyleSheet.create({
     color: COLORS.text,
     fontSize: FONT.text,
   },
-  showButton: {
+  eyeButton: {
     paddingLeft: 12,
     paddingVertical: 8,
   },
-  showButtonText: {
-    color: COLORS.warning,
-    fontSize: FONT.small,
+  eyeButtonText: {
+    color: COLORS.textSecondary,
+    fontSize: 14,
   },
   forgotButton: {
     alignSelf: 'center',
@@ -252,12 +248,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#04141A',
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: COLORS.primary,
-    shadowOpacity: 0.25,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 0 },
-    elevation: 8,
-    marginTop: 4,
   },
   primaryButtonText: {
     color: COLORS.primary,
