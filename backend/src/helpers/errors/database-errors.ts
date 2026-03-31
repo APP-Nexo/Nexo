@@ -10,16 +10,16 @@ export class DatabaseErrors extends Error {
 
     static throwNotFound(resource: string): never
     {
-    throw new DatabaseErrors(`${resource} não encontrado.`, 404)
+        throw new DatabaseErrors(`${resource} não encontrado.`, 404)
     }
 
     static throwAlreadyExists(resource: string): never 
     {
-    throw new DatabaseErrors(`${resource} já existe.`, 409)
+        throw new DatabaseErrors(`${resource} já existe.`, 409)
     }
 
     static throwQueryFailed(): never
     {
-    throw new DatabaseErrors('Erro ao executar operação no banco.', 500)
+        throw new DatabaseErrors('Erro ao executar operação no banco.', 500)
     }
 }

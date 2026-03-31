@@ -51,7 +51,13 @@ export const AnyNull = runtime.AnyNull
 
 
 export const ModelName = {
-
+  AppVersion: 'AppVersion',
+  Role: 'Role',
+  User: 'User',
+  UserProfile: 'UserProfile',
+  UserFollow: 'UserFollow',
+  VwUserPublic: 'VwUserPublic',
+  VwUsersStatusSummary: 'VwUsersStatusSummary'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -68,4 +74,131 @@ export const TransactionIsolationLevel = runtime.makeStrictEnum({
 } as const)
 
 export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
+
+
+export const AppVersionScalarFieldEnum = {
+  id: 'id',
+  appVersion: 'appVersion',
+  dbVersion: 'dbVersion',
+  timestamp: 'timestamp'
+} as const
+
+export type AppVersionScalarFieldEnum = (typeof AppVersionScalarFieldEnum)[keyof typeof AppVersionScalarFieldEnum]
+
+
+export const RoleScalarFieldEnum = {
+  id: 'id',
+  role: 'role'
+} as const
+
+export type RoleScalarFieldEnum = (typeof RoleScalarFieldEnum)[keyof typeof RoleScalarFieldEnum]
+
+
+export const UserScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  email: 'email',
+  password: 'password',
+  createdAt: 'createdAt',
+  deletedAt: 'deletedAt',
+  activate: 'activate',
+  roleId: 'roleId'
+} as const
+
+export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
+export const UserProfileScalarFieldEnum = {
+  id: 'id',
+  friendlyId: 'friendlyId',
+  photo: 'photo',
+  banner: 'banner',
+  config: 'config',
+  bio: 'bio',
+  userId: 'userId',
+  followersCount: 'followersCount',
+  followingCount: 'followingCount'
+} as const
+
+export type UserProfileScalarFieldEnum = (typeof UserProfileScalarFieldEnum)[keyof typeof UserProfileScalarFieldEnum]
+
+
+export const UserFollowScalarFieldEnum = {
+  id: 'id',
+  followerId: 'followerId',
+  followingId: 'followingId',
+  timestamp: 'timestamp'
+} as const
+
+export type UserFollowScalarFieldEnum = (typeof UserFollowScalarFieldEnum)[keyof typeof UserFollowScalarFieldEnum]
+
+
+export const VwUserPublicScalarFieldEnum = {
+  id: 'id',
+  friendlyId: 'friendlyId',
+  name: 'name',
+  email: 'email',
+  createdAt: 'createdAt',
+  roleId: 'roleId',
+  photo: 'photo',
+  banner: 'banner',
+  config: 'config',
+  bio: 'bio',
+  followersCount: 'followersCount',
+  followingCount: 'followingCount'
+} as const
+
+export type VwUserPublicScalarFieldEnum = (typeof VwUserPublicScalarFieldEnum)[keyof typeof VwUserPublicScalarFieldEnum]
+
+
+export const VwUsersStatusSummaryScalarFieldEnum = {
+  totalUsers: 'totalUsers',
+  totalActive: 'totalActive',
+  totalDeactivated: 'totalDeactivated',
+  totalAdmins: 'totalAdmins',
+  totalRegularUsers: 'totalRegularUsers'
+} as const
+
+export type VwUsersStatusSummaryScalarFieldEnum = (typeof VwUsersStatusSummaryScalarFieldEnum)[keyof typeof VwUsersStatusSummaryScalarFieldEnum]
+
+
+export const SortOrder = {
+  asc: 'asc',
+  desc: 'desc'
+} as const
+
+export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
+
+
+export const NullableJsonNullValueInput = {
+  DbNull: DbNull,
+  JsonNull: JsonNull
+} as const
+
+export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
+export const QueryMode = {
+  default: 'default',
+  insensitive: 'insensitive'
+} as const
+
+export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
+
+
+export const NullsOrder = {
+  first: 'first',
+  last: 'last'
+} as const
+
+export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+export const JsonNullValueFilter = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+  AnyNull: AnyNull
+} as const
+
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 

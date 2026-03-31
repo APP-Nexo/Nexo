@@ -7,8 +7,97 @@
 generator client {
   provider = "prisma-client"
   output   = "../src/generated"
+  previewFeatures = ["views"]
 }
 
 datasource db {
   provider = "postgresql"
+}
+
+// version
+model AppVersion {
+  id         Int      @id @default(autoincrement())
+  appVersion String   
+  dbVersion  String   
+  timestamp  DateTime @default(now()) 
+
+  @@unique([appVersion, dbVersion])
+}
+
+// application
+model Role {
+  id    Int    @id @default(autoincrement())
+  role  String @unique
+  
+  users User[]
+}
+
+model User {
+  id        Int          @id @default(autoincrement())
+  name      String
+  email     String       @unique
+  password  String
+  createdAt DateTime     @default(now())
+  deletedAt DateTime?   
+  activate  Boolean      @default(true)
+  roleId    Int
+
+  role      Role         @relation(fields: [roleId], references: [id])
+  profile   UserProfile?
+  following      UserFollow[]   @relation("follower")
+  followers      UserFollow[]   @relation("following")
+}
+
+model UserProfile {
+  id             Int       @id @default(autoincrement())
+  friendlyId     String    @unique @default(cuid()) 
+  photo          String?
+  banner         String?
+  config         Json?
+  bio            String?
+  userId         Int       @unique
+  followersCount Int       @default(0) 
+  followingCount Int       @default(0)
+  
+  user     User    @relation(fields: [userId], references: [id])
+}
+
+model UserFollow {
+  id          Int      @id @default(autoincrement())
+  followerId  Int
+  followingId Int
+  timestamp   DateTime @default(now())
+
+  follower    User @relation("follower", fields: [followerId], references: [id])
+  following   User @relation("following", fields: [followingId], references: [id])
+
+  @@unique([followerId, followingId])
+}
+
+// views
+view VwUserPublic {
+  id         Int      @unique
+  friendlyId String?  @unique 
+  name       String
+  email      String   @unique
+  createdAt  DateTime
+  roleId     Int     
+  photo      String?
+  banner     String?
+  config     Json?
+  bio        String?
+  followersCount Int?
+  followingCount Int?
+
+  @@map("vw_user_public")
+}
+
+view VwUsersStatusSummary {
+  totalUsers        Int 
+  totalActive       Int 
+  totalDeactivated  Int 
+  totalAdmins       Int 
+  totalRegularUsers Int 
+
+  @@map("vw_users_status_summary")
 }
