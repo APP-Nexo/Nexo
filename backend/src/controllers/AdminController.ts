@@ -1,14 +1,11 @@
 import type { FastifyRequest, FastifyReply } from 'fastify';
 
-import { AdminErrors } from '../helpers/errors/admin-errors.js';
-
 import type { VwUserPublic, VwUsersStatusSummary, Role } from '../generated/client.js';
 
 import { GenericQueries } from '../repository/generics.js';
 import prisma from '../helpers/utils/prisma_conn.js';
 const vwUserQuery = new GenericQueries<VwUserPublic>(prisma.vwUserPublic)
 const vwUserStatsQuery = new GenericQueries<VwUsersStatusSummary>(prisma.vwUsersStatusSummary)
-const roleQuery = new GenericQueries<Role>(prisma.role)
 
 export class AdminController
 {
