@@ -4,8 +4,8 @@ export class HealthController
 {
     
     // ============================================================
-    //  health: @get
-    //  @returns: { message: 'healthy', uptime: process.uptime() }
+    //  @get
+    //  @return: { message: 'healthy', uptime: process.uptime() }
     //  @status:  200 
     // ============================================================
     static async health(req: FastifyRequest, reply: FastifyReply) 
@@ -14,8 +14,8 @@ export class HealthController
     }
 
     // ============================================================
-    //  ping: @get
-    //  @returns: { message: 'pong', timestamp: new Date() }
+    //  @get
+    //  @return: { message: 'pong', timestamp: new Date() }
     //  @status:  200 
     // ============================================================
     static async ping(req: FastifyRequest, reply: FastifyReply) 

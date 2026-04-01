@@ -10,7 +10,7 @@ const userFollowQuery = new GenericQueries<UserFollow>(prisma.userFollow)
 export class FollowController
 {
     // =======================================================
-    //  followUser: @post
+    //  @post
     //  @returns: { message: 'Usuário seguido com sucesso.' }
     //  @status:  201 OK
     // =======================================================
@@ -28,7 +28,7 @@ export class FollowController
     }
 
     // ============================================================
-    //  unfollowUser: @delete
+    //  @delete
     //  @returns: { message: 'Você deixou de seguir um usuário.' }
     //  @status:  200 OK
     // ============================================================

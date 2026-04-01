@@ -10,7 +10,7 @@ const vwUserStatsQuery = new GenericQueries<VwUsersStatusSummary>(prisma.vwUsers
 export class AdminController
 {
     // ==================================
-    //  getUsersStats: @get
+    //  @get
     //  @returns: { usersStatus: stats }
     //  @status:  200 OK
     // ==================================
@@ -20,7 +20,7 @@ export class AdminController
     }
 
     // ============================
-    //  getUsersAdmin: @get 
+    //  @get 
     //  @returns: { users: users }
     //  @status:  200 OK
     // ============================
@@ -42,7 +42,7 @@ export class AdminController
     }
 
     // ===========================================
-    //  searchUser: @get @req.query: email, cursor
+    //  @get 
     //  @returns: { users: data, nextCursor }
     //  @status:  200 OK
     // ===========================================
@@ -77,7 +77,7 @@ export class AdminController
     }
 
     // =========================================
-    //  getUsers: @get @req.query: cursor, limit
+    //  @get
     //  @returns: { users: data, nextCursor }
     //  @status:  200 OK
     // =========================================

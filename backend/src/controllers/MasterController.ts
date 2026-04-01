@@ -13,7 +13,7 @@ const userQuery = new GenericQueries(prisma.user)
 export class MasterController 
 {
     // ===========================================================================================
-    //  promoteUser: @patch
+    //  @patch
     //  @returns: { message: 'Usuário promovido para admin.', email: user?.email, role: 'admin' }
     //  @status:  200 
     // ===========================================================================================
@@ -36,7 +36,7 @@ export class MasterController
     }
 
     // =========================================================================================
-    //  demoteUser: @patch
+    //  @patch
     //  @returns: { message: 'Usuário rebaixado para user.', email: user?.email, role: 'user' }
     //  @status:  200 OK
     // =========================================================================================
@@ -59,7 +59,7 @@ export class MasterController
     }
 
     // ==================================================================================================
-    //  banUser: @patch
+    //  @patch
     //  @returns: { message: 'Usuário banido.', email: user?.email, bannedAt: new Date().toISOString() }
     //  @status:  200 OK
     // ==================================================================================================

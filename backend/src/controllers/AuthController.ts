@@ -16,8 +16,8 @@ const roleQuery = new GenericQueries<Role>(prisma.role)
 export class AuthController 
 {
     // =================================================================================================
-    //  register: @post
-    //  @returns: { tokenType: process.env.TOKEN_TYPE!, token, expiresIn: process.env.TOKEN_EXPIRES! }
+    //  @post
+    //  @return: { tokenType: process.env.TOKEN_TYPE!, token, expiresIn: process.env.TOKEN_EXPIRES! }
     //  @status:  201 
     // =================================================================================================
     static async register(req: FastifyRequest, reply: FastifyReply)
@@ -45,8 +45,8 @@ export class AuthController
     }
 
     // =================================================================================================
-    //  login: @post
-    //  @returns: { tokenType: process.env.TOKEN_TYPE!, token, expiresIn: process.env.TOKEN_EXPIRES! }
+    //  @post
+    //  @return: { tokenType: process.env.TOKEN_TYPE!, token, expiresIn: process.env.TOKEN_EXPIRES! }
     //  @status:  200 OK
     // =================================================================================================
     static async login(req: FastifyRequest, reply: FastifyReply)

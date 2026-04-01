@@ -15,7 +15,7 @@ export const searchUserSchemaSwagger =
         querystring: {
         type: 'object',
         properties: {
-            search: { type: 'string' },
+            find: { type: 'string' },
             cursor: { type: 'string' }
         }
         },
