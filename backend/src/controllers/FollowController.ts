@@ -1,7 +1,6 @@
 import type { FastifyRequest, FastifyReply } from 'fastify';
 
 import type { UserTokenPayload } from '../helpers/interfaces/I-Jwt.js';
-import type { UserFollow } from '../generated/client.js';
 
 import { FollowErrors } from '../helpers/errors/follow-errors.js';
 
