@@ -56,6 +56,7 @@ export const ModelName = {
   User: 'User',
   UserProfile: 'UserProfile',
   UserFollow: 'UserFollow',
+  Notification: 'Notification',
   VwUserPublic: 'VwUserPublic',
   VwUsersStatusSummary: 'VwUsersStatusSummary'
 } as const
@@ -131,6 +132,17 @@ export const UserFollowScalarFieldEnum = {
 } as const
 
 export type UserFollowScalarFieldEnum = (typeof UserFollowScalarFieldEnum)[keyof typeof UserFollowScalarFieldEnum]
+
+
+export const NotificationScalarFieldEnum = {
+  id: 'id',
+  read: 'read',
+  createdAt: 'createdAt',
+  toUserId: 'toUserId',
+  fromUserId: 'fromUserId'
+} as const
+
+export type NotificationScalarFieldEnum = (typeof NotificationScalarFieldEnum)[keyof typeof NotificationScalarFieldEnum]
 
 
 export const VwUserPublicScalarFieldEnum = {

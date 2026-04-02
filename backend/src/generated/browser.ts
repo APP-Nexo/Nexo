@@ -43,6 +43,11 @@ export type UserProfile = Prisma.UserProfileModel
  */
 export type UserFollow = Prisma.UserFollowModel
 /**
+ * Model Notification
+ * 
+ */
+export type Notification = Prisma.NotificationModel
+/**
  * Model VwUserPublic
  * 
  */

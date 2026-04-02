@@ -56,3 +56,19 @@ CREATE TRIGGER follow_count_trigger
 AFTER INSERT OR DELETE ON "UserFollow"
 FOR EACH ROW
 EXECUTE FUNCTION update_follow_counts();
+
+
+-- 7. Gerar notificações para seguidorees
+CREATE OR REPLACE FUNCTION follow_user(
+    p_follower_id INT,
+    p_following_id INT
+) RETURNS VOID AS $$
+BEGIN
+    INSERT INTO "UserFollow" ("followerId", "followingId")
+    VALUES (p_follower_id, p_following_id)
+    ON CONFLICT DO NOTHING;
+
+    INSERT INTO "Notification" ("toUserId", "fromUserId")
+    VALUES (p_following_id, p_follower_id);
+END;
+$$ LANGUAGE plpgsql;

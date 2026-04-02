@@ -10,7 +10,7 @@ export class FollowController
 {
     // =======================================================
     //  @post
-    //  @return: { message: 'Usuário seguido com sucesso.' }
+    //  @return: { message: `Você começou a seguir ${following?.name}.` }
     //  @status:  201 OK
     // =======================================================
     static async followUser(req: FastifyRequest, reply: FastifyReply) 
@@ -20,27 +20,23 @@ export class FollowController
             const { id } = req.params as { id: string }
             const tokenUser = req.user as UserTokenPayload
 
-            await FollowErrors.ensureFollow(prisma.userFollow, tokenUser.id, Number(id))
+            const following = await prisma.vwUserPublic.findUnique({ where: { id: Number(id) }})
+            await FollowErrors.ensureFollow(prisma.userFollow, tokenUser.id, Number(id), String(following?.name))
             
-            await prisma.userFollow.create({
-                data: {
-                    followerId:  tokenUser.id,
-                    followingId: Number(id),
-                }
-            })
+            await prisma.$executeRaw`SELECT follow_user(${tokenUser.id}::int, ${Number(id)}::int)`
 
-            return reply.status(201).send({ message: 'Usuário seguido com sucesso.' })
+            return reply.status(201).send({ message: `Você começou a seguir ${following?.name}.` })
 
         } catch(error) {
             throw error
         }
     }
 
-    // ============================================================
+    // =====================================================================
     //  @delete
-    //  @return: { message: 'Você deixou de seguir um usuário.' }
+    //  @return: { message: `Você deixou de seguir ${unfollowing?.name}.` }
     //  @status:  200 OK
-    // ============================================================
+    // =====================================================================
     static async unfollowUser(req: FastifyRequest, reply: FastifyReply) 
     {
         try 
@@ -48,7 +44,8 @@ export class FollowController
             const { id } = req.params as { id: string }
             const tokenUser = req.user as UserTokenPayload
 
-            await FollowErrors.ensureUnfollow(prisma.userFollow, tokenUser.id, Number(id))
+            const unfollowing = await prisma.vwUserPublic.findUnique({ where: { id: Number(id) }})
+            await FollowErrors.ensureUnfollow(prisma.userFollow, tokenUser.id, Number(id), String(unfollowing?.name))
             
             await prisma.userFollow.delete({
                 where: {
@@ -59,7 +56,7 @@ export class FollowController
                 }
             })
 
-            return reply.status(200).send({ message: 'Você deixou de seguir um usuário.' })
+            return reply.status(201).send({ message: `Você deixou de seguir ${unfollowing?.name}.` })
             
         } catch(error) {
             throw error

@@ -46,6 +46,8 @@ model User {
   profile   UserProfile?
   following      UserFollow[]   @relation("follower")
   followers      UserFollow[]   @relation("following")
+  notificationsReceived Notification[] @relation("toUser")
+  notificationsSent     Notification[] @relation("fromUser")
 }
 
 model UserProfile {
@@ -72,6 +74,17 @@ model UserFollow {
   following   User @relation("following", fields: [followingId], references: [id])
 
   @@unique([followerId, followingId])
+}
+
+model Notification {
+  id         Int      @id @default(autoincrement())
+  read       Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  toUserId   Int
+  fromUserId Int
+
+  toUser     User     @relation("toUser",   fields: [toUserId],   references: [id])
+  fromUser   User     @relation("fromUser", fields: [fromUserId], references: [id])
 }
 
 // views

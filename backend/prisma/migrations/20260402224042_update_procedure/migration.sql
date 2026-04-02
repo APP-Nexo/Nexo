@@ -1,3 +1,5 @@
+-- This is an empty migration.
+
 CREATE OR REPLACE FUNCTION follow_user(
     p_follower_id INT,
     p_following_id INT

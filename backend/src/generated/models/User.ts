@@ -248,6 +248,8 @@ export type UserWhereInput = {
   profile?: Prisma.XOR<Prisma.UserProfileNullableScalarRelationFilter, Prisma.UserProfileWhereInput> | null
   following?: Prisma.UserFollowListRelationFilter
   followers?: Prisma.UserFollowListRelationFilter
+  notificationsReceived?: Prisma.NotificationListRelationFilter
+  notificationsSent?: Prisma.NotificationListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -263,6 +265,8 @@ export type UserOrderByWithRelationInput = {
   profile?: Prisma.UserProfileOrderByWithRelationInput
   following?: Prisma.UserFollowOrderByRelationAggregateInput
   followers?: Prisma.UserFollowOrderByRelationAggregateInput
+  notificationsReceived?: Prisma.NotificationOrderByRelationAggregateInput
+  notificationsSent?: Prisma.NotificationOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -281,6 +285,8 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   profile?: Prisma.XOR<Prisma.UserProfileNullableScalarRelationFilter, Prisma.UserProfileWhereInput> | null
   following?: Prisma.UserFollowListRelationFilter
   followers?: Prisma.UserFollowListRelationFilter
+  notificationsReceived?: Prisma.NotificationListRelationFilter
+  notificationsSent?: Prisma.NotificationListRelationFilter
 }, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -324,6 +330,8 @@ export type UserCreateInput = {
   profile?: Prisma.UserProfileCreateNestedOneWithoutUserInput
   following?: Prisma.UserFollowCreateNestedManyWithoutFollowerInput
   followers?: Prisma.UserFollowCreateNestedManyWithoutFollowingInput
+  notificationsReceived?: Prisma.NotificationCreateNestedManyWithoutToUserInput
+  notificationsSent?: Prisma.NotificationCreateNestedManyWithoutFromUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -338,6 +346,8 @@ export type UserUncheckedCreateInput = {
   profile?: Prisma.UserProfileUncheckedCreateNestedOneWithoutUserInput
   following?: Prisma.UserFollowUncheckedCreateNestedManyWithoutFollowerInput
   followers?: Prisma.UserFollowUncheckedCreateNestedManyWithoutFollowingInput
+  notificationsReceived?: Prisma.NotificationUncheckedCreateNestedManyWithoutToUserInput
+  notificationsSent?: Prisma.NotificationUncheckedCreateNestedManyWithoutFromUserInput
 }
 
 export type UserUpdateInput = {
@@ -351,6 +361,8 @@ export type UserUpdateInput = {
   profile?: Prisma.UserProfileUpdateOneWithoutUserNestedInput
   following?: Prisma.UserFollowUpdateManyWithoutFollowerNestedInput
   followers?: Prisma.UserFollowUpdateManyWithoutFollowingNestedInput
+  notificationsReceived?: Prisma.NotificationUpdateManyWithoutToUserNestedInput
+  notificationsSent?: Prisma.NotificationUpdateManyWithoutFromUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -365,6 +377,8 @@ export type UserUncheckedUpdateInput = {
   profile?: Prisma.UserProfileUncheckedUpdateOneWithoutUserNestedInput
   following?: Prisma.UserFollowUncheckedUpdateManyWithoutFollowerNestedInput
   followers?: Prisma.UserFollowUncheckedUpdateManyWithoutFollowingNestedInput
+  notificationsReceived?: Prisma.NotificationUncheckedUpdateManyWithoutToUserNestedInput
+  notificationsSent?: Prisma.NotificationUncheckedUpdateManyWithoutFromUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -548,6 +562,34 @@ export type UserUpdateOneRequiredWithoutFollowersNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutFollowersInput, Prisma.UserUpdateWithoutFollowersInput>, Prisma.UserUncheckedUpdateWithoutFollowersInput>
 }
 
+export type UserCreateNestedOneWithoutNotificationsReceivedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutNotificationsReceivedInput, Prisma.UserUncheckedCreateWithoutNotificationsReceivedInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutNotificationsReceivedInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserCreateNestedOneWithoutNotificationsSentInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutNotificationsSentInput, Prisma.UserUncheckedCreateWithoutNotificationsSentInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutNotificationsSentInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutNotificationsReceivedNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutNotificationsReceivedInput, Prisma.UserUncheckedCreateWithoutNotificationsReceivedInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutNotificationsReceivedInput
+  upsert?: Prisma.UserUpsertWithoutNotificationsReceivedInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutNotificationsReceivedInput, Prisma.UserUpdateWithoutNotificationsReceivedInput>, Prisma.UserUncheckedUpdateWithoutNotificationsReceivedInput>
+}
+
+export type UserUpdateOneRequiredWithoutNotificationsSentNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutNotificationsSentInput, Prisma.UserUncheckedCreateWithoutNotificationsSentInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutNotificationsSentInput
+  upsert?: Prisma.UserUpsertWithoutNotificationsSentInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutNotificationsSentInput, Prisma.UserUpdateWithoutNotificationsSentInput>, Prisma.UserUncheckedUpdateWithoutNotificationsSentInput>
+}
+
 export type UserCreateWithoutRoleInput = {
   name: string
   email: string
@@ -558,6 +600,8 @@ export type UserCreateWithoutRoleInput = {
   profile?: Prisma.UserProfileCreateNestedOneWithoutUserInput
   following?: Prisma.UserFollowCreateNestedManyWithoutFollowerInput
   followers?: Prisma.UserFollowCreateNestedManyWithoutFollowingInput
+  notificationsReceived?: Prisma.NotificationCreateNestedManyWithoutToUserInput
+  notificationsSent?: Prisma.NotificationCreateNestedManyWithoutFromUserInput
 }
 
 export type UserUncheckedCreateWithoutRoleInput = {
@@ -571,6 +615,8 @@ export type UserUncheckedCreateWithoutRoleInput = {
   profile?: Prisma.UserProfileUncheckedCreateNestedOneWithoutUserInput
   following?: Prisma.UserFollowUncheckedCreateNestedManyWithoutFollowerInput
   followers?: Prisma.UserFollowUncheckedCreateNestedManyWithoutFollowingInput
+  notificationsReceived?: Prisma.NotificationUncheckedCreateNestedManyWithoutToUserInput
+  notificationsSent?: Prisma.NotificationUncheckedCreateNestedManyWithoutFromUserInput
 }
 
 export type UserCreateOrConnectWithoutRoleInput = {
@@ -623,6 +669,8 @@ export type UserCreateWithoutProfileInput = {
   role: Prisma.RoleCreateNestedOneWithoutUsersInput
   following?: Prisma.UserFollowCreateNestedManyWithoutFollowerInput
   followers?: Prisma.UserFollowCreateNestedManyWithoutFollowingInput
+  notificationsReceived?: Prisma.NotificationCreateNestedManyWithoutToUserInput
+  notificationsSent?: Prisma.NotificationCreateNestedManyWithoutFromUserInput
 }
 
 export type UserUncheckedCreateWithoutProfileInput = {
@@ -636,6 +684,8 @@ export type UserUncheckedCreateWithoutProfileInput = {
   roleId: number
   following?: Prisma.UserFollowUncheckedCreateNestedManyWithoutFollowerInput
   followers?: Prisma.UserFollowUncheckedCreateNestedManyWithoutFollowingInput
+  notificationsReceived?: Prisma.NotificationUncheckedCreateNestedManyWithoutToUserInput
+  notificationsSent?: Prisma.NotificationUncheckedCreateNestedManyWithoutFromUserInput
 }
 
 export type UserCreateOrConnectWithoutProfileInput = {
@@ -664,6 +714,8 @@ export type UserUpdateWithoutProfileInput = {
   role?: Prisma.RoleUpdateOneRequiredWithoutUsersNestedInput
   following?: Prisma.UserFollowUpdateManyWithoutFollowerNestedInput
   followers?: Prisma.UserFollowUpdateManyWithoutFollowingNestedInput
+  notificationsReceived?: Prisma.NotificationUpdateManyWithoutToUserNestedInput
+  notificationsSent?: Prisma.NotificationUpdateManyWithoutFromUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutProfileInput = {
@@ -677,6 +729,8 @@ export type UserUncheckedUpdateWithoutProfileInput = {
   roleId?: Prisma.IntFieldUpdateOperationsInput | number
   following?: Prisma.UserFollowUncheckedUpdateManyWithoutFollowerNestedInput
   followers?: Prisma.UserFollowUncheckedUpdateManyWithoutFollowingNestedInput
+  notificationsReceived?: Prisma.NotificationUncheckedUpdateManyWithoutToUserNestedInput
+  notificationsSent?: Prisma.NotificationUncheckedUpdateManyWithoutFromUserNestedInput
 }
 
 export type UserCreateWithoutFollowingInput = {
@@ -689,6 +743,8 @@ export type UserCreateWithoutFollowingInput = {
   role: Prisma.RoleCreateNestedOneWithoutUsersInput
   profile?: Prisma.UserProfileCreateNestedOneWithoutUserInput
   followers?: Prisma.UserFollowCreateNestedManyWithoutFollowingInput
+  notificationsReceived?: Prisma.NotificationCreateNestedManyWithoutToUserInput
+  notificationsSent?: Prisma.NotificationCreateNestedManyWithoutFromUserInput
 }
 
 export type UserUncheckedCreateWithoutFollowingInput = {
@@ -702,6 +758,8 @@ export type UserUncheckedCreateWithoutFollowingInput = {
   roleId: number
   profile?: Prisma.UserProfileUncheckedCreateNestedOneWithoutUserInput
   followers?: Prisma.UserFollowUncheckedCreateNestedManyWithoutFollowingInput
+  notificationsReceived?: Prisma.NotificationUncheckedCreateNestedManyWithoutToUserInput
+  notificationsSent?: Prisma.NotificationUncheckedCreateNestedManyWithoutFromUserInput
 }
 
 export type UserCreateOrConnectWithoutFollowingInput = {
@@ -719,6 +777,8 @@ export type UserCreateWithoutFollowersInput = {
   role: Prisma.RoleCreateNestedOneWithoutUsersInput
   profile?: Prisma.UserProfileCreateNestedOneWithoutUserInput
   following?: Prisma.UserFollowCreateNestedManyWithoutFollowerInput
+  notificationsReceived?: Prisma.NotificationCreateNestedManyWithoutToUserInput
+  notificationsSent?: Prisma.NotificationCreateNestedManyWithoutFromUserInput
 }
 
 export type UserUncheckedCreateWithoutFollowersInput = {
@@ -732,6 +792,8 @@ export type UserUncheckedCreateWithoutFollowersInput = {
   roleId: number
   profile?: Prisma.UserProfileUncheckedCreateNestedOneWithoutUserInput
   following?: Prisma.UserFollowUncheckedCreateNestedManyWithoutFollowerInput
+  notificationsReceived?: Prisma.NotificationUncheckedCreateNestedManyWithoutToUserInput
+  notificationsSent?: Prisma.NotificationUncheckedCreateNestedManyWithoutFromUserInput
 }
 
 export type UserCreateOrConnectWithoutFollowersInput = {
@@ -760,6 +822,8 @@ export type UserUpdateWithoutFollowingInput = {
   role?: Prisma.RoleUpdateOneRequiredWithoutUsersNestedInput
   profile?: Prisma.UserProfileUpdateOneWithoutUserNestedInput
   followers?: Prisma.UserFollowUpdateManyWithoutFollowingNestedInput
+  notificationsReceived?: Prisma.NotificationUpdateManyWithoutToUserNestedInput
+  notificationsSent?: Prisma.NotificationUpdateManyWithoutFromUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutFollowingInput = {
@@ -773,6 +837,8 @@ export type UserUncheckedUpdateWithoutFollowingInput = {
   roleId?: Prisma.IntFieldUpdateOperationsInput | number
   profile?: Prisma.UserProfileUncheckedUpdateOneWithoutUserNestedInput
   followers?: Prisma.UserFollowUncheckedUpdateManyWithoutFollowingNestedInput
+  notificationsReceived?: Prisma.NotificationUncheckedUpdateManyWithoutToUserNestedInput
+  notificationsSent?: Prisma.NotificationUncheckedUpdateManyWithoutFromUserNestedInput
 }
 
 export type UserUpsertWithoutFollowersInput = {
@@ -796,6 +862,8 @@ export type UserUpdateWithoutFollowersInput = {
   role?: Prisma.RoleUpdateOneRequiredWithoutUsersNestedInput
   profile?: Prisma.UserProfileUpdateOneWithoutUserNestedInput
   following?: Prisma.UserFollowUpdateManyWithoutFollowerNestedInput
+  notificationsReceived?: Prisma.NotificationUpdateManyWithoutToUserNestedInput
+  notificationsSent?: Prisma.NotificationUpdateManyWithoutFromUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutFollowersInput = {
@@ -809,6 +877,156 @@ export type UserUncheckedUpdateWithoutFollowersInput = {
   roleId?: Prisma.IntFieldUpdateOperationsInput | number
   profile?: Prisma.UserProfileUncheckedUpdateOneWithoutUserNestedInput
   following?: Prisma.UserFollowUncheckedUpdateManyWithoutFollowerNestedInput
+  notificationsReceived?: Prisma.NotificationUncheckedUpdateManyWithoutToUserNestedInput
+  notificationsSent?: Prisma.NotificationUncheckedUpdateManyWithoutFromUserNestedInput
+}
+
+export type UserCreateWithoutNotificationsReceivedInput = {
+  name: string
+  email: string
+  password: string
+  createdAt?: Date | string
+  deletedAt?: Date | string | null
+  activate?: boolean
+  role: Prisma.RoleCreateNestedOneWithoutUsersInput
+  profile?: Prisma.UserProfileCreateNestedOneWithoutUserInput
+  following?: Prisma.UserFollowCreateNestedManyWithoutFollowerInput
+  followers?: Prisma.UserFollowCreateNestedManyWithoutFollowingInput
+  notificationsSent?: Prisma.NotificationCreateNestedManyWithoutFromUserInput
+}
+
+export type UserUncheckedCreateWithoutNotificationsReceivedInput = {
+  id?: number
+  name: string
+  email: string
+  password: string
+  createdAt?: Date | string
+  deletedAt?: Date | string | null
+  activate?: boolean
+  roleId: number
+  profile?: Prisma.UserProfileUncheckedCreateNestedOneWithoutUserInput
+  following?: Prisma.UserFollowUncheckedCreateNestedManyWithoutFollowerInput
+  followers?: Prisma.UserFollowUncheckedCreateNestedManyWithoutFollowingInput
+  notificationsSent?: Prisma.NotificationUncheckedCreateNestedManyWithoutFromUserInput
+}
+
+export type UserCreateOrConnectWithoutNotificationsReceivedInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutNotificationsReceivedInput, Prisma.UserUncheckedCreateWithoutNotificationsReceivedInput>
+}
+
+export type UserCreateWithoutNotificationsSentInput = {
+  name: string
+  email: string
+  password: string
+  createdAt?: Date | string
+  deletedAt?: Date | string | null
+  activate?: boolean
+  role: Prisma.RoleCreateNestedOneWithoutUsersInput
+  profile?: Prisma.UserProfileCreateNestedOneWithoutUserInput
+  following?: Prisma.UserFollowCreateNestedManyWithoutFollowerInput
+  followers?: Prisma.UserFollowCreateNestedManyWithoutFollowingInput
+  notificationsReceived?: Prisma.NotificationCreateNestedManyWithoutToUserInput
+}
+
+export type UserUncheckedCreateWithoutNotificationsSentInput = {
+  id?: number
+  name: string
+  email: string
+  password: string
+  createdAt?: Date | string
+  deletedAt?: Date | string | null
+  activate?: boolean
+  roleId: number
+  profile?: Prisma.UserProfileUncheckedCreateNestedOneWithoutUserInput
+  following?: Prisma.UserFollowUncheckedCreateNestedManyWithoutFollowerInput
+  followers?: Prisma.UserFollowUncheckedCreateNestedManyWithoutFollowingInput
+  notificationsReceived?: Prisma.NotificationUncheckedCreateNestedManyWithoutToUserInput
+}
+
+export type UserCreateOrConnectWithoutNotificationsSentInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutNotificationsSentInput, Prisma.UserUncheckedCreateWithoutNotificationsSentInput>
+}
+
+export type UserUpsertWithoutNotificationsReceivedInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutNotificationsReceivedInput, Prisma.UserUncheckedUpdateWithoutNotificationsReceivedInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutNotificationsReceivedInput, Prisma.UserUncheckedCreateWithoutNotificationsReceivedInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutNotificationsReceivedInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutNotificationsReceivedInput, Prisma.UserUncheckedUpdateWithoutNotificationsReceivedInput>
+}
+
+export type UserUpdateWithoutNotificationsReceivedInput = {
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  activate?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  role?: Prisma.RoleUpdateOneRequiredWithoutUsersNestedInput
+  profile?: Prisma.UserProfileUpdateOneWithoutUserNestedInput
+  following?: Prisma.UserFollowUpdateManyWithoutFollowerNestedInput
+  followers?: Prisma.UserFollowUpdateManyWithoutFollowingNestedInput
+  notificationsSent?: Prisma.NotificationUpdateManyWithoutFromUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutNotificationsReceivedInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  activate?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  roleId?: Prisma.IntFieldUpdateOperationsInput | number
+  profile?: Prisma.UserProfileUncheckedUpdateOneWithoutUserNestedInput
+  following?: Prisma.UserFollowUncheckedUpdateManyWithoutFollowerNestedInput
+  followers?: Prisma.UserFollowUncheckedUpdateManyWithoutFollowingNestedInput
+  notificationsSent?: Prisma.NotificationUncheckedUpdateManyWithoutFromUserNestedInput
+}
+
+export type UserUpsertWithoutNotificationsSentInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutNotificationsSentInput, Prisma.UserUncheckedUpdateWithoutNotificationsSentInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutNotificationsSentInput, Prisma.UserUncheckedCreateWithoutNotificationsSentInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutNotificationsSentInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutNotificationsSentInput, Prisma.UserUncheckedUpdateWithoutNotificationsSentInput>
+}
+
+export type UserUpdateWithoutNotificationsSentInput = {
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  activate?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  role?: Prisma.RoleUpdateOneRequiredWithoutUsersNestedInput
+  profile?: Prisma.UserProfileUpdateOneWithoutUserNestedInput
+  following?: Prisma.UserFollowUpdateManyWithoutFollowerNestedInput
+  followers?: Prisma.UserFollowUpdateManyWithoutFollowingNestedInput
+  notificationsReceived?: Prisma.NotificationUpdateManyWithoutToUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutNotificationsSentInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  activate?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  roleId?: Prisma.IntFieldUpdateOperationsInput | number
+  profile?: Prisma.UserProfileUncheckedUpdateOneWithoutUserNestedInput
+  following?: Prisma.UserFollowUncheckedUpdateManyWithoutFollowerNestedInput
+  followers?: Prisma.UserFollowUncheckedUpdateManyWithoutFollowingNestedInput
+  notificationsReceived?: Prisma.NotificationUncheckedUpdateManyWithoutToUserNestedInput
 }
 
 export type UserCreateManyRoleInput = {
@@ -831,6 +1049,8 @@ export type UserUpdateWithoutRoleInput = {
   profile?: Prisma.UserProfileUpdateOneWithoutUserNestedInput
   following?: Prisma.UserFollowUpdateManyWithoutFollowerNestedInput
   followers?: Prisma.UserFollowUpdateManyWithoutFollowingNestedInput
+  notificationsReceived?: Prisma.NotificationUpdateManyWithoutToUserNestedInput
+  notificationsSent?: Prisma.NotificationUpdateManyWithoutFromUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRoleInput = {
@@ -844,6 +1064,8 @@ export type UserUncheckedUpdateWithoutRoleInput = {
   profile?: Prisma.UserProfileUncheckedUpdateOneWithoutUserNestedInput
   following?: Prisma.UserFollowUncheckedUpdateManyWithoutFollowerNestedInput
   followers?: Prisma.UserFollowUncheckedUpdateManyWithoutFollowingNestedInput
+  notificationsReceived?: Prisma.NotificationUncheckedUpdateManyWithoutToUserNestedInput
+  notificationsSent?: Prisma.NotificationUncheckedUpdateManyWithoutFromUserNestedInput
 }
 
 export type UserUncheckedUpdateManyWithoutRoleInput = {
@@ -864,11 +1086,15 @@ export type UserUncheckedUpdateManyWithoutRoleInput = {
 export type UserCountOutputType = {
   following: number
   followers: number
+  notificationsReceived: number
+  notificationsSent: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   following?: boolean | UserCountOutputTypeCountFollowingArgs
   followers?: boolean | UserCountOutputTypeCountFollowersArgs
+  notificationsReceived?: boolean | UserCountOutputTypeCountNotificationsReceivedArgs
+  notificationsSent?: boolean | UserCountOutputTypeCountNotificationsSentArgs
 }
 
 /**
@@ -895,6 +1121,20 @@ export type UserCountOutputTypeCountFollowersArgs<ExtArgs extends runtime.Types.
   where?: Prisma.UserFollowWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountNotificationsReceivedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.NotificationWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountNotificationsSentArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.NotificationWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -909,6 +1149,8 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   profile?: boolean | Prisma.User$profileArgs<ExtArgs>
   following?: boolean | Prisma.User$followingArgs<ExtArgs>
   followers?: boolean | Prisma.User$followersArgs<ExtArgs>
+  notificationsReceived?: boolean | Prisma.User$notificationsReceivedArgs<ExtArgs>
+  notificationsSent?: boolean | Prisma.User$notificationsSentArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -953,6 +1195,8 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   profile?: boolean | Prisma.User$profileArgs<ExtArgs>
   following?: boolean | Prisma.User$followingArgs<ExtArgs>
   followers?: boolean | Prisma.User$followersArgs<ExtArgs>
+  notificationsReceived?: boolean | Prisma.User$notificationsReceivedArgs<ExtArgs>
+  notificationsSent?: boolean | Prisma.User$notificationsSentArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -969,6 +1213,8 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     profile: Prisma.$UserProfilePayload<ExtArgs> | null
     following: Prisma.$UserFollowPayload<ExtArgs>[]
     followers: Prisma.$UserFollowPayload<ExtArgs>[]
+    notificationsReceived: Prisma.$NotificationPayload<ExtArgs>[]
+    notificationsSent: Prisma.$NotificationPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
@@ -1377,6 +1623,8 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   profile<T extends Prisma.User$profileArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$profileArgs<ExtArgs>>): Prisma.Prisma__UserProfileClient<runtime.Types.Result.GetResult<Prisma.$UserProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   following<T extends Prisma.User$followingArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$followingArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserFollowPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   followers<T extends Prisma.User$followersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$followersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserFollowPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  notificationsReceived<T extends Prisma.User$notificationsReceivedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$notificationsReceivedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  notificationsSent<T extends Prisma.User$notificationsSentArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$notificationsSentArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1874,6 +2122,54 @@ export type User$followersArgs<ExtArgs extends runtime.Types.Extensions.Internal
   take?: number
   skip?: number
   distinct?: Prisma.UserFollowScalarFieldEnum | Prisma.UserFollowScalarFieldEnum[]
+}
+
+/**
+ * User.notificationsReceived
+ */
+export type User$notificationsReceivedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Notification
+   */
+  select?: Prisma.NotificationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Notification
+   */
+  omit?: Prisma.NotificationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.NotificationInclude<ExtArgs> | null
+  where?: Prisma.NotificationWhereInput
+  orderBy?: Prisma.NotificationOrderByWithRelationInput | Prisma.NotificationOrderByWithRelationInput[]
+  cursor?: Prisma.NotificationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.NotificationScalarFieldEnum | Prisma.NotificationScalarFieldEnum[]
+}
+
+/**
+ * User.notificationsSent
+ */
+export type User$notificationsSentArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Notification
+   */
+  select?: Prisma.NotificationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Notification
+   */
+  omit?: Prisma.NotificationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.NotificationInclude<ExtArgs> | null
+  where?: Prisma.NotificationWhereInput
+  orderBy?: Prisma.NotificationOrderByWithRelationInput | Prisma.NotificationOrderByWithRelationInput[]
+  cursor?: Prisma.NotificationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.NotificationScalarFieldEnum | Prisma.NotificationScalarFieldEnum[]
 }
 
 /**
