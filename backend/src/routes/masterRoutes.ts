@@ -1,7 +1,7 @@
 import type { FastifyInstance } from 'fastify';
 import { MasterController } from '../controllers/MasterController.js';
 
-import { promoteUserSchemaSwagger, demoteUserSchemaSwagger, banUserSchemaSwagger } from '../../documentation/master.docs.js';
+import { promoteUserSchemaSwagger, demoteUserSchemaSwagger, banUserSchemaSwagger } from '../../documentation/master.swagger.js';
 
 import { checkToken } from '../middlewares/check_token.js';
 import { checkAccessMaster } from '../middlewares/check_acess_master.js';

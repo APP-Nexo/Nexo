@@ -6,7 +6,7 @@ import {
     searchUserSchemaSwagger, 
     getUserSchemaSwagger, 
     deleteUserSchemaSwagger
-} from '../../documentation/user.docs.js';
+} from '../../documentation/user.swagger.js';
 
 import { checkToken } from '../middlewares/check_token.js';
 import { checkUser } from '../middlewares/check_user.js';

@@ -1,7 +1,7 @@
 import type { FastifyInstance } from 'fastify';
 import { HealthController } from '../controllers/HealthController.js';
 
-import { healthSchemaSwagger, pingSchemaSwagger } from '../../documentation/health.docs.js';
+import { healthSchemaSwagger, pingSchemaSwagger } from '../../documentation/health.swagger.js';
 
 export async function healthRoutes(app: FastifyInstance) 
 {

@@ -6,7 +6,7 @@ import {
     getUsersStatsSchemaSwagger,
     getUsersAdminSchemaSwagger,
     searchUserAdminSchemaSwagger
-} from '../../documentation/admin.docs.js';
+} from '../../documentation/admin.swagger.js';
 
 import { checkToken } from '../middlewares/check_token.js';
 import { checkAccessPerm } from '../middlewares/check_acess_perm.js';
