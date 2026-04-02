@@ -26,7 +26,7 @@ export class UserController
 
     // ==============================================
     //  @get 
-    //  @returns: { users: data, nextCursor, total }
+    //  @return: { users: data, nextCursor, total }
     //  @status:  200 OK
     // ==============================================
     static async searchUser(req: FastifyRequest, reply: FastifyReply)
@@ -82,7 +82,7 @@ export class UserController
     }
     // ================================================================================================================
     //  @get 
-    //  @returns: user: { ...userData, isFollowing: !!isFollowing },
+    //  @return: user: { ...userData, isFollowing: !!isFollowing },
     //            profile: { friendlyId, photo, banner, bio, config, followersCount, followingCount },
     //  @status:  200 OK
     // ================================================================================================================
@@ -106,7 +106,7 @@ export class UserController
 
     // ================================================================================================================
     //  @patch 
-    //  @returns: { message: 'Conta deletada.',  deletedAt: new Date().toISOString(), email: tokenUser.email }
+    //  @return: { message: 'Conta deletada.',  deletedAt: new Date().toISOString(), email: tokenUser.email }
     //  @status:  200 OK
     // ================================================================================================================
     static async delete(req: FastifyRequest, reply: FastifyReply)

@@ -10,7 +10,7 @@ export class FollowController
 {
     // =======================================================
     //  @post
-    //  @returns: { message: 'Usuário seguido com sucesso.' }
+    //  @return: { message: 'Usuário seguido com sucesso.' }
     //  @status:  201 OK
     // =======================================================
     static async followUser(req: FastifyRequest, reply: FastifyReply) 
@@ -38,7 +38,7 @@ export class FollowController
 
     // ============================================================
     //  @delete
-    //  @returns: { message: 'Você deixou de seguir um usuário.' }
+    //  @return: { message: 'Você deixou de seguir um usuário.' }
     //  @status:  200 OK
     // ============================================================
     static async unfollowUser(req: FastifyRequest, reply: FastifyReply) 

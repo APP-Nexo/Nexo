@@ -11,7 +11,7 @@ export class AdminController
 {
     // ==================================
     //  @get
-    //  @returns: { usersStatus: stats }
+    //  @return: { usersStatus: stats }
     //  @status:  200 OK
     // ==================================
     static async getUsersStats(req: FastifyRequest, reply: FastifyReply) {
@@ -21,7 +21,7 @@ export class AdminController
 
     // ============================
     //  @get 
-    //  @returns: { users: users }
+    //  @return: { users: users }
     //  @status:  200 OK
     // ============================
     static async getUsersAdmin(req: FastifyRequest, reply: FastifyReply)
@@ -43,7 +43,7 @@ export class AdminController
 
     // ===========================================
     //  @get 
-    //  @returns: { users: data, nextCursor }
+    //  @return: { users: data, nextCursor }
     //  @status:  200 OK
     // ===========================================
     static async searchUser(req: FastifyRequest, reply: FastifyReply) 
@@ -78,7 +78,7 @@ export class AdminController
 
     // =========================================
     //  @get
-    //  @returns: { users: data, nextCursor }
+    //  @return: { users: data, nextCursor }
     //  @status:  200 OK
     // =========================================
     static async getUsers(req: FastifyRequest, reply: FastifyReply) {
