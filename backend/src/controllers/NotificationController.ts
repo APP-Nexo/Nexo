@@ -1,6 +1,8 @@
 import type { FastifyRequest, FastifyReply } from 'fastify';
 import type { UserTokenPayload } from '../helpers/interfaces/I-Jwt.js';
 
+import { notificationErrors } from '../helpers/errors/notificiation-errors.js';
+
 import prisma from '../helpers/utils/prisma_conn.js';
 
 export class NotificationController 
@@ -50,6 +52,8 @@ export class NotificationController
         try {
             const tokenUser = req.user as UserTokenPayload
 
+            await notificationErrors.ensureHasUnreadNotifications(prisma.notification, tokenUser.id)
+
             await prisma.notification.updateMany({
                 where: { toUserId: tokenUser.id, read: false },
                 data: { read: true }
@@ -72,6 +76,8 @@ export class NotificationController
             const { id } = req.params as { id: string }
             const tokenUser = req.user as UserTokenPayload
 
+            await notificationErrors.ensureNotificationExists(prisma.notification, Number(id), tokenUser.id)
+
             await prisma.notification.deleteMany({
                 where: { id: Number(id), toUserId: tokenUser.id }
             })
@@ -91,6 +97,8 @@ export class NotificationController
     {
         try {
             const tokenUser = req.user as UserTokenPayload
+
+            await notificationErrors.ensureHasNotifications(prisma.notification, tokenUser.id)
 
             await prisma.notification.deleteMany({
             where: { toUserId: tokenUser.id }
