@@ -1,7 +1,7 @@
 import { APP_VERSION, DB_VERSION } from "../../version.js";
-import { Logs } from "../../src/helpers/utils/write_logs.js";
+import { Logs } from "../../../src/core/shared/utils/log/write_logs.js";
 
-import type { AppVersion } from '../../src/generated/client.js'
+import type { AppVersion } from '../../../src/core/generated/client.js'
 
 import { GenericQueries } from "../../src/repository/generics.js";
 import prisma from "../../src/helpers/utils/prisma_conn.js";

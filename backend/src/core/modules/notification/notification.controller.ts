@@ -1,0 +1,75 @@
+import type { FastifyRequest, FastifyReply } from 'fastify';
+import type { UserTokenPayload } from '../../shared/utils/jwt/I-Jwt.js';
+import { NotificationService } from './notification.service.js';
+
+export class NotificationController {
+    // =======================================================
+    //  @get
+    //  @return: { notifications, nextCursor, total }
+    //  @status:  200 OK
+    // =======================================================
+    static async getNotifications(req: FastifyRequest, reply: FastifyReply) 
+    {
+        try {
+            const { cursor } = req.query as { cursor?: string };
+            const tokenUser = req.user as UserTokenPayload;
+            
+            const response = await NotificationService.getNotifications(tokenUser.id, cursor);
+            return reply.status(200).send(response);
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    // =======================================================
+    //  @patch
+    //  @return: { message: 'Todas notificações marcadas como lidas.' }
+    //  @status:  200 OK
+    // =======================================================
+    static async readAllNotifications(req: FastifyRequest, reply: FastifyReply) 
+    {
+        try {
+            const tokenUser = req.user as UserTokenPayload;
+
+            const response = await NotificationService.readAllNotifications(tokenUser.id);
+            return reply.status(200).send(response);
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    // =======================================================
+    //  @delete
+    //  @return: { message: 'Notificação removida.' }
+    //  @status:  200 OK
+    // =======================================================
+    static async deleteNotification(req: FastifyRequest, reply: FastifyReply) 
+    {
+        try {
+            const { id } = req.params as { id: string };
+            const tokenUser = req.user as UserTokenPayload;
+
+            const response = await NotificationService.deleteNotification(Number(id), tokenUser.id);
+            return reply.status(200).send(response);
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    // =======================================================
+    //  @delete
+    //  @return: { message: 'Todas notificações removidas.' }
+    //  @status:  200 OK
+    // =======================================================
+    static async deleteAllNotifications(req: FastifyRequest, reply: FastifyReply) 
+    {
+        try {
+            const tokenUser = req.user as UserTokenPayload;
+
+            const response = await NotificationService.deleteAllNotifications(tokenUser.id);
+            return reply.status(200).send(response);
+        } catch (error) {
+            throw error;
+        }
+    }
+}
