@@ -1,4 +1,4 @@
-import { DatabaseErrors } from "../helpers/errors/database-errors.js"
+import { DatabaseErrors } from "../utils/prisma/database-errors.js"
 
 export class GenericQueries<T> {
     constructor(private model: any) {}

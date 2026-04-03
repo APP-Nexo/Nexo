@@ -10,8 +10,12 @@ export class AuthController {
     // =================================================================================================
     static async register(req: FastifyRequest, reply: FastifyReply) 
     {
-        const response = await AuthService.register(req.body as RegisterPayload, reply)
-        return reply.status(201).send(response)
+        try {
+            const response = await AuthService.register(req.body as RegisterPayload, reply)
+            return reply.status(201).send(response)
+        } catch(error) {
+            throw error;
+        }
     }
 
     // =================================================================================================
@@ -21,8 +25,12 @@ export class AuthController {
     // =================================================================================================
     static async login(req: FastifyRequest, reply: FastifyReply) 
     {
-        const { email, password } = req.body as { email: string, password: string }
-        const response = await AuthService.login(email, password, reply)
-        return reply.status(200).send(response)
+        try {
+            const { email, password } = req.body as { email: string, password: string }
+            const response = await AuthService.login(email, password, reply)
+            return reply.status(200).send(response)
+        } catch(error) {
+            throw error
+        }
     }
 }

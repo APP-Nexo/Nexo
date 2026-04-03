@@ -1,5 +1,5 @@
 import type { FastifyRequest, FastifyReply } from 'fastify';
-import type { UserTokenPayload } from '../../shared/utils/jwt/I-Jwt.js';
+import type { UserTokenPayload } from '../../shared/utils/jwt/jwt.interfaces.js';
 import { NotificationService } from './notification.service.js';
 
 export class NotificationController {

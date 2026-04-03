@@ -1,8 +1,8 @@
 // prisma/seeds/roles.ts
-import { Logs } from '../../../src/core/shared/utils/log/write_logs.js'
-import { GenericQueries } from '../../src/repository/generics.js'
-import prisma from '../../src/helpers/utils/prisma_conn.js'
-import type { Role } from '../../../src/core/generated/client.js'
+import { Logs } from "../../src/core/shared/utils/log/write_logs.js";
+import { GenericQueries } from "../../src/core/shared/repository/generics.js";
+import prisma from "../../src/core/shared/utils/prisma/prisma_conn.js";
+import type { Role } from "../../src/core/generated/client.js";
 
 const roleQuery = new GenericQueries<Role>(prisma.role)
 

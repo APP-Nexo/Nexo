@@ -1,5 +1,5 @@
 import { BaseErrors } from "../../shared/errors/base-errors.js"
-import type { UserTokenPayload } from "../../shared/utils/jwt/I-Jwt.js";
+import type { UserTokenPayload } from "../../shared/utils/jwt/jwt.interfaces.js";
 
 export class UserErrors extends BaseErrors {
     static ensureDelete(email: string,  tokenUser: UserTokenPayload )

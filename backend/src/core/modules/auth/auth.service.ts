@@ -11,7 +11,7 @@ export class AuthService {
     {
         const { name, email, password, confirmPassword } = payload
 
-        AuthErrors.ensureRegister({ name, email, password, confirmPassword })
+        AuthErrors.ensureDataRegister({ name, email, password, confirmPassword })
         await AuthErrors.ensureUserExistByEmail(prisma.user, email)
 
         const defaultRole = await prisma.role.findUnique({ where: { role: 'user' } })
@@ -26,15 +26,15 @@ export class AuthService {
         }
         }) as UserPayload
 
-        const token = JwtToken.create(createdUser, reply)
+        const token = await JwtToken.create(createdUser, reply)
 
         return { tokenType: process.env.TOKEN_TYPE!, token, expiresIn: process.env.TOKEN_EXPIRES! }
     }
 
     static async login(email: string, password: string, reply: FastifyReply) 
     {
-        AuthErrors.ensureLogin(email, password)
-        await AuthErrors.ensureUserNotExist(prisma.user, email)
+        AuthErrors.ensureDataLogin(email, password)
+        await AuthErrors.ensureUserNotExistByEmail(prisma.user, email)
 
         const user = await prisma.user.findUnique({ where: { email } }) as UserPayload
 
@@ -42,7 +42,7 @@ export class AuthService {
 
         const { password: _, ...userPayload } = user as UserPayload
 
-        const token = JwtToken.create(userPayload, reply)
+        const token = await JwtToken.create(userPayload, reply)
 
         return { tokenType: process.env.TOKEN_TYPE!, token, expiresIn: process.env.TOKEN_EXPIRES! }
     }

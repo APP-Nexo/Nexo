@@ -1,5 +1,5 @@
 import type { FastifyRequest, FastifyReply } from 'fastify';
-import type { UserTokenPayload } from '../../shared/utils/jwt/I-Jwt.js';
+import type { UserTokenPayload } from '../../shared/utils/jwt/jwt.interfaces.js';
 import type { UserPayload } from '../auth/auth.interfaces.js';
 import { UserService } from './user.service.js';
 

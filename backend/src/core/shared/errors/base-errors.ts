@@ -1,6 +1,6 @@
-import { GenericQueries } from "../../../src/repository/generics.js";
+import { GenericQueries } from "../repository/generics.js";
 
-import prisma from "../utils/prisma_conn.js";
+import prisma from "../utils/prisma/prisma_conn.js";
 
 export class BaseErrors extends Error 
 {

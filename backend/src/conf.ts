@@ -2,10 +2,10 @@ import 'dotenv/config'
 
 import fastify from "fastify";
 import swaggerUi from '@fastify/swagger-ui'
-import { setupSwagger } from '../../swagger.config.js';
+import { setupSwagger } from '../swagger.config.js';
 import cors from "@fastify/cors";
 
-import { errorHandler } from './shared/middlewares/error_handler.js';
+import { errorHandler } from './core/shared/errors/error_handler.js';
 import fastifyJwt from "@fastify/jwt";
 
 export const app = fastify({ 
@@ -19,13 +19,13 @@ await app.register(cors);
 app.setErrorHandler(errorHandler);
 await app.register(fastifyJwt, { secret: process.env.SECRET! });
 
-import { healthRoutes } from "./modules/health/health.routes.js";
-import { authRoutes } from "./modules/auth/auth.routes.js";
-import { userRoutes } from './modules/user/user.routes.js';
-import { adminRoutes } from './modules/admin/admin.routes.js';
-import { masterRoutes } from './modules/master/master.routes.js';
-import { followRoutes } from './modules/follow/follow.routes.js';
-import { notificationRoutes } from './modules/notification/notification.routes.js';
+import { healthRoutes } from "./core/modules/health/health.routes.js";
+import { authRoutes } from "./core/modules/auth/auth.routes.js";
+import { userRoutes } from './core/modules/user/user.routes.js';
+import { adminRoutes } from './core/modules/admin/admin.routes.js';
+import { masterRoutes } from './core/modules/master/master.routes.js';
+import { followRoutes } from './core/modules/follow/follow.routes.js';
+import { notificationRoutes } from './core/modules/notification/notification.routes.js';
 
 const routes = [
     { route: healthRoutes, prefix: 'api/verify' },

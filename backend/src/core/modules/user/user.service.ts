@@ -1,6 +1,6 @@
 import { Prisma } from '../../generated/client.js';
 import type { VwUserPublic } from '../../generated/client.js';
-import type { UserTokenPayload } from '../../shared/utils/jwt/I-Jwt.js';
+import type { UserTokenPayload } from '../../shared/utils/jwt/jwt.interfaces.js';
 import type { UserPayload } from '../auth/auth.interfaces.js';
 import { UserErrors } from './user.errors.js';
 import { GenericQueries } from '../../shared/repository/generics.js';

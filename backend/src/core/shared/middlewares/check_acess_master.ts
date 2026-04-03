@@ -1,9 +1,9 @@
 import type { FastifyRequest } from 'fastify'
-import { JwtToken } from '../helpers/utils/jwt_token.js'
-import { TokenErrors } from '../helpers/errors/token-erros.js'
+import { JwtToken } from '../utils/jwt/jwt_token.js'
+import { TokenErrors } from '../utils/jwt/token.errors.js'
 import { GenericQueries } from '../repository/generics.js'
-import type { Role } from '../generated/client.js'
-import prisma from '../helpers/utils/prisma_conn.js'
+import type { Role } from '../../generated/client.js'
+import prisma from '../utils/prisma/prisma_conn.js'
 
 const roleQuery = new GenericQueries<Role>(prisma.role)
 

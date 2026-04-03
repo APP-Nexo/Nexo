@@ -1,10 +1,10 @@
 import { APP_VERSION, DB_VERSION } from "../../version.js";
-import { Logs } from "../../../src/core/shared/utils/log/write_logs.js";
+import { Logs } from "../../src/core/shared/utils/log/write_logs.js";
 
-import type { AppVersion } from '../../../src/core/generated/client.js'
+import type { AppVersion } from "../../src/core/generated/client.js";
 
-import { GenericQueries } from "../../src/repository/generics.js";
-import prisma from "../../src/helpers/utils/prisma_conn.js";
+import { GenericQueries } from "../../src/core/shared/repository/generics.js";
+import prisma from "../../src/core/shared/utils/prisma/prisma_conn.js";
 const versionQuery = new GenericQueries<AppVersion>(prisma.appVersion)
 
 export async function seedVersion() {

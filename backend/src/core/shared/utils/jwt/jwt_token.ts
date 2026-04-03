@@ -2,11 +2,11 @@ import 'dotenv/config'
 import '@fastify/jwt'
 import type { FastifyReply, FastifyRequest } from 'fastify'
 
-import { TokenErrors } from '../errors/token-erros.js'
+import { TokenErrors } from './token.errors.js'
 
-import { app } from '../../conf.js'
+import { app } from '../../../../conf.js'
 
-import type { UserTokenPayload } from '../interfaces/I-Jwt.js'
+import type { UserTokenPayload } from './jwt.interfaces.js'
 
 export class JwtToken 
 {

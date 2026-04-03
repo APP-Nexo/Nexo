@@ -12,3 +12,7 @@ export interface UserPayload {
     password: string
     roleId: number
 }
+
+export type FindByEmail = {
+    findUnique: (args: { where: { email: string } }) => Promise<unknown>
+}
