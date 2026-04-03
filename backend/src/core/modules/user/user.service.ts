@@ -1,13 +1,9 @@
 import { Prisma } from '../../generated/client.js';
-import type { VwUserPublic } from '../../generated/client.js';
 import type { UserTokenPayload } from '../../shared/utils/jwt/jwt.interfaces.js';
 import type { UserPayload } from '../auth/auth.interfaces.js';
 import { UserErrors } from './user.errors.js';
-import { GenericQueries } from '../../shared/repository/generics.js';
 import prisma from '../../shared/utils/prisma/prisma_conn.js';
 
-const userQuery = new GenericQueries(prisma.user);
-const vwUserQuery = new GenericQueries<VwUserPublic>(prisma.vwUserPublic);
 
 export class UserService {
     static async searchUser(tokenUser: UserPayload, find?: string, cursor?: string) 
@@ -22,21 +18,21 @@ export class UserService {
         };
 
         const [users, total] = await Promise.all([
-        vwUserQuery.findManyWithOptions({
+        prisma.vwUserPublic.findMany({
             where,
             select: {
-            id: true,
-            friendlyId: true,
-            createdAt: true,
-            name: true,
-            email: true,
-            photo: true,
+                id: true,
+                friendlyId: true,
+                createdAt: true,
+                name: true,
+                email: true,
+                photo: true,
             },
             orderBy: { name: 'asc' },
             take: 11,
             ...(cursor && { cursor: { id: Number(cursor) }, skip: 1 }),
         }),
-        prisma.vwUserPublic.count({ where }),
+            prisma.vwUserPublic.count({ where }),
         ]);
 
         const data = users.slice(0, 10);
@@ -61,11 +57,12 @@ export class UserService {
 
     static async getUser(tokenUser: UserPayload, id: number) 
     {
-        await UserErrors.ensureUserExistById(vwUserQuery, id);
+        await UserErrors.ensureUserExistById(prisma.vwUserPublic, id);
 
-        const user = await vwUserQuery.findUnique({ id });
+        const user = await prisma.vwUserPublic.findUnique({ where: { id } });
+
         const isFollowing = await prisma.userFollow.findFirst({
-        where: { followerId: tokenUser.id, followingId: id },
+            where: { followerId: tokenUser.id, followingId: id },
         });
 
         const { photo, banner, bio, config, friendlyId, followersCount, followingCount, ...userData } = user as any;
@@ -80,12 +77,15 @@ export class UserService {
     {
         UserErrors.ensureDelete(email, tokenUser);
         await UserErrors.ensureNotMaster(Number(tokenUser.id));
-        await UserErrors.ensureUserExistById(vwUserQuery, tokenUser.id);
+        await UserErrors.ensureUserExistById(prisma.vwUserPublic, tokenUser.id);
 
-        await userQuery.update(tokenUser.id, {
-            activate: false,
-            email: `deleted_${tokenUser.id}_${tokenUser.email}`,
-            deletedAt: new Date(),
+        await prisma.user.update({
+            where: { id: tokenUser.id },
+            data: {
+                activate: false,
+                email: `deleted_${tokenUser.id}_${tokenUser.email}`,
+                deletedAt: new Date(),
+            },
         });
 
         return { message: 'Conta deletada.', deletedAt: new Date().toISOString(), email: tokenUser.email };

@@ -1,4 +1,4 @@
-import { app } from '../../src/core/conf.js'
+import { app } from '../conf.js'
 
 export async function startApp() {
     await app.ready()

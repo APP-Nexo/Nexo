@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest'
 import { startApp, closeApp } from './tests.setup.js'
-import { app } from '../../src/core/conf.js'
+import { app } from '../conf.js'
 
 // ============================================================
 //  TESTS

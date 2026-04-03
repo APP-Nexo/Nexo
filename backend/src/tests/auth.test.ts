@@ -4,38 +4,32 @@ import { startApp, closeApp } from './tests.setup.js'
 // ================================================================
 //  SETUP MOCKS - Must be declared before imports to ensure hoisting
 // =================================================================
-vi.mock('../src/helpers/utils/prisma_conn.js', () => ({
+vi.mock('../core/shared/utils/prisma/prisma_conn.js', () => ({
     default: {
-        user: {
-            findUnique: vi.fn(),
-            findFirst: vi.fn(),
-            create: vi.fn(),
-        },
-        role: {
-            findUnique: vi.fn(),
-        }
-    }
+        user: { findUnique: vi.fn(), findFirst: vi.fn(), create: vi.fn() },
+        role: { findUnique: vi.fn() },
+    },
 }))
 
-vi.mock('../src/helpers/utils/encrypt_password.js', () => ({
-    encryptPassword: vi.fn()
+vi.mock('../core/shared/utils/bcrypt/encrypt_password.js', () => ({
+    encryptPassword: vi.fn(),
 }))
 
-vi.mock('../src/helpers/utils/compare_password.js', () => ({
-    comparePassword: vi.fn()
+vi.mock('../core/shared/utils/bcrypt/compare_password.js', () => ({
+    comparePassword: vi.fn(),
 }))
 
-vi.mock('../src/helpers/utils/jwt_token.js', () => ({
+vi.mock('../core/shared/utils/jwt/jwt_token.js', () => ({
     JwtToken: {
-        create: vi.fn().mockResolvedValue('mocked_token_12345')
-    }
+        create: vi.fn().mockResolvedValue('mocked_token_12345'),
+    },
 }))
 
 // ============================================================
 //  IMPORTS - After mocks are hoisted
 // ============================================================
 
-import { app } from '../core/conf.js'
+import { app } from '../conf.js'
 import prisma from '../core/shared/utils/prisma/prisma_conn.js'
 import { encryptPassword } from '../../src/core/shared/utils/bcrypt/encrypt_password.js'
 import { comparePassword } from '../../src/core/shared/utils/bcrypt/compare_password.js'

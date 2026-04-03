@@ -14,8 +14,8 @@ export class FollowController
             const { id } = req.params as { id: string }
             const tokenUser = req.user as UserTokenPayload
             
-            const data = await FollowService.followUser(tokenUser.id, Number(id))
-            return reply.status(201).send(data)
+            const response = await FollowService.followUser(tokenUser.id, Number(id))
+            return reply.status(201).send(response)
         } catch (error) {
             throw error
         }
@@ -32,8 +32,8 @@ export class FollowController
             const { id } = req.params as { id: string }
             const tokenUser = req.user as UserTokenPayload
 
-            const data = await FollowService.unfollowUser(tokenUser.id, Number(id))
-            return reply.status(200).send(data)
+            const response = await FollowService.unfollowUser(tokenUser.id, Number(id))
+            return reply.status(200).send(response)
         } catch (error) {
             throw error
         }

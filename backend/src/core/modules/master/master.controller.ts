@@ -28,6 +28,7 @@ export class MasterController {
     {
         try {
             const { id } = req.params as { id: string };
+            
             const response = await MasterService.demoteUser(Number(id));
             return reply.status(200).send(response);
         } catch (error) {

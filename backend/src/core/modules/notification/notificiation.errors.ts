@@ -1,24 +1,28 @@
-import { BaseErrors } from "../../shared/errors/base-errors.js";
+export class NotificationErrors extends Error {
+    public statusCode: number;
 
-export class notificationErrors extends BaseErrors
-{
-    static async ensureNotificationExists(table: any, id: number, toUserId: number) 
-    {
-        const exists = await table.findFirst({
-            where: { id, toUserId }
-        })
-
-        if (!exists) throw new BaseErrors('Notificação não existe.', 404)
+    constructor(message: string, statusCode: number) {
+        super(message);
+        this.name = 'Notification Errors';
+        this.statusCode = statusCode;
     }
 
-    static async ensureHasNotifications(table: any, toUserId: number) 
-    {
-        const count = await table.count({ where: { toUserId } })
-        if (count === 0) throw new BaseErrors('Você não possui notificações.', 404)
+    private static throw(message: string, statusCode: number): never {
+        throw new NotificationErrors(message, statusCode);
+    }
+
+    static async ensureNotificationExists(table: any, id: number, toUserId: number) {
+        const exists = await table.findFirst({ where: { id, toUserId } });
+        if (!exists) this.throw('Notificação não existe.', 404);
+    }
+
+    static async ensureHasNotifications(table: any, toUserId: number) {
+        const count = await table.count({ where: { toUserId } });
+        if (count === 0) this.throw('Você não possui notificações.', 404);
     }
 
     static async ensureHasUnreadNotifications(table: any, toUserId: number) {
-        const count = await table.count({ where: { toUserId, read: false } })
-        if (count === 0) throw new BaseErrors('Você não possui notificações não lidas.', 404)
+        const count = await table.count({ where: { toUserId, read: false } });
+        if (count === 0) this.throw('Você não possui notificações não lidas.', 404);
     }
 }

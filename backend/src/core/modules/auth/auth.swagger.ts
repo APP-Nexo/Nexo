@@ -5,7 +5,6 @@ export const registerSchemaSwagger =
         summary: 'Register',
         body: {
         type: 'object',
-        required: ['name', 'email', 'password', 'confirmPassword'],
         properties: {
             name:            { type: 'string' },
             email:           { type: 'string' },
@@ -33,7 +32,6 @@ export const loginSchemaSwagger =
         summary: 'Login',
         body: {
         type: 'object',
-        required: ['email', 'password'],
         properties: {
             email:    { type: 'string' },
             password: { type: 'string' }

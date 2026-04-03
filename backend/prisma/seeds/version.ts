@@ -3,28 +3,34 @@ import { Logs } from "../../src/core/shared/utils/log/write_logs.js";
 
 import type { AppVersion } from "../../src/core/generated/client.js";
 
-import { GenericQueries } from "../../src/core/shared/repository/generics.js";
 import prisma from "../../src/core/shared/utils/prisma/prisma_conn.js";
-const versionQuery = new GenericQueries<AppVersion>(prisma.appVersion)
 
 export async function seedVersion() {
-    const existing = await versionQuery.findUnique({ 
+    const existing = await prisma.appVersion.findUnique({
+        where: {
         appVersion_dbVersion: {
-        appVersion: APP_VERSION,
-        dbVersion: DB_VERSION
-        }
+            appVersion: APP_VERSION,
+            dbVersion: DB_VERSION,
+        },
+        },
     })
 
     if (existing) {
-        await versionQuery.update(existing.id, { timestamp: new Date() })
+        await prisma.appVersion.update({
+            where: { id: existing.id },
+            data: { timestamp: new Date() },
+        })
+
         const { id: _, ...versionData } = existing as any
         Logs.write({ version: versionData }, `Version already up to date | app: ${APP_VERSION} | db: ${DB_VERSION}`, 'info', true, false)
         return
     }
 
-    const version = await versionQuery.create({
-        appVersion: APP_VERSION,
-        dbVersion: DB_VERSION,
+    const version = await prisma.appVersion.create({
+        data: {
+            appVersion: APP_VERSION,
+            dbVersion: DB_VERSION,
+        },
     })
 
     const { id: _, ...versionData } = version as any

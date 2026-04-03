@@ -1,23 +1,27 @@
-import { BaseErrors } from "../../shared/errors/base-errors.js";
+export class FollowErrors extends Error {
+    public statusCode: number;
 
-export class FollowErrors extends BaseErrors 
-{
-    static async ensureFollow(query: any, followerId: number, followingId: number, followingName: string)
-    {
-        if (followerId === followingId) throw new BaseErrors('Você não pode seguir a si mesmo.', 400)
-
-        const exists = await query.findFirst({ where: { followerId, followingId }})
-
-        if (exists) throw new BaseErrors(`Você já segue ${followingName}.`, 409)
+    constructor(message: string, statusCode: number) {
+        super(message);
+        this.name = 'FollowErrors';
+        this.statusCode = statusCode;
     }
 
+    private static throw(message: string, statusCode: number): never {
+        throw new FollowErrors(message, statusCode)
+    }
 
-    static async ensureUnfollow(query: any, followerId: number, followingId: number, followingName: string)
-    {
-        if (followerId === followingId) throw new BaseErrors('Você não pode desseguir a si mesmo.', 400)
+    static async ensureFollow(table: any, followerId: number, followingId: number, followingName: string) {
+        if (followerId === followingId) this.throw('Você não pode seguir a si mesmo.', 400)
 
-        const exists = await query.findFirst({ where: { followerId, followingId } })
+        const exists = await table.findFirst({ where: { followerId, followingId } })
+        if (exists) this.throw(`Você já segue ${followingName}.`, 409)
+    }
 
-        if (!exists) throw new BaseErrors(`Você não segue ${followingName}.`, 404)
+    static async ensureUnfollow(table: any, followerId: number, followingId: number, followingName: string) {
+        if (followerId === followingId) this.throw('Você não pode desseguir a si mesmo.', 400)
+
+        const exists = await table.findFirst({ where: { followerId, followingId } })
+        if (!exists) this.throw(`Você não segue ${followingName}.`, 404)
     }
 }

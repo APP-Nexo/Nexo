@@ -1,5 +1,5 @@
 import type { FastifyRequest, FastifyReply } from 'fastify';
-import type { RegisterPayload } from './auth.interfaces.js';
+import type { LoginPayload, RegisterPayload } from './auth.interfaces.js';
 import { AuthService } from './auth.service.js';
 
 export class AuthController {
@@ -26,8 +26,9 @@ export class AuthController {
     static async login(req: FastifyRequest, reply: FastifyReply) 
     {
         try {
-            const { email, password } = req.body as { email: string, password: string }
-            const response = await AuthService.login(email, password, reply)
+            const { email, password } = req.body as LoginPayload
+
+            const response = await AuthService.login(email!, password, reply)
             return reply.status(200).send(response)
         } catch(error) {
             throw error

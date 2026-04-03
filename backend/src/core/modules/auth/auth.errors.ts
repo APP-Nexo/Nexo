@@ -15,7 +15,8 @@ export class AuthErrors extends Error {
         throw new AuthErrors(`O campo ${field} é obrigatório e não foi fornecido.`, 400);
     }
 
-    static throwPasswordMismatch() {
+    static throwPasswordMismatch() 
+    {
         throw new AuthErrors('As senhas não coincidem.', 400)
     }
 
@@ -23,7 +24,7 @@ export class AuthErrors extends Error {
         if (!name) this.throwMissing('name')
         if (!email) this.throwMissing('email')
         if (!password) this.throwMissing('password')
-        if (!confirmPassword) this.throwMissing('confirmPassword')
+        if (!confirmPassword) this.throwMissing('confirm password')
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new AuthErrors('Email inválido.', 400)
         if (password.length < 5) throw new AuthErrors('A senha deve ter no mínimo 5 caracteres.', 400)
         if (password != confirmPassword) this.throwPasswordMismatch()

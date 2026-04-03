@@ -1,4 +1,4 @@
-import { notificationErrors } from './notificiation.errors.js';
+import { NotificationErrors } from './notificiation.errors.js';
 import prisma from '../../shared/utils/prisma/prisma_conn.js';
 
 export class NotificationService {
@@ -27,7 +27,7 @@ export class NotificationService {
 
     static async readAllNotifications(userId: number) 
     {
-        await notificationErrors.ensureHasUnreadNotifications(prisma.notification, userId);
+        await NotificationErrors.ensureHasUnreadNotifications(prisma.notification, userId);
         
         await prisma.notification.updateMany({
             where: { toUserId: userId, read: false },
@@ -39,7 +39,7 @@ export class NotificationService {
 
     static async deleteNotification(notificationId: number, userId: number) 
     {
-        await notificationErrors.ensureNotificationExists(prisma.notification, notificationId, userId);
+        await NotificationErrors.ensureNotificationExists(prisma.notification, notificationId, userId);
 
         await prisma.notification.deleteMany({
             where: { id: notificationId, toUserId: userId }
@@ -50,7 +50,7 @@ export class NotificationService {
 
     static async deleteAllNotifications(userId: number) 
     {
-        await notificationErrors.ensureHasNotifications(prisma.notification, userId);
+        await NotificationErrors.ensureHasNotifications(prisma.notification, userId);
 
         await prisma.notification.deleteMany({
             where: { toUserId: userId }
