@@ -12,10 +12,10 @@
  * 🟢 You can import this file directly.
  */
 
-import * as Prisma from "./internal/prismaNamespaceBrowser.js";
+import * as Prisma from './internal/prismaNamespaceBrowser.js';
 
-export * as $Enums from "./enums.js";
-export * from "./enums.js";
+export * as $Enums from './enums.js';
+export * from './enums.js';
 export { Prisma };
 /**
  * Model AppVersion

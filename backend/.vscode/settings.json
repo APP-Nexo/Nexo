@@ -1,9 +1,9 @@
 {
-	"editor.formatOnSave": true,
-	"editor.defaultFormatter": "biomejs.biome",
-	"biome.packageManager": "npm",
-	"biome.bin": "./node_modules/@biomejs/biome/bin/biome",
-	"editor.codeActionsOnSave": {
-		"source.organizeImports.biome": "explicit"
-	}
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "biomejs.biome",
+    "biome.packageManager": "npm",
+    "biome.bin": "./node_modules/@biomejs/biome/bin/biome",
+    "editor.codeActionsOnSave": {
+        "source.organizeImports.biome": "explicit"
+    }
 }

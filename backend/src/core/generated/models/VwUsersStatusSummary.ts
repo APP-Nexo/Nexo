@@ -7,671 +7,626 @@
  *
  * 🟢 You can import this file directly.
  */
-import type * as runtime from "@prisma/client/runtime/client";
-import type * as $Enums from "../enums.js";
-import type * as Prisma from "../internal/prismaNamespace.js";
+import type * as runtime from '@prisma/client/runtime/client';
+import type * as $Enums from '../enums.js';
+import type * as Prisma from '../internal/prismaNamespace.js';
 
 /**
  * Model VwUsersStatusSummary
  *
  */
 export type VwUsersStatusSummaryModel =
-	runtime.Types.Result.DefaultSelection<Prisma.$VwUsersStatusSummaryPayload>;
+    runtime.Types.Result.DefaultSelection<Prisma.$VwUsersStatusSummaryPayload>;
 
 export type AggregateVwUsersStatusSummary = {
-	_count: VwUsersStatusSummaryCountAggregateOutputType | null;
-	_avg: VwUsersStatusSummaryAvgAggregateOutputType | null;
-	_sum: VwUsersStatusSummarySumAggregateOutputType | null;
-	_min: VwUsersStatusSummaryMinAggregateOutputType | null;
-	_max: VwUsersStatusSummaryMaxAggregateOutputType | null;
+    _count: VwUsersStatusSummaryCountAggregateOutputType | null;
+    _avg: VwUsersStatusSummaryAvgAggregateOutputType | null;
+    _sum: VwUsersStatusSummarySumAggregateOutputType | null;
+    _min: VwUsersStatusSummaryMinAggregateOutputType | null;
+    _max: VwUsersStatusSummaryMaxAggregateOutputType | null;
 };
 
 export type VwUsersStatusSummaryAvgAggregateOutputType = {
-	totalUsers: number | null;
-	totalActive: number | null;
-	totalDeactivated: number | null;
-	totalAdmins: number | null;
-	totalRegularUsers: number | null;
+    totalUsers: number | null;
+    totalActive: number | null;
+    totalDeactivated: number | null;
+    totalAdmins: number | null;
+    totalRegularUsers: number | null;
 };
 
 export type VwUsersStatusSummarySumAggregateOutputType = {
-	totalUsers: number | null;
-	totalActive: number | null;
-	totalDeactivated: number | null;
-	totalAdmins: number | null;
-	totalRegularUsers: number | null;
+    totalUsers: number | null;
+    totalActive: number | null;
+    totalDeactivated: number | null;
+    totalAdmins: number | null;
+    totalRegularUsers: number | null;
 };
 
 export type VwUsersStatusSummaryMinAggregateOutputType = {
-	totalUsers: number | null;
-	totalActive: number | null;
-	totalDeactivated: number | null;
-	totalAdmins: number | null;
-	totalRegularUsers: number | null;
+    totalUsers: number | null;
+    totalActive: number | null;
+    totalDeactivated: number | null;
+    totalAdmins: number | null;
+    totalRegularUsers: number | null;
 };
 
 export type VwUsersStatusSummaryMaxAggregateOutputType = {
-	totalUsers: number | null;
-	totalActive: number | null;
-	totalDeactivated: number | null;
-	totalAdmins: number | null;
-	totalRegularUsers: number | null;
+    totalUsers: number | null;
+    totalActive: number | null;
+    totalDeactivated: number | null;
+    totalAdmins: number | null;
+    totalRegularUsers: number | null;
 };
 
 export type VwUsersStatusSummaryCountAggregateOutputType = {
-	totalUsers: number;
-	totalActive: number;
-	totalDeactivated: number;
-	totalAdmins: number;
-	totalRegularUsers: number;
-	_all: number;
+    totalUsers: number;
+    totalActive: number;
+    totalDeactivated: number;
+    totalAdmins: number;
+    totalRegularUsers: number;
+    _all: number;
 };
 
 export type VwUsersStatusSummaryAvgAggregateInputType = {
-	totalUsers?: true;
-	totalActive?: true;
-	totalDeactivated?: true;
-	totalAdmins?: true;
-	totalRegularUsers?: true;
+    totalUsers?: true;
+    totalActive?: true;
+    totalDeactivated?: true;
+    totalAdmins?: true;
+    totalRegularUsers?: true;
 };
 
 export type VwUsersStatusSummarySumAggregateInputType = {
-	totalUsers?: true;
-	totalActive?: true;
-	totalDeactivated?: true;
-	totalAdmins?: true;
-	totalRegularUsers?: true;
+    totalUsers?: true;
+    totalActive?: true;
+    totalDeactivated?: true;
+    totalAdmins?: true;
+    totalRegularUsers?: true;
 };
 
 export type VwUsersStatusSummaryMinAggregateInputType = {
-	totalUsers?: true;
-	totalActive?: true;
-	totalDeactivated?: true;
-	totalAdmins?: true;
-	totalRegularUsers?: true;
+    totalUsers?: true;
+    totalActive?: true;
+    totalDeactivated?: true;
+    totalAdmins?: true;
+    totalRegularUsers?: true;
 };
 
 export type VwUsersStatusSummaryMaxAggregateInputType = {
-	totalUsers?: true;
-	totalActive?: true;
-	totalDeactivated?: true;
-	totalAdmins?: true;
-	totalRegularUsers?: true;
+    totalUsers?: true;
+    totalActive?: true;
+    totalDeactivated?: true;
+    totalAdmins?: true;
+    totalRegularUsers?: true;
 };
 
 export type VwUsersStatusSummaryCountAggregateInputType = {
-	totalUsers?: true;
-	totalActive?: true;
-	totalDeactivated?: true;
-	totalAdmins?: true;
-	totalRegularUsers?: true;
-	_all?: true;
+    totalUsers?: true;
+    totalActive?: true;
+    totalDeactivated?: true;
+    totalAdmins?: true;
+    totalRegularUsers?: true;
+    _all?: true;
 };
 
 export type VwUsersStatusSummaryAggregateArgs<
-	ExtArgs extends
-		runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
+    ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
 > = {
-	/**
-	 * Filter which VwUsersStatusSummary to aggregate.
-	 */
-	where?: Prisma.VwUsersStatusSummaryWhereInput;
-	/**
-	 * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-	 *
-	 * Determine the order of VwUsersStatusSummaries to fetch.
-	 */
-	orderBy?:
-		| Prisma.VwUsersStatusSummaryOrderByWithRelationInput
-		| Prisma.VwUsersStatusSummaryOrderByWithRelationInput[];
-	/**
-	 * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-	 *
-	 * Take `±n` VwUsersStatusSummaries from the position of the cursor.
-	 */
-	take?: number;
-	/**
-	 * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-	 *
-	 * Skip the first `n` VwUsersStatusSummaries.
-	 */
-	skip?: number;
-	/**
-	 * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-	 *
-	 * Count returned VwUsersStatusSummaries
-	 **/
-	_count?: true | VwUsersStatusSummaryCountAggregateInputType;
-	/**
-	 * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-	 *
-	 * Select which fields to average
-	 **/
-	_avg?: VwUsersStatusSummaryAvgAggregateInputType;
-	/**
-	 * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-	 *
-	 * Select which fields to sum
-	 **/
-	_sum?: VwUsersStatusSummarySumAggregateInputType;
-	/**
-	 * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-	 *
-	 * Select which fields to find the minimum value
-	 **/
-	_min?: VwUsersStatusSummaryMinAggregateInputType;
-	/**
-	 * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-	 *
-	 * Select which fields to find the maximum value
-	 **/
-	_max?: VwUsersStatusSummaryMaxAggregateInputType;
+    /**
+     * Filter which VwUsersStatusSummary to aggregate.
+     */
+    where?: Prisma.VwUsersStatusSummaryWhereInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of VwUsersStatusSummaries to fetch.
+     */
+    orderBy?:
+        | Prisma.VwUsersStatusSummaryOrderByWithRelationInput
+        | Prisma.VwUsersStatusSummaryOrderByWithRelationInput[];
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` VwUsersStatusSummaries from the position of the cursor.
+     */
+    take?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` VwUsersStatusSummaries.
+     */
+    skip?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Count returned VwUsersStatusSummaries
+     **/
+    _count?: true | VwUsersStatusSummaryCountAggregateInputType;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to average
+     **/
+    _avg?: VwUsersStatusSummaryAvgAggregateInputType;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to sum
+     **/
+    _sum?: VwUsersStatusSummarySumAggregateInputType;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to find the minimum value
+     **/
+    _min?: VwUsersStatusSummaryMinAggregateInputType;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to find the maximum value
+     **/
+    _max?: VwUsersStatusSummaryMaxAggregateInputType;
 };
 
-export type GetVwUsersStatusSummaryAggregateType<
-	T extends VwUsersStatusSummaryAggregateArgs,
-> = {
-	[P in keyof T & keyof AggregateVwUsersStatusSummary]: P extends
-		| "_count"
-		| "count"
-		? T[P] extends true
-			? number
-			: Prisma.GetScalarType<T[P], AggregateVwUsersStatusSummary[P]>
-		: Prisma.GetScalarType<T[P], AggregateVwUsersStatusSummary[P]>;
+export type GetVwUsersStatusSummaryAggregateType<T extends VwUsersStatusSummaryAggregateArgs> = {
+    [P in keyof T & keyof AggregateVwUsersStatusSummary]: P extends '_count' | 'count'
+        ? T[P] extends true
+            ? number
+            : Prisma.GetScalarType<T[P], AggregateVwUsersStatusSummary[P]>
+        : Prisma.GetScalarType<T[P], AggregateVwUsersStatusSummary[P]>;
 };
 
 export type VwUsersStatusSummaryGroupByArgs<
-	ExtArgs extends
-		runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
+    ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
 > = {
-	where?: Prisma.VwUsersStatusSummaryWhereInput;
-	orderBy?:
-		| Prisma.VwUsersStatusSummaryOrderByWithAggregationInput
-		| Prisma.VwUsersStatusSummaryOrderByWithAggregationInput[];
-	by:
-		| Prisma.VwUsersStatusSummaryScalarFieldEnum[]
-		| Prisma.VwUsersStatusSummaryScalarFieldEnum;
-	having?: Prisma.VwUsersStatusSummaryScalarWhereWithAggregatesInput;
-	take?: number;
-	skip?: number;
-	_count?: VwUsersStatusSummaryCountAggregateInputType | true;
-	_avg?: VwUsersStatusSummaryAvgAggregateInputType;
-	_sum?: VwUsersStatusSummarySumAggregateInputType;
-	_min?: VwUsersStatusSummaryMinAggregateInputType;
-	_max?: VwUsersStatusSummaryMaxAggregateInputType;
+    where?: Prisma.VwUsersStatusSummaryWhereInput;
+    orderBy?:
+        | Prisma.VwUsersStatusSummaryOrderByWithAggregationInput
+        | Prisma.VwUsersStatusSummaryOrderByWithAggregationInput[];
+    by: Prisma.VwUsersStatusSummaryScalarFieldEnum[] | Prisma.VwUsersStatusSummaryScalarFieldEnum;
+    having?: Prisma.VwUsersStatusSummaryScalarWhereWithAggregatesInput;
+    take?: number;
+    skip?: number;
+    _count?: VwUsersStatusSummaryCountAggregateInputType | true;
+    _avg?: VwUsersStatusSummaryAvgAggregateInputType;
+    _sum?: VwUsersStatusSummarySumAggregateInputType;
+    _min?: VwUsersStatusSummaryMinAggregateInputType;
+    _max?: VwUsersStatusSummaryMaxAggregateInputType;
 };
 
 export type VwUsersStatusSummaryGroupByOutputType = {
-	totalUsers: number;
-	totalActive: number;
-	totalDeactivated: number;
-	totalAdmins: number;
-	totalRegularUsers: number;
-	_count: VwUsersStatusSummaryCountAggregateOutputType | null;
-	_avg: VwUsersStatusSummaryAvgAggregateOutputType | null;
-	_sum: VwUsersStatusSummarySumAggregateOutputType | null;
-	_min: VwUsersStatusSummaryMinAggregateOutputType | null;
-	_max: VwUsersStatusSummaryMaxAggregateOutputType | null;
+    totalUsers: number;
+    totalActive: number;
+    totalDeactivated: number;
+    totalAdmins: number;
+    totalRegularUsers: number;
+    _count: VwUsersStatusSummaryCountAggregateOutputType | null;
+    _avg: VwUsersStatusSummaryAvgAggregateOutputType | null;
+    _sum: VwUsersStatusSummarySumAggregateOutputType | null;
+    _min: VwUsersStatusSummaryMinAggregateOutputType | null;
+    _max: VwUsersStatusSummaryMaxAggregateOutputType | null;
 };
 
-type GetVwUsersStatusSummaryGroupByPayload<
-	T extends VwUsersStatusSummaryGroupByArgs,
-> = Prisma.PrismaPromise<
-	Array<
-		Prisma.PickEnumerable<VwUsersStatusSummaryGroupByOutputType, T["by"]> & {
-			[P in keyof T &
-				keyof VwUsersStatusSummaryGroupByOutputType]: P extends "_count"
-				? T[P] extends boolean
-					? number
-					: Prisma.GetScalarType<T[P], VwUsersStatusSummaryGroupByOutputType[P]>
-				: Prisma.GetScalarType<T[P], VwUsersStatusSummaryGroupByOutputType[P]>;
-		}
-	>
->;
+type GetVwUsersStatusSummaryGroupByPayload<T extends VwUsersStatusSummaryGroupByArgs> =
+    Prisma.PrismaPromise<
+        Array<
+            Prisma.PickEnumerable<VwUsersStatusSummaryGroupByOutputType, T['by']> & {
+                [P in keyof T & keyof VwUsersStatusSummaryGroupByOutputType]: P extends '_count'
+                    ? T[P] extends boolean
+                        ? number
+                        : Prisma.GetScalarType<T[P], VwUsersStatusSummaryGroupByOutputType[P]>
+                    : Prisma.GetScalarType<T[P], VwUsersStatusSummaryGroupByOutputType[P]>;
+            }
+        >
+    >;
 
 export type VwUsersStatusSummaryWhereInput = {
-	AND?:
-		| Prisma.VwUsersStatusSummaryWhereInput
-		| Prisma.VwUsersStatusSummaryWhereInput[];
-	OR?: Prisma.VwUsersStatusSummaryWhereInput[];
-	NOT?:
-		| Prisma.VwUsersStatusSummaryWhereInput
-		| Prisma.VwUsersStatusSummaryWhereInput[];
-	totalUsers?: Prisma.IntFilter<"VwUsersStatusSummary"> | number;
-	totalActive?: Prisma.IntFilter<"VwUsersStatusSummary"> | number;
-	totalDeactivated?: Prisma.IntFilter<"VwUsersStatusSummary"> | number;
-	totalAdmins?: Prisma.IntFilter<"VwUsersStatusSummary"> | number;
-	totalRegularUsers?: Prisma.IntFilter<"VwUsersStatusSummary"> | number;
+    AND?: Prisma.VwUsersStatusSummaryWhereInput | Prisma.VwUsersStatusSummaryWhereInput[];
+    OR?: Prisma.VwUsersStatusSummaryWhereInput[];
+    NOT?: Prisma.VwUsersStatusSummaryWhereInput | Prisma.VwUsersStatusSummaryWhereInput[];
+    totalUsers?: Prisma.IntFilter<'VwUsersStatusSummary'> | number;
+    totalActive?: Prisma.IntFilter<'VwUsersStatusSummary'> | number;
+    totalDeactivated?: Prisma.IntFilter<'VwUsersStatusSummary'> | number;
+    totalAdmins?: Prisma.IntFilter<'VwUsersStatusSummary'> | number;
+    totalRegularUsers?: Prisma.IntFilter<'VwUsersStatusSummary'> | number;
 };
 
 export type VwUsersStatusSummaryOrderByWithRelationInput = {
-	totalUsers?: Prisma.SortOrder;
-	totalActive?: Prisma.SortOrder;
-	totalDeactivated?: Prisma.SortOrder;
-	totalAdmins?: Prisma.SortOrder;
-	totalRegularUsers?: Prisma.SortOrder;
+    totalUsers?: Prisma.SortOrder;
+    totalActive?: Prisma.SortOrder;
+    totalDeactivated?: Prisma.SortOrder;
+    totalAdmins?: Prisma.SortOrder;
+    totalRegularUsers?: Prisma.SortOrder;
 };
 
 export type VwUsersStatusSummaryOrderByWithAggregationInput = {
-	totalUsers?: Prisma.SortOrder;
-	totalActive?: Prisma.SortOrder;
-	totalDeactivated?: Prisma.SortOrder;
-	totalAdmins?: Prisma.SortOrder;
-	totalRegularUsers?: Prisma.SortOrder;
-	_count?: Prisma.VwUsersStatusSummaryCountOrderByAggregateInput;
-	_avg?: Prisma.VwUsersStatusSummaryAvgOrderByAggregateInput;
-	_max?: Prisma.VwUsersStatusSummaryMaxOrderByAggregateInput;
-	_min?: Prisma.VwUsersStatusSummaryMinOrderByAggregateInput;
-	_sum?: Prisma.VwUsersStatusSummarySumOrderByAggregateInput;
+    totalUsers?: Prisma.SortOrder;
+    totalActive?: Prisma.SortOrder;
+    totalDeactivated?: Prisma.SortOrder;
+    totalAdmins?: Prisma.SortOrder;
+    totalRegularUsers?: Prisma.SortOrder;
+    _count?: Prisma.VwUsersStatusSummaryCountOrderByAggregateInput;
+    _avg?: Prisma.VwUsersStatusSummaryAvgOrderByAggregateInput;
+    _max?: Prisma.VwUsersStatusSummaryMaxOrderByAggregateInput;
+    _min?: Prisma.VwUsersStatusSummaryMinOrderByAggregateInput;
+    _sum?: Prisma.VwUsersStatusSummarySumOrderByAggregateInput;
 };
 
 export type VwUsersStatusSummaryScalarWhereWithAggregatesInput = {
-	AND?:
-		| Prisma.VwUsersStatusSummaryScalarWhereWithAggregatesInput
-		| Prisma.VwUsersStatusSummaryScalarWhereWithAggregatesInput[];
-	OR?: Prisma.VwUsersStatusSummaryScalarWhereWithAggregatesInput[];
-	NOT?:
-		| Prisma.VwUsersStatusSummaryScalarWhereWithAggregatesInput
-		| Prisma.VwUsersStatusSummaryScalarWhereWithAggregatesInput[];
-	totalUsers?: Prisma.IntWithAggregatesFilter<"VwUsersStatusSummary"> | number;
-	totalActive?: Prisma.IntWithAggregatesFilter<"VwUsersStatusSummary"> | number;
-	totalDeactivated?:
-		| Prisma.IntWithAggregatesFilter<"VwUsersStatusSummary">
-		| number;
-	totalAdmins?: Prisma.IntWithAggregatesFilter<"VwUsersStatusSummary"> | number;
-	totalRegularUsers?:
-		| Prisma.IntWithAggregatesFilter<"VwUsersStatusSummary">
-		| number;
+    AND?:
+        | Prisma.VwUsersStatusSummaryScalarWhereWithAggregatesInput
+        | Prisma.VwUsersStatusSummaryScalarWhereWithAggregatesInput[];
+    OR?: Prisma.VwUsersStatusSummaryScalarWhereWithAggregatesInput[];
+    NOT?:
+        | Prisma.VwUsersStatusSummaryScalarWhereWithAggregatesInput
+        | Prisma.VwUsersStatusSummaryScalarWhereWithAggregatesInput[];
+    totalUsers?: Prisma.IntWithAggregatesFilter<'VwUsersStatusSummary'> | number;
+    totalActive?: Prisma.IntWithAggregatesFilter<'VwUsersStatusSummary'> | number;
+    totalDeactivated?: Prisma.IntWithAggregatesFilter<'VwUsersStatusSummary'> | number;
+    totalAdmins?: Prisma.IntWithAggregatesFilter<'VwUsersStatusSummary'> | number;
+    totalRegularUsers?: Prisma.IntWithAggregatesFilter<'VwUsersStatusSummary'> | number;
 };
 
 export type VwUsersStatusSummaryCountOrderByAggregateInput = {
-	totalUsers?: Prisma.SortOrder;
-	totalActive?: Prisma.SortOrder;
-	totalDeactivated?: Prisma.SortOrder;
-	totalAdmins?: Prisma.SortOrder;
-	totalRegularUsers?: Prisma.SortOrder;
+    totalUsers?: Prisma.SortOrder;
+    totalActive?: Prisma.SortOrder;
+    totalDeactivated?: Prisma.SortOrder;
+    totalAdmins?: Prisma.SortOrder;
+    totalRegularUsers?: Prisma.SortOrder;
 };
 
 export type VwUsersStatusSummaryAvgOrderByAggregateInput = {
-	totalUsers?: Prisma.SortOrder;
-	totalActive?: Prisma.SortOrder;
-	totalDeactivated?: Prisma.SortOrder;
-	totalAdmins?: Prisma.SortOrder;
-	totalRegularUsers?: Prisma.SortOrder;
+    totalUsers?: Prisma.SortOrder;
+    totalActive?: Prisma.SortOrder;
+    totalDeactivated?: Prisma.SortOrder;
+    totalAdmins?: Prisma.SortOrder;
+    totalRegularUsers?: Prisma.SortOrder;
 };
 
 export type VwUsersStatusSummaryMaxOrderByAggregateInput = {
-	totalUsers?: Prisma.SortOrder;
-	totalActive?: Prisma.SortOrder;
-	totalDeactivated?: Prisma.SortOrder;
-	totalAdmins?: Prisma.SortOrder;
-	totalRegularUsers?: Prisma.SortOrder;
+    totalUsers?: Prisma.SortOrder;
+    totalActive?: Prisma.SortOrder;
+    totalDeactivated?: Prisma.SortOrder;
+    totalAdmins?: Prisma.SortOrder;
+    totalRegularUsers?: Prisma.SortOrder;
 };
 
 export type VwUsersStatusSummaryMinOrderByAggregateInput = {
-	totalUsers?: Prisma.SortOrder;
-	totalActive?: Prisma.SortOrder;
-	totalDeactivated?: Prisma.SortOrder;
-	totalAdmins?: Prisma.SortOrder;
-	totalRegularUsers?: Prisma.SortOrder;
+    totalUsers?: Prisma.SortOrder;
+    totalActive?: Prisma.SortOrder;
+    totalDeactivated?: Prisma.SortOrder;
+    totalAdmins?: Prisma.SortOrder;
+    totalRegularUsers?: Prisma.SortOrder;
 };
 
 export type VwUsersStatusSummarySumOrderByAggregateInput = {
-	totalUsers?: Prisma.SortOrder;
-	totalActive?: Prisma.SortOrder;
-	totalDeactivated?: Prisma.SortOrder;
-	totalAdmins?: Prisma.SortOrder;
-	totalRegularUsers?: Prisma.SortOrder;
+    totalUsers?: Prisma.SortOrder;
+    totalActive?: Prisma.SortOrder;
+    totalDeactivated?: Prisma.SortOrder;
+    totalAdmins?: Prisma.SortOrder;
+    totalRegularUsers?: Prisma.SortOrder;
 };
 
 export type VwUsersStatusSummarySelect<
-	ExtArgs extends
-		runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
+    ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
 > = runtime.Types.Extensions.GetSelect<
-	{
-		totalUsers?: boolean;
-		totalActive?: boolean;
-		totalDeactivated?: boolean;
-		totalAdmins?: boolean;
-		totalRegularUsers?: boolean;
-	},
-	ExtArgs["result"]["vwUsersStatusSummary"]
+    {
+        totalUsers?: boolean;
+        totalActive?: boolean;
+        totalDeactivated?: boolean;
+        totalAdmins?: boolean;
+        totalRegularUsers?: boolean;
+    },
+    ExtArgs['result']['vwUsersStatusSummary']
 >;
 
 export type VwUsersStatusSummarySelectScalar = {
-	totalUsers?: boolean;
-	totalActive?: boolean;
-	totalDeactivated?: boolean;
-	totalAdmins?: boolean;
-	totalRegularUsers?: boolean;
+    totalUsers?: boolean;
+    totalActive?: boolean;
+    totalDeactivated?: boolean;
+    totalAdmins?: boolean;
+    totalRegularUsers?: boolean;
 };
 
 export type VwUsersStatusSummaryOmit<
-	ExtArgs extends
-		runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
+    ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
 > = runtime.Types.Extensions.GetOmit<
-	| "totalUsers"
-	| "totalActive"
-	| "totalDeactivated"
-	| "totalAdmins"
-	| "totalRegularUsers",
-	ExtArgs["result"]["vwUsersStatusSummary"]
+    'totalUsers' | 'totalActive' | 'totalDeactivated' | 'totalAdmins' | 'totalRegularUsers',
+    ExtArgs['result']['vwUsersStatusSummary']
 >;
 
 export type $VwUsersStatusSummaryPayload<
-	ExtArgs extends
-		runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
+    ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
 > = {
-	name: "VwUsersStatusSummary";
-	objects: {};
-	scalars: runtime.Types.Extensions.GetPayloadResult<
-		{
-			totalUsers: number;
-			totalActive: number;
-			totalDeactivated: number;
-			totalAdmins: number;
-			totalRegularUsers: number;
-		},
-		ExtArgs["result"]["vwUsersStatusSummary"]
-	>;
-	composites: {};
+    name: 'VwUsersStatusSummary';
+    objects: {};
+    scalars: runtime.Types.Extensions.GetPayloadResult<
+        {
+            totalUsers: number;
+            totalActive: number;
+            totalDeactivated: number;
+            totalAdmins: number;
+            totalRegularUsers: number;
+        },
+        ExtArgs['result']['vwUsersStatusSummary']
+    >;
+    composites: {};
 };
 
 export type VwUsersStatusSummaryGetPayload<
-	S extends boolean | null | undefined | VwUsersStatusSummaryDefaultArgs,
+    S extends boolean | null | undefined | VwUsersStatusSummaryDefaultArgs,
 > = runtime.Types.Result.GetResult<Prisma.$VwUsersStatusSummaryPayload, S>;
 
 export type VwUsersStatusSummaryCountArgs<
-	ExtArgs extends
-		runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
-> = Omit<
-	VwUsersStatusSummaryFindManyArgs,
-	"select" | "include" | "distinct" | "omit"
-> & {
-	select?: VwUsersStatusSummaryCountAggregateInputType | true;
+    ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
+> = Omit<VwUsersStatusSummaryFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+    select?: VwUsersStatusSummaryCountAggregateInputType | true;
 };
 
 export interface VwUsersStatusSummaryDelegate<
-	ExtArgs extends
-		runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
-	GlobalOmitOptions = {},
+    ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
+    GlobalOmitOptions = {},
 > {
-	[K: symbol]: {
-		types: Prisma.TypeMap<ExtArgs>["model"]["VwUsersStatusSummary"];
-		meta: { name: "VwUsersStatusSummary" };
-	};
-	/**
-	 * Find the first VwUsersStatusSummary that matches the filter.
-	 * Note, that providing `undefined` is treated as the value not being there.
-	 * Read more here: https://pris.ly/d/null-undefined
-	 * @param {VwUsersStatusSummaryFindFirstArgs} args - Arguments to find a VwUsersStatusSummary
-	 * @example
-	 * // Get one VwUsersStatusSummary
-	 * const vwUsersStatusSummary = await prisma.vwUsersStatusSummary.findFirst({
-	 *   where: {
-	 *     // ... provide filter here
-	 *   }
-	 * })
-	 */
-	findFirst<
-		T extends VwUsersStatusSummaryFindFirstArgs,
-		TakeDependenciesValidator extends "take" extends Prisma.Keys<T>
-			? {
-					orderBy: {};
-				}
-			: {},
-		SkipDependenciesValidator extends "skip" extends Prisma.Keys<T>
-			? {
-					orderBy: {};
-				}
-			: {},
-	>(
-		args?: Prisma.SelectSubset<T, VwUsersStatusSummaryFindFirstArgs<ExtArgs>> &
-			TakeDependenciesValidator &
-			SkipDependenciesValidator,
-	): Prisma.Prisma__VwUsersStatusSummaryClient<
-		runtime.Types.Result.GetResult<
-			Prisma.$VwUsersStatusSummaryPayload<ExtArgs>,
-			T,
-			"findFirst",
-			GlobalOmitOptions
-		> | null,
-		null,
-		ExtArgs,
-		GlobalOmitOptions
-	>;
+    [K: symbol]: {
+        types: Prisma.TypeMap<ExtArgs>['model']['VwUsersStatusSummary'];
+        meta: { name: 'VwUsersStatusSummary' };
+    };
+    /**
+     * Find the first VwUsersStatusSummary that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {VwUsersStatusSummaryFindFirstArgs} args - Arguments to find a VwUsersStatusSummary
+     * @example
+     * // Get one VwUsersStatusSummary
+     * const vwUsersStatusSummary = await prisma.vwUsersStatusSummary.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<
+        T extends VwUsersStatusSummaryFindFirstArgs,
+        TakeDependenciesValidator extends 'take' extends Prisma.Keys<T>
+            ? {
+                  orderBy: {};
+              }
+            : {},
+        SkipDependenciesValidator extends 'skip' extends Prisma.Keys<T>
+            ? {
+                  orderBy: {};
+              }
+            : {},
+    >(
+        args?: Prisma.SelectSubset<T, VwUsersStatusSummaryFindFirstArgs<ExtArgs>> &
+            TakeDependenciesValidator &
+            SkipDependenciesValidator,
+    ): Prisma.Prisma__VwUsersStatusSummaryClient<
+        runtime.Types.Result.GetResult<
+            Prisma.$VwUsersStatusSummaryPayload<ExtArgs>,
+            T,
+            'findFirst',
+            GlobalOmitOptions
+        > | null,
+        null,
+        ExtArgs,
+        GlobalOmitOptions
+    >;
 
-	/**
-	 * Find the first VwUsersStatusSummary that matches the filter or
-	 * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
-	 * Note, that providing `undefined` is treated as the value not being there.
-	 * Read more here: https://pris.ly/d/null-undefined
-	 * @param {VwUsersStatusSummaryFindFirstOrThrowArgs} args - Arguments to find a VwUsersStatusSummary
-	 * @example
-	 * // Get one VwUsersStatusSummary
-	 * const vwUsersStatusSummary = await prisma.vwUsersStatusSummary.findFirstOrThrow({
-	 *   where: {
-	 *     // ... provide filter here
-	 *   }
-	 * })
-	 */
-	findFirstOrThrow<
-		T extends VwUsersStatusSummaryFindFirstOrThrowArgs,
-		TakeDependenciesValidator extends "take" extends Prisma.Keys<T>
-			? {
-					orderBy: {};
-				}
-			: {},
-		SkipDependenciesValidator extends "skip" extends Prisma.Keys<T>
-			? {
-					orderBy: {};
-				}
-			: {},
-	>(
-		args?: Prisma.SelectSubset<
-			T,
-			VwUsersStatusSummaryFindFirstOrThrowArgs<ExtArgs>
-		> &
-			TakeDependenciesValidator &
-			SkipDependenciesValidator,
-	): Prisma.Prisma__VwUsersStatusSummaryClient<
-		runtime.Types.Result.GetResult<
-			Prisma.$VwUsersStatusSummaryPayload<ExtArgs>,
-			T,
-			"findFirstOrThrow",
-			GlobalOmitOptions
-		>,
-		never,
-		ExtArgs,
-		GlobalOmitOptions
-	>;
+    /**
+     * Find the first VwUsersStatusSummary that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {VwUsersStatusSummaryFindFirstOrThrowArgs} args - Arguments to find a VwUsersStatusSummary
+     * @example
+     * // Get one VwUsersStatusSummary
+     * const vwUsersStatusSummary = await prisma.vwUsersStatusSummary.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<
+        T extends VwUsersStatusSummaryFindFirstOrThrowArgs,
+        TakeDependenciesValidator extends 'take' extends Prisma.Keys<T>
+            ? {
+                  orderBy: {};
+              }
+            : {},
+        SkipDependenciesValidator extends 'skip' extends Prisma.Keys<T>
+            ? {
+                  orderBy: {};
+              }
+            : {},
+    >(
+        args?: Prisma.SelectSubset<T, VwUsersStatusSummaryFindFirstOrThrowArgs<ExtArgs>> &
+            TakeDependenciesValidator &
+            SkipDependenciesValidator,
+    ): Prisma.Prisma__VwUsersStatusSummaryClient<
+        runtime.Types.Result.GetResult<
+            Prisma.$VwUsersStatusSummaryPayload<ExtArgs>,
+            T,
+            'findFirstOrThrow',
+            GlobalOmitOptions
+        >,
+        never,
+        ExtArgs,
+        GlobalOmitOptions
+    >;
 
-	/**
-	 * Find zero or more VwUsersStatusSummaries that matches the filter.
-	 * Note, that providing `undefined` is treated as the value not being there.
-	 * Read more here: https://pris.ly/d/null-undefined
-	 * @param {VwUsersStatusSummaryFindManyArgs} args - Arguments to filter and select certain fields only.
-	 * @example
-	 * // Get all VwUsersStatusSummaries
-	 * const vwUsersStatusSummaries = await prisma.vwUsersStatusSummary.findMany()
-	 *
-	 * // Get first 10 VwUsersStatusSummaries
-	 * const vwUsersStatusSummaries = await prisma.vwUsersStatusSummary.findMany({ take: 10 })
-	 *
-	 * // Only select the `totalUsers`
-	 * const vwUsersStatusSummaryWithTotalUsersOnly = await prisma.vwUsersStatusSummary.findMany({ select: { totalUsers: true } })
-	 *
-	 */
-	findMany<
-		T extends VwUsersStatusSummaryFindManyArgs,
-		TakeDependenciesValidator extends "take" extends Prisma.Keys<T>
-			? {
-					orderBy: {};
-				}
-			: {},
-		SkipDependenciesValidator extends "skip" extends Prisma.Keys<T>
-			? {
-					orderBy: {};
-				}
-			: {},
-	>(
-		args?: Prisma.SelectSubset<T, VwUsersStatusSummaryFindManyArgs<ExtArgs>> &
-			TakeDependenciesValidator &
-			SkipDependenciesValidator,
-	): Prisma.PrismaPromise<
-		runtime.Types.Result.GetResult<
-			Prisma.$VwUsersStatusSummaryPayload<ExtArgs>,
-			T,
-			"findMany",
-			GlobalOmitOptions
-		>
-	>;
+    /**
+     * Find zero or more VwUsersStatusSummaries that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {VwUsersStatusSummaryFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all VwUsersStatusSummaries
+     * const vwUsersStatusSummaries = await prisma.vwUsersStatusSummary.findMany()
+     *
+     * // Get first 10 VwUsersStatusSummaries
+     * const vwUsersStatusSummaries = await prisma.vwUsersStatusSummary.findMany({ take: 10 })
+     *
+     * // Only select the `totalUsers`
+     * const vwUsersStatusSummaryWithTotalUsersOnly = await prisma.vwUsersStatusSummary.findMany({ select: { totalUsers: true } })
+     *
+     */
+    findMany<
+        T extends VwUsersStatusSummaryFindManyArgs,
+        TakeDependenciesValidator extends 'take' extends Prisma.Keys<T>
+            ? {
+                  orderBy: {};
+              }
+            : {},
+        SkipDependenciesValidator extends 'skip' extends Prisma.Keys<T>
+            ? {
+                  orderBy: {};
+              }
+            : {},
+    >(
+        args?: Prisma.SelectSubset<T, VwUsersStatusSummaryFindManyArgs<ExtArgs>> &
+            TakeDependenciesValidator &
+            SkipDependenciesValidator,
+    ): Prisma.PrismaPromise<
+        runtime.Types.Result.GetResult<
+            Prisma.$VwUsersStatusSummaryPayload<ExtArgs>,
+            T,
+            'findMany',
+            GlobalOmitOptions
+        >
+    >;
 
-	/**
-	 * Count the number of VwUsersStatusSummaries.
-	 * Note, that providing `undefined` is treated as the value not being there.
-	 * Read more here: https://pris.ly/d/null-undefined
-	 * @param {VwUsersStatusSummaryCountArgs} args - Arguments to filter VwUsersStatusSummaries to count.
-	 * @example
-	 * // Count the number of VwUsersStatusSummaries
-	 * const count = await prisma.vwUsersStatusSummary.count({
-	 *   where: {
-	 *     // ... the filter for the VwUsersStatusSummaries we want to count
-	 *   }
-	 * })
-	 **/
-	count<T extends VwUsersStatusSummaryCountArgs>(
-		args?: Prisma.Subset<T, VwUsersStatusSummaryCountArgs>,
-	): Prisma.PrismaPromise<
-		T extends runtime.Types.Utils.Record<"select", any>
-			? T["select"] extends true
-				? number
-				: Prisma.GetScalarType<
-						T["select"],
-						VwUsersStatusSummaryCountAggregateOutputType
-					>
-			: number
-	>;
+    /**
+     * Count the number of VwUsersStatusSummaries.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {VwUsersStatusSummaryCountArgs} args - Arguments to filter VwUsersStatusSummaries to count.
+     * @example
+     * // Count the number of VwUsersStatusSummaries
+     * const count = await prisma.vwUsersStatusSummary.count({
+     *   where: {
+     *     // ... the filter for the VwUsersStatusSummaries we want to count
+     *   }
+     * })
+     **/
+    count<T extends VwUsersStatusSummaryCountArgs>(
+        args?: Prisma.Subset<T, VwUsersStatusSummaryCountArgs>,
+    ): Prisma.PrismaPromise<
+        T extends runtime.Types.Utils.Record<'select', any>
+            ? T['select'] extends true
+                ? number
+                : Prisma.GetScalarType<T['select'], VwUsersStatusSummaryCountAggregateOutputType>
+            : number
+    >;
 
-	/**
-	 * Allows you to perform aggregations operations on a VwUsersStatusSummary.
-	 * Note, that providing `undefined` is treated as the value not being there.
-	 * Read more here: https://pris.ly/d/null-undefined
-	 * @param {VwUsersStatusSummaryAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
-	 * @example
-	 * // Ordered by age ascending
-	 * // Where email contains prisma.io
-	 * // Limited to the 10 users
-	 * const aggregations = await prisma.user.aggregate({
-	 *   _avg: {
-	 *     age: true,
-	 *   },
-	 *   where: {
-	 *     email: {
-	 *       contains: "prisma.io",
-	 *     },
-	 *   },
-	 *   orderBy: {
-	 *     age: "asc",
-	 *   },
-	 *   take: 10,
-	 * })
-	 **/
-	aggregate<T extends VwUsersStatusSummaryAggregateArgs>(
-		args: Prisma.Subset<T, VwUsersStatusSummaryAggregateArgs>,
-	): Prisma.PrismaPromise<GetVwUsersStatusSummaryAggregateType<T>>;
+    /**
+     * Allows you to perform aggregations operations on a VwUsersStatusSummary.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {VwUsersStatusSummaryAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+     **/
+    aggregate<T extends VwUsersStatusSummaryAggregateArgs>(
+        args: Prisma.Subset<T, VwUsersStatusSummaryAggregateArgs>,
+    ): Prisma.PrismaPromise<GetVwUsersStatusSummaryAggregateType<T>>;
 
-	/**
-	 * Group by VwUsersStatusSummary.
-	 * Note, that providing `undefined` is treated as the value not being there.
-	 * Read more here: https://pris.ly/d/null-undefined
-	 * @param {VwUsersStatusSummaryGroupByArgs} args - Group by arguments.
-	 * @example
-	 * // Group by city, order by createdAt, get count
-	 * const result = await prisma.user.groupBy({
-	 *   by: ['city', 'createdAt'],
-	 *   orderBy: {
-	 *     createdAt: true
-	 *   },
-	 *   _count: {
-	 *     _all: true
-	 *   },
-	 * })
-	 *
-	 **/
-	groupBy<
-		T extends VwUsersStatusSummaryGroupByArgs,
-		HasSelectOrTake extends Prisma.Or<
-			Prisma.Extends<"skip", Prisma.Keys<T>>,
-			Prisma.Extends<"take", Prisma.Keys<T>>
-		>,
-		OrderByArg extends Prisma.True extends HasSelectOrTake
-			? { orderBy: VwUsersStatusSummaryGroupByArgs["orderBy"] }
-			: { orderBy?: VwUsersStatusSummaryGroupByArgs["orderBy"] },
-		OrderFields extends Prisma.ExcludeUnderscoreKeys<
-			Prisma.Keys<Prisma.MaybeTupleToUnion<T["orderBy"]>>
-		>,
-		ByFields extends Prisma.MaybeTupleToUnion<T["by"]>,
-		ByValid extends Prisma.Has<ByFields, OrderFields>,
-		HavingFields extends Prisma.GetHavingFields<T["having"]>,
-		HavingValid extends Prisma.Has<ByFields, HavingFields>,
-		ByEmpty extends T["by"] extends never[] ? Prisma.True : Prisma.False,
-		InputErrors extends ByEmpty extends Prisma.True
-			? `Error: "by" must not be empty.`
-			: HavingValid extends Prisma.False
-				? {
-						[P in HavingFields]: P extends ByFields
-							? never
-							: P extends string
-								? `Error: Field "${P}" used in "having" needs to be provided in "by".`
-								: [
-										Error,
-										"Field ",
-										P,
-										` in "having" needs to be provided in "by"`,
-									];
-					}[HavingFields]
-				: "take" extends Prisma.Keys<T>
-					? "orderBy" extends Prisma.Keys<T>
-						? ByValid extends Prisma.True
-							? {}
-							: {
-									[P in OrderFields]: P extends ByFields
-										? never
-										: `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
-								}[OrderFields]
-						: 'Error: If you provide "take", you also need to provide "orderBy"'
-					: "skip" extends Prisma.Keys<T>
-						? "orderBy" extends Prisma.Keys<T>
-							? ByValid extends Prisma.True
-								? {}
-								: {
-										[P in OrderFields]: P extends ByFields
-											? never
-											: `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
-									}[OrderFields]
-							: 'Error: If you provide "skip", you also need to provide "orderBy"'
-						: ByValid extends Prisma.True
-							? {}
-							: {
-									[P in OrderFields]: P extends ByFields
-										? never
-										: `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
-								}[OrderFields],
-	>(
-		args: Prisma.SubsetIntersection<
-			T,
-			VwUsersStatusSummaryGroupByArgs,
-			OrderByArg
-		> &
-			InputErrors,
-	): {} extends InputErrors
-		? GetVwUsersStatusSummaryGroupByPayload<T>
-		: Prisma.PrismaPromise<InputErrors>;
-	/**
-	 * Fields of the VwUsersStatusSummary model
-	 */
-	readonly fields: VwUsersStatusSummaryFieldRefs;
+    /**
+     * Group by VwUsersStatusSummary.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {VwUsersStatusSummaryGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     *
+     **/
+    groupBy<
+        T extends VwUsersStatusSummaryGroupByArgs,
+        HasSelectOrTake extends Prisma.Or<
+            Prisma.Extends<'skip', Prisma.Keys<T>>,
+            Prisma.Extends<'take', Prisma.Keys<T>>
+        >,
+        OrderByArg extends Prisma.True extends HasSelectOrTake
+            ? { orderBy: VwUsersStatusSummaryGroupByArgs['orderBy'] }
+            : { orderBy?: VwUsersStatusSummaryGroupByArgs['orderBy'] },
+        OrderFields extends Prisma.ExcludeUnderscoreKeys<
+            Prisma.Keys<Prisma.MaybeTupleToUnion<T['orderBy']>>
+        >,
+        ByFields extends Prisma.MaybeTupleToUnion<T['by']>,
+        ByValid extends Prisma.Has<ByFields, OrderFields>,
+        HavingFields extends Prisma.GetHavingFields<T['having']>,
+        HavingValid extends Prisma.Has<ByFields, HavingFields>,
+        ByEmpty extends T['by'] extends never[] ? Prisma.True : Prisma.False,
+        InputErrors extends ByEmpty extends Prisma.True
+            ? `Error: "by" must not be empty.`
+            : HavingValid extends Prisma.False
+              ? {
+                    [P in HavingFields]: P extends ByFields
+                        ? never
+                        : P extends string
+                          ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+                          : [Error, 'Field ', P, ` in "having" needs to be provided in "by"`];
+                }[HavingFields]
+              : 'take' extends Prisma.Keys<T>
+                ? 'orderBy' extends Prisma.Keys<T>
+                    ? ByValid extends Prisma.True
+                        ? {}
+                        : {
+                              [P in OrderFields]: P extends ByFields
+                                  ? never
+                                  : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                          }[OrderFields]
+                    : 'Error: If you provide "take", you also need to provide "orderBy"'
+                : 'skip' extends Prisma.Keys<T>
+                  ? 'orderBy' extends Prisma.Keys<T>
+                      ? ByValid extends Prisma.True
+                          ? {}
+                          : {
+                                [P in OrderFields]: P extends ByFields
+                                    ? never
+                                    : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                            }[OrderFields]
+                      : 'Error: If you provide "skip", you also need to provide "orderBy"'
+                  : ByValid extends Prisma.True
+                    ? {}
+                    : {
+                          [P in OrderFields]: P extends ByFields
+                              ? never
+                              : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                      }[OrderFields],
+    >(
+        args: Prisma.SubsetIntersection<T, VwUsersStatusSummaryGroupByArgs, OrderByArg> &
+            InputErrors,
+    ): {} extends InputErrors
+        ? GetVwUsersStatusSummaryGroupByPayload<T>
+        : Prisma.PrismaPromise<InputErrors>;
+    /**
+     * Fields of the VwUsersStatusSummary model
+     */
+    readonly fields: VwUsersStatusSummaryFieldRefs;
 }
 
 /**
@@ -681,60 +636,48 @@ export interface VwUsersStatusSummaryDelegate<
  * https://github.com/prisma/prisma-client-js/issues/707
  */
 export interface Prisma__VwUsersStatusSummaryClient<
-	T,
-	Null = never,
-	ExtArgs extends
-		runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
-	GlobalOmitOptions = {},
+    T,
+    Null = never,
+    ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
+    GlobalOmitOptions = {},
 > extends Prisma.PrismaPromise<T> {
-	readonly [Symbol.toStringTag]: "PrismaPromise";
-	/**
-	 * Attaches callbacks for the resolution and/or rejection of the Promise.
-	 * @param onfulfilled The callback to execute when the Promise is resolved.
-	 * @param onrejected The callback to execute when the Promise is rejected.
-	 * @returns A Promise for the completion of which ever callback is executed.
-	 */
-	then<TResult1 = T, TResult2 = never>(
-		onfulfilled?:
-			| ((value: T) => TResult1 | PromiseLike<TResult1>)
-			| undefined
-			| null,
-		onrejected?:
-			| ((reason: any) => TResult2 | PromiseLike<TResult2>)
-			| undefined
-			| null,
-	): runtime.Types.Utils.JsPromise<TResult1 | TResult2>;
-	/**
-	 * Attaches a callback for only the rejection of the Promise.
-	 * @param onrejected The callback to execute when the Promise is rejected.
-	 * @returns A Promise for the completion of the callback.
-	 */
-	catch<TResult = never>(
-		onrejected?:
-			| ((reason: any) => TResult | PromiseLike<TResult>)
-			| undefined
-			| null,
-	): runtime.Types.Utils.JsPromise<T | TResult>;
-	/**
-	 * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
-	 * resolved value cannot be modified from the callback.
-	 * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
-	 * @returns A Promise for the completion of the callback.
-	 */
-	finally(
-		onfinally?: (() => void) | undefined | null,
-	): runtime.Types.Utils.JsPromise<T>;
+    readonly [Symbol.toStringTag]: 'PrismaPromise';
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(
+        onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null,
+        onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null,
+    ): runtime.Types.Utils.JsPromise<TResult1 | TResult2>;
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(
+        onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null,
+    ): runtime.Types.Utils.JsPromise<T | TResult>;
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): runtime.Types.Utils.JsPromise<T>;
 }
 
 /**
  * Fields of the VwUsersStatusSummary model
  */
 export interface VwUsersStatusSummaryFieldRefs {
-	readonly totalUsers: Prisma.FieldRef<"VwUsersStatusSummary", "Int">;
-	readonly totalActive: Prisma.FieldRef<"VwUsersStatusSummary", "Int">;
-	readonly totalDeactivated: Prisma.FieldRef<"VwUsersStatusSummary", "Int">;
-	readonly totalAdmins: Prisma.FieldRef<"VwUsersStatusSummary", "Int">;
-	readonly totalRegularUsers: Prisma.FieldRef<"VwUsersStatusSummary", "Int">;
+    readonly totalUsers: Prisma.FieldRef<'VwUsersStatusSummary', 'Int'>;
+    readonly totalActive: Prisma.FieldRef<'VwUsersStatusSummary', 'Int'>;
+    readonly totalDeactivated: Prisma.FieldRef<'VwUsersStatusSummary', 'Int'>;
+    readonly totalAdmins: Prisma.FieldRef<'VwUsersStatusSummary', 'Int'>;
+    readonly totalRegularUsers: Prisma.FieldRef<'VwUsersStatusSummary', 'Int'>;
 }
 
 // Custom InputTypes
@@ -742,157 +685,153 @@ export interface VwUsersStatusSummaryFieldRefs {
  * VwUsersStatusSummary findFirst
  */
 export type VwUsersStatusSummaryFindFirstArgs<
-	ExtArgs extends
-		runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
+    ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
 > = {
-	/**
-	 * Select specific fields to fetch from the VwUsersStatusSummary
-	 */
-	select?: Prisma.VwUsersStatusSummarySelect<ExtArgs> | null;
-	/**
-	 * Omit specific fields from the VwUsersStatusSummary
-	 */
-	omit?: Prisma.VwUsersStatusSummaryOmit<ExtArgs> | null;
-	/**
-	 * Filter, which VwUsersStatusSummary to fetch.
-	 */
-	where?: Prisma.VwUsersStatusSummaryWhereInput;
-	/**
-	 * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-	 *
-	 * Determine the order of VwUsersStatusSummaries to fetch.
-	 */
-	orderBy?:
-		| Prisma.VwUsersStatusSummaryOrderByWithRelationInput
-		| Prisma.VwUsersStatusSummaryOrderByWithRelationInput[];
-	/**
-	 * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-	 *
-	 * Take `±n` VwUsersStatusSummaries from the position of the cursor.
-	 */
-	take?: number;
-	/**
-	 * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-	 *
-	 * Skip the first `n` VwUsersStatusSummaries.
-	 */
-	skip?: number;
-	/**
-	 * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-	 *
-	 * Filter by unique combinations of VwUsersStatusSummaries.
-	 */
-	distinct?:
-		| Prisma.VwUsersStatusSummaryScalarFieldEnum
-		| Prisma.VwUsersStatusSummaryScalarFieldEnum[];
+    /**
+     * Select specific fields to fetch from the VwUsersStatusSummary
+     */
+    select?: Prisma.VwUsersStatusSummarySelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the VwUsersStatusSummary
+     */
+    omit?: Prisma.VwUsersStatusSummaryOmit<ExtArgs> | null;
+    /**
+     * Filter, which VwUsersStatusSummary to fetch.
+     */
+    where?: Prisma.VwUsersStatusSummaryWhereInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of VwUsersStatusSummaries to fetch.
+     */
+    orderBy?:
+        | Prisma.VwUsersStatusSummaryOrderByWithRelationInput
+        | Prisma.VwUsersStatusSummaryOrderByWithRelationInput[];
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` VwUsersStatusSummaries from the position of the cursor.
+     */
+    take?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` VwUsersStatusSummaries.
+     */
+    skip?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of VwUsersStatusSummaries.
+     */
+    distinct?:
+        | Prisma.VwUsersStatusSummaryScalarFieldEnum
+        | Prisma.VwUsersStatusSummaryScalarFieldEnum[];
 };
 
 /**
  * VwUsersStatusSummary findFirstOrThrow
  */
 export type VwUsersStatusSummaryFindFirstOrThrowArgs<
-	ExtArgs extends
-		runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
+    ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
 > = {
-	/**
-	 * Select specific fields to fetch from the VwUsersStatusSummary
-	 */
-	select?: Prisma.VwUsersStatusSummarySelect<ExtArgs> | null;
-	/**
-	 * Omit specific fields from the VwUsersStatusSummary
-	 */
-	omit?: Prisma.VwUsersStatusSummaryOmit<ExtArgs> | null;
-	/**
-	 * Filter, which VwUsersStatusSummary to fetch.
-	 */
-	where?: Prisma.VwUsersStatusSummaryWhereInput;
-	/**
-	 * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-	 *
-	 * Determine the order of VwUsersStatusSummaries to fetch.
-	 */
-	orderBy?:
-		| Prisma.VwUsersStatusSummaryOrderByWithRelationInput
-		| Prisma.VwUsersStatusSummaryOrderByWithRelationInput[];
-	/**
-	 * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-	 *
-	 * Take `±n` VwUsersStatusSummaries from the position of the cursor.
-	 */
-	take?: number;
-	/**
-	 * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-	 *
-	 * Skip the first `n` VwUsersStatusSummaries.
-	 */
-	skip?: number;
-	/**
-	 * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-	 *
-	 * Filter by unique combinations of VwUsersStatusSummaries.
-	 */
-	distinct?:
-		| Prisma.VwUsersStatusSummaryScalarFieldEnum
-		| Prisma.VwUsersStatusSummaryScalarFieldEnum[];
+    /**
+     * Select specific fields to fetch from the VwUsersStatusSummary
+     */
+    select?: Prisma.VwUsersStatusSummarySelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the VwUsersStatusSummary
+     */
+    omit?: Prisma.VwUsersStatusSummaryOmit<ExtArgs> | null;
+    /**
+     * Filter, which VwUsersStatusSummary to fetch.
+     */
+    where?: Prisma.VwUsersStatusSummaryWhereInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of VwUsersStatusSummaries to fetch.
+     */
+    orderBy?:
+        | Prisma.VwUsersStatusSummaryOrderByWithRelationInput
+        | Prisma.VwUsersStatusSummaryOrderByWithRelationInput[];
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` VwUsersStatusSummaries from the position of the cursor.
+     */
+    take?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` VwUsersStatusSummaries.
+     */
+    skip?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of VwUsersStatusSummaries.
+     */
+    distinct?:
+        | Prisma.VwUsersStatusSummaryScalarFieldEnum
+        | Prisma.VwUsersStatusSummaryScalarFieldEnum[];
 };
 
 /**
  * VwUsersStatusSummary findMany
  */
 export type VwUsersStatusSummaryFindManyArgs<
-	ExtArgs extends
-		runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
+    ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
 > = {
-	/**
-	 * Select specific fields to fetch from the VwUsersStatusSummary
-	 */
-	select?: Prisma.VwUsersStatusSummarySelect<ExtArgs> | null;
-	/**
-	 * Omit specific fields from the VwUsersStatusSummary
-	 */
-	omit?: Prisma.VwUsersStatusSummaryOmit<ExtArgs> | null;
-	/**
-	 * Filter, which VwUsersStatusSummaries to fetch.
-	 */
-	where?: Prisma.VwUsersStatusSummaryWhereInput;
-	/**
-	 * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-	 *
-	 * Determine the order of VwUsersStatusSummaries to fetch.
-	 */
-	orderBy?:
-		| Prisma.VwUsersStatusSummaryOrderByWithRelationInput
-		| Prisma.VwUsersStatusSummaryOrderByWithRelationInput[];
-	/**
-	 * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-	 *
-	 * Take `±n` VwUsersStatusSummaries from the position of the cursor.
-	 */
-	take?: number;
-	/**
-	 * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-	 *
-	 * Skip the first `n` VwUsersStatusSummaries.
-	 */
-	skip?: number;
-	distinct?:
-		| Prisma.VwUsersStatusSummaryScalarFieldEnum
-		| Prisma.VwUsersStatusSummaryScalarFieldEnum[];
+    /**
+     * Select specific fields to fetch from the VwUsersStatusSummary
+     */
+    select?: Prisma.VwUsersStatusSummarySelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the VwUsersStatusSummary
+     */
+    omit?: Prisma.VwUsersStatusSummaryOmit<ExtArgs> | null;
+    /**
+     * Filter, which VwUsersStatusSummaries to fetch.
+     */
+    where?: Prisma.VwUsersStatusSummaryWhereInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of VwUsersStatusSummaries to fetch.
+     */
+    orderBy?:
+        | Prisma.VwUsersStatusSummaryOrderByWithRelationInput
+        | Prisma.VwUsersStatusSummaryOrderByWithRelationInput[];
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` VwUsersStatusSummaries from the position of the cursor.
+     */
+    take?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` VwUsersStatusSummaries.
+     */
+    skip?: number;
+    distinct?:
+        | Prisma.VwUsersStatusSummaryScalarFieldEnum
+        | Prisma.VwUsersStatusSummaryScalarFieldEnum[];
 };
 
 /**
  * VwUsersStatusSummary without action
  */
 export type VwUsersStatusSummaryDefaultArgs<
-	ExtArgs extends
-		runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
+    ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
 > = {
-	/**
-	 * Select specific fields to fetch from the VwUsersStatusSummary
-	 */
-	select?: Prisma.VwUsersStatusSummarySelect<ExtArgs> | null;
-	/**
-	 * Omit specific fields from the VwUsersStatusSummary
-	 */
-	omit?: Prisma.VwUsersStatusSummaryOmit<ExtArgs> | null;
+    /**
+     * Select specific fields to fetch from the VwUsersStatusSummary
+     */
+    select?: Prisma.VwUsersStatusSummarySelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the VwUsersStatusSummary
+     */
+    omit?: Prisma.VwUsersStatusSummaryOmit<ExtArgs> | null;
 };

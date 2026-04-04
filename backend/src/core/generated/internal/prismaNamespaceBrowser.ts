@@ -14,23 +14,17 @@
  * model files in the `model` directory!
  */
 
-import * as runtime from "@prisma/client/runtime/index-browser";
+import * as runtime from '@prisma/client/runtime/index-browser';
 
-export type * from "../models.js";
-export type * from "./prismaNamespace.js";
+export type * from '../models.js';
+export type * from './prismaNamespace.js';
 
 export const Decimal = runtime.Decimal;
 
 export const NullTypes = {
-	DbNull: runtime.NullTypes.DbNull as new (
-		secret: never,
-	) => typeof runtime.DbNull,
-	JsonNull: runtime.NullTypes.JsonNull as new (
-		secret: never,
-	) => typeof runtime.JsonNull,
-	AnyNull: runtime.NullTypes.AnyNull as new (
-		secret: never,
-	) => typeof runtime.AnyNull,
+    DbNull: runtime.NullTypes.DbNull as new (secret: never) => typeof runtime.DbNull,
+    JsonNull: runtime.NullTypes.JsonNull as new (secret: never) => typeof runtime.JsonNull,
+    AnyNull: runtime.NullTypes.AnyNull as new (secret: never) => typeof runtime.AnyNull,
 };
 /**
  * Helper for filtering JSON entries that have `null` on the database (empty on the db)
@@ -54,14 +48,14 @@ export const JsonNull = runtime.JsonNull;
 export const AnyNull = runtime.AnyNull;
 
 export const ModelName = {
-	AppVersion: "AppVersion",
-	Role: "Role",
-	User: "User",
-	UserProfile: "UserProfile",
-	UserFollow: "UserFollow",
-	Notification: "Notification",
-	VwUserPublic: "VwUserPublic",
-	VwUsersStatusSummary: "VwUsersStatusSummary",
+    AppVersion: 'AppVersion',
+    Role: 'Role',
+    User: 'User',
+    UserProfile: 'UserProfile',
+    UserFollow: 'UserFollow',
+    Notification: 'Notification',
+    VwUserPublic: 'VwUserPublic',
+    VwUsersStatusSummary: 'VwUsersStatusSummary',
 } as const;
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName];
@@ -71,146 +65,143 @@ export type ModelName = (typeof ModelName)[keyof typeof ModelName];
  */
 
 export const TransactionIsolationLevel = runtime.makeStrictEnum({
-	ReadUncommitted: "ReadUncommitted",
-	ReadCommitted: "ReadCommitted",
-	RepeatableRead: "RepeatableRead",
-	Serializable: "Serializable",
+    ReadUncommitted: 'ReadUncommitted',
+    ReadCommitted: 'ReadCommitted',
+    RepeatableRead: 'RepeatableRead',
+    Serializable: 'Serializable',
 } as const);
 
 export type TransactionIsolationLevel =
-	(typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel];
+    (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel];
 
 export const AppVersionScalarFieldEnum = {
-	id: "id",
-	appVersion: "appVersion",
-	dbVersion: "dbVersion",
-	timestamp: "timestamp",
+    id: 'id',
+    appVersion: 'appVersion',
+    dbVersion: 'dbVersion',
+    timestamp: 'timestamp',
 } as const;
 
 export type AppVersionScalarFieldEnum =
-	(typeof AppVersionScalarFieldEnum)[keyof typeof AppVersionScalarFieldEnum];
+    (typeof AppVersionScalarFieldEnum)[keyof typeof AppVersionScalarFieldEnum];
 
 export const RoleScalarFieldEnum = {
-	id: "id",
-	role: "role",
+    id: 'id',
+    role: 'role',
 } as const;
 
-export type RoleScalarFieldEnum =
-	(typeof RoleScalarFieldEnum)[keyof typeof RoleScalarFieldEnum];
+export type RoleScalarFieldEnum = (typeof RoleScalarFieldEnum)[keyof typeof RoleScalarFieldEnum];
 
 export const UserScalarFieldEnum = {
-	id: "id",
-	name: "name",
-	email: "email",
-	password: "password",
-	createdAt: "createdAt",
-	deletedAt: "deletedAt",
-	activate: "activate",
-	roleId: "roleId",
+    id: 'id',
+    name: 'name',
+    email: 'email',
+    password: 'password',
+    createdAt: 'createdAt',
+    deletedAt: 'deletedAt',
+    activate: 'activate',
+    roleId: 'roleId',
 } as const;
 
-export type UserScalarFieldEnum =
-	(typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum];
+export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum];
 
 export const UserProfileScalarFieldEnum = {
-	id: "id",
-	friendlyId: "friendlyId",
-	photo: "photo",
-	banner: "banner",
-	config: "config",
-	bio: "bio",
-	userId: "userId",
-	followersCount: "followersCount",
-	followingCount: "followingCount",
+    id: 'id',
+    friendlyId: 'friendlyId',
+    photo: 'photo',
+    banner: 'banner',
+    config: 'config',
+    bio: 'bio',
+    userId: 'userId',
+    followersCount: 'followersCount',
+    followingCount: 'followingCount',
 } as const;
 
 export type UserProfileScalarFieldEnum =
-	(typeof UserProfileScalarFieldEnum)[keyof typeof UserProfileScalarFieldEnum];
+    (typeof UserProfileScalarFieldEnum)[keyof typeof UserProfileScalarFieldEnum];
 
 export const UserFollowScalarFieldEnum = {
-	id: "id",
-	followerId: "followerId",
-	followingId: "followingId",
-	timestamp: "timestamp",
+    id: 'id',
+    followerId: 'followerId',
+    followingId: 'followingId',
+    timestamp: 'timestamp',
 } as const;
 
 export type UserFollowScalarFieldEnum =
-	(typeof UserFollowScalarFieldEnum)[keyof typeof UserFollowScalarFieldEnum];
+    (typeof UserFollowScalarFieldEnum)[keyof typeof UserFollowScalarFieldEnum];
 
 export const NotificationScalarFieldEnum = {
-	id: "id",
-	read: "read",
-	createdAt: "createdAt",
-	toUserId: "toUserId",
-	fromUserId: "fromUserId",
+    id: 'id',
+    read: 'read',
+    createdAt: 'createdAt',
+    toUserId: 'toUserId',
+    fromUserId: 'fromUserId',
 } as const;
 
 export type NotificationScalarFieldEnum =
-	(typeof NotificationScalarFieldEnum)[keyof typeof NotificationScalarFieldEnum];
+    (typeof NotificationScalarFieldEnum)[keyof typeof NotificationScalarFieldEnum];
 
 export const VwUserPublicScalarFieldEnum = {
-	id: "id",
-	friendlyId: "friendlyId",
-	name: "name",
-	email: "email",
-	createdAt: "createdAt",
-	roleId: "roleId",
-	photo: "photo",
-	banner: "banner",
-	config: "config",
-	bio: "bio",
-	followersCount: "followersCount",
-	followingCount: "followingCount",
+    id: 'id',
+    friendlyId: 'friendlyId',
+    name: 'name',
+    email: 'email',
+    createdAt: 'createdAt',
+    roleId: 'roleId',
+    photo: 'photo',
+    banner: 'banner',
+    config: 'config',
+    bio: 'bio',
+    followersCount: 'followersCount',
+    followingCount: 'followingCount',
 } as const;
 
 export type VwUserPublicScalarFieldEnum =
-	(typeof VwUserPublicScalarFieldEnum)[keyof typeof VwUserPublicScalarFieldEnum];
+    (typeof VwUserPublicScalarFieldEnum)[keyof typeof VwUserPublicScalarFieldEnum];
 
 export const VwUsersStatusSummaryScalarFieldEnum = {
-	totalUsers: "totalUsers",
-	totalActive: "totalActive",
-	totalDeactivated: "totalDeactivated",
-	totalAdmins: "totalAdmins",
-	totalRegularUsers: "totalRegularUsers",
+    totalUsers: 'totalUsers',
+    totalActive: 'totalActive',
+    totalDeactivated: 'totalDeactivated',
+    totalAdmins: 'totalAdmins',
+    totalRegularUsers: 'totalRegularUsers',
 } as const;
 
 export type VwUsersStatusSummaryScalarFieldEnum =
-	(typeof VwUsersStatusSummaryScalarFieldEnum)[keyof typeof VwUsersStatusSummaryScalarFieldEnum];
+    (typeof VwUsersStatusSummaryScalarFieldEnum)[keyof typeof VwUsersStatusSummaryScalarFieldEnum];
 
 export const SortOrder = {
-	asc: "asc",
-	desc: "desc",
+    asc: 'asc',
+    desc: 'desc',
 } as const;
 
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder];
 
 export const NullableJsonNullValueInput = {
-	DbNull: DbNull,
-	JsonNull: JsonNull,
+    DbNull: DbNull,
+    JsonNull: JsonNull,
 } as const;
 
 export type NullableJsonNullValueInput =
-	(typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput];
+    (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput];
 
 export const QueryMode = {
-	default: "default",
-	insensitive: "insensitive",
+    default: 'default',
+    insensitive: 'insensitive',
 } as const;
 
 export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode];
 
 export const NullsOrder = {
-	first: "first",
-	last: "last",
+    first: 'first',
+    last: 'last',
 } as const;
 
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder];
 
 export const JsonNullValueFilter = {
-	DbNull: DbNull,
-	JsonNull: JsonNull,
-	AnyNull: AnyNull,
+    DbNull: DbNull,
+    JsonNull: JsonNull,
+    AnyNull: AnyNull,
 } as const;
 
-export type JsonNullValueFilter =
-	(typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter];
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter];
