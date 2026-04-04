@@ -3,7 +3,7 @@ import type { UserTokenPayload } from '../../shared/utils/jwt/jwt.interfaces.js'
 import prisma from '../../shared/utils/prisma/prisma_conn.js';
 import type { UserPayload } from '../auth/auth.interfaces.js';
 import { UserErrors } from './user.errors.js';
-
+import type { DeleteUserResponse, UserResponse } from './user.interfaces.js';
 export class UserService {
     static async searchUser(tokenUser: UserPayload, find?: string, cursor?: string) {
         if (!find) return { users: [], nextCursor: null };
@@ -56,7 +56,7 @@ export class UserService {
         };
     }
 
-    static async getUser(tokenUser: UserPayload, id: number) {
+    static async getUser(tokenUser: UserPayload, id: number): Promise<UserResponse> {
         await UserErrors.ensureUserExistById(prisma.vwUserPublic, id);
 
         const user = await prisma.vwUserPublic.findUnique({ where: { id } });
@@ -90,7 +90,10 @@ export class UserService {
         };
     }
 
-    static async deleteUser(tokenUser: UserTokenPayload, email: string) {
+    static async deleteUser(
+        tokenUser: UserTokenPayload,
+        email: string,
+    ): Promise<DeleteUserResponse> {
         UserErrors.ensureDelete(email, tokenUser);
         await UserErrors.ensureNotMaster(Number(tokenUser.id));
         await UserErrors.ensureUserExistById(prisma.vwUserPublic, tokenUser.id);
