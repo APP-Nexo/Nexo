@@ -1,9 +1,9 @@
-export type QueryEmail = {
+export type SearchByEmailPayload = {
     email?: string;
     cursor?: string;
 };
 
-export type QueryPagination = {
+export type PaginationPayload = {
     cursor?: string;
     limit?: number;
 };

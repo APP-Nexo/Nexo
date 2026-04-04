@@ -21,3 +21,9 @@ export interface UserPayload {
 export type FindByEmail = {
     findUnique: (args: { where: { email: string } }) => Promise<unknown>;
 };
+
+export type AuthResponse = {
+    tokenType: string;
+    token: string;
+    expiresIn: string;
+};

@@ -4,10 +4,10 @@ import { encryptPassword } from '../../shared/utils/bcrypt/encrypt_password.js';
 import { JwtToken } from '../../shared/utils/jwt/jwt_token.js';
 import prisma from '../../shared/utils/prisma/prisma_conn.js';
 import { AuthErrors } from './auth.errors.js';
-import type { RegisterPayload, UserPayload } from './auth.interfaces.js';
+import type { AuthResponse, RegisterPayload, UserPayload } from './auth.interfaces.js';
 
 export class AuthService {
-    static async register(payload: RegisterPayload, reply: FastifyReply) {
+    static async register(payload: RegisterPayload, reply: FastifyReply): Promise<AuthResponse> {
         const { name, email, password, confirmPassword } = payload;
 
         AuthErrors.ensureDataRegister({ name, email, password, confirmPassword });
@@ -36,7 +36,11 @@ export class AuthService {
         };
     }
 
-    static async login(email: string, password: string, reply: FastifyReply) {
+    static async login(
+        email: string,
+        password: string,
+        reply: FastifyReply,
+    ): Promise<AuthResponse> {
         AuthErrors.ensureDataLogin(email, password);
         await AuthErrors.ensureUserNotExistByEmail(prisma.user, email);
 

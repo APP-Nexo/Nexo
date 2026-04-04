@@ -1,5 +1,5 @@
 import type { FastifyReply, FastifyRequest } from 'fastify';
-import type { QueryEmail, QueryPagination } from './admin.interfaces.js';
+import type { PaginationPayload, SearchByEmailPayload } from './admin.interfaces.js';
 import { AdminService } from './admin.service.js';
 
 export class AdminController {
@@ -38,7 +38,7 @@ export class AdminController {
     // ===========================================
     static async searchUser(req: FastifyRequest, reply: FastifyReply) {
         try {
-            const { email, cursor } = req.query as QueryEmail;
+            const { email, cursor } = req.query as SearchByEmailPayload;
 
             const response = await AdminService.searchUser(email, cursor);
             return reply.status(200).send(response);
@@ -54,7 +54,7 @@ export class AdminController {
     // =========================================
     static async getUsers(req: FastifyRequest, reply: FastifyReply) {
         try {
-            const { cursor, limit = 10 } = req.query as QueryPagination;
+            const { cursor, limit = 10 } = req.query as PaginationPayload;
 
             const response = await AdminService.getUsers(cursor, Number(limit));
             return reply.status(200).send(response);
