@@ -1,8 +1,12 @@
 import prisma from '../../shared/utils/prisma/prisma_conn.js';
+import type {
+    NotificationMessageResponse,
+    NotificationsResponse,
+} from './notification.interfaces.js';
 import { NotificationErrors } from './notificiation.errors.js';
 
 export class NotificationService {
-    static async getNotifications(userId: number, cursor?: string) {
+    static async getNotifications(userId: number, cursor?: string): Promise<NotificationsResponse> {
         const [notifications, total] = await Promise.all([
             prisma.notification.findMany({
                 where: { toUserId: userId },
@@ -24,7 +28,7 @@ export class NotificationService {
         return { notifications: data, nextCursor, total };
     }
 
-    static async readAllNotifications(userId: number) {
+    static async readAllNotifications(userId: number): Promise<NotificationMessageResponse> {
         await NotificationErrors.ensureHasUnreadNotifications(prisma.notification, userId);
 
         await prisma.notification.updateMany({
@@ -35,7 +39,10 @@ export class NotificationService {
         return { message: 'Todas notificações marcadas como lidas.' };
     }
 
-    static async deleteNotification(notificationId: number, userId: number) {
+    static async deleteNotification(
+        notificationId: number,
+        userId: number,
+    ): Promise<NotificationMessageResponse> {
         await NotificationErrors.ensureNotificationExists(
             prisma.notification,
             notificationId,
@@ -49,7 +56,7 @@ export class NotificationService {
         return { message: 'Notificação removida.' };
     }
 
-    static async deleteAllNotifications(userId: number) {
+    static async deleteAllNotifications(userId: number): Promise<NotificationMessageResponse> {
         await NotificationErrors.ensureHasNotifications(prisma.notification, userId);
 
         await prisma.notification.deleteMany({

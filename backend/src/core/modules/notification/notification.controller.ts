@@ -1,4 +1,5 @@
 import type { FastifyReply, FastifyRequest } from 'fastify';
+import type { ParamCursor, ParamId } from '../../shared/types/common.types.js';
 import type { UserTokenPayload } from '../../shared/utils/jwt/jwt.interfaces.js';
 import { NotificationService } from './notification.service.js';
 
@@ -10,7 +11,7 @@ export class NotificationController {
     // =======================================================
     static async getNotifications(req: FastifyRequest, reply: FastifyReply) {
         try {
-            const { cursor } = req.query as { cursor?: string };
+            const { cursor } = req.query as ParamCursor;
             const tokenUser = req.user as UserTokenPayload;
 
             const response = await NotificationService.getNotifications(tokenUser.id, cursor);
@@ -20,11 +21,11 @@ export class NotificationController {
         }
     }
 
-    // =======================================================
+    // =================================================================
     //  @patch
     //  @return: { message: 'Todas notificações marcadas como lidas.' }
     //  @status:  200 OK
-    // =======================================================
+    // =================================================================
     static async readAllNotifications(req: FastifyRequest, reply: FastifyReply) {
         try {
             const tokenUser = req.user as UserTokenPayload;
@@ -43,7 +44,7 @@ export class NotificationController {
     // =======================================================
     static async deleteNotification(req: FastifyRequest, reply: FastifyReply) {
         try {
-            const { id } = req.params as { id: string };
+            const { id } = req.params as ParamId;
             const tokenUser = req.user as UserTokenPayload;
 
             const response = await NotificationService.deleteNotification(Number(id), tokenUser.id);
