@@ -24,18 +24,6 @@ export class JwtToken {
         }
     }
 
-    static async get(req: FastifyRequest) {
-        try {
-            const token = req.headers.authorization?.replace('Bearer ', '');
-
-            if (!token) TokenErrors.throwMissing();
-
-            return token;
-        } catch (e) {
-            TokenErrors.throwInvalid();
-        }
-    }
-
     static async getByUser(req: FastifyRequest) {
         try {
             await req.jwtVerify();
