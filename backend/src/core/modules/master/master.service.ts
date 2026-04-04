@@ -1,8 +1,9 @@
 import prisma from '../../shared/utils/prisma/prisma_conn.js';
 import { MasterErrors } from './master.errors.js';
+import type { BanResponse, RoleActionResponse } from './master.interfaces.js';
 
 export class MasterService {
-    static async promoteUser(id: number) {
+    static async promoteUser(id: number): Promise<RoleActionResponse | undefined> {
         await MasterErrors.ensureNotMaster(prisma.user, id);
         await MasterErrors.ensureUserExistById(prisma.user, id);
 
@@ -26,7 +27,7 @@ export class MasterService {
         };
     }
 
-    static async demoteUser(id: number) {
+    static async demoteUser(id: number): Promise<RoleActionResponse | undefined> {
         await MasterErrors.ensureNotMaster(prisma.user, id);
         await MasterErrors.ensureUserExistById(prisma.user, id);
 
@@ -48,7 +49,7 @@ export class MasterService {
         };
     }
 
-    static async banUser(id: number) {
+    static async banUser(id: number): Promise<BanResponse> {
         await MasterErrors.ensureNotMaster(prisma.user, id);
         await MasterErrors.ensureUserExistById(prisma.user, id);
 
