@@ -1,6 +1,5 @@
 import 'dotenv/config';
 
-import type { Role, User } from '../../src/core/generated/client.js';
 import { encryptPassword } from '../../src/core/shared/utils/bcrypt/encrypt_password.js';
 import { Logs } from '../../src/core/shared/utils/log/write_logs.js';
 import prisma from '../../src/core/shared/utils/prisma/prisma_conn.js';

@@ -1,6 +1,3 @@
-// prisma/seeds/roles.ts
-
-import type { Role } from '../../src/core/generated/client.js';
 import { Logs } from '../../src/core/shared/utils/log/write_logs.js';
 import prisma from '../../src/core/shared/utils/prisma/prisma_conn.js';
 
