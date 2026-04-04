@@ -1,5 +1,6 @@
 import type { FastifyReply, FastifyRequest } from 'fastify';
 import type { UserTokenPayload } from '../../shared/utils/jwt/jwt.interfaces.js';
+import type { ParamId } from './follow.interfaces.js';
 import { FollowService } from './follow.service.js';
 
 export class FollowController {
@@ -10,7 +11,7 @@ export class FollowController {
     // =======================================================
     static async followUser(req: FastifyRequest, reply: FastifyReply) {
         try {
-            const { id } = req.params as { id: string };
+            const { id } = req.params as ParamId;
             const tokenUser = req.user as UserTokenPayload;
 
             const response = await FollowService.followUser(tokenUser.id, Number(id));
@@ -27,7 +28,7 @@ export class FollowController {
     // =====================================================================
     static async unfollowUser(req: FastifyRequest, reply: FastifyReply) {
         try {
-            const { id } = req.params as { id: string };
+            const { id } = req.params as ParamId;
             const tokenUser = req.user as UserTokenPayload;
 
             const response = await FollowService.unfollowUser(tokenUser.id, Number(id));

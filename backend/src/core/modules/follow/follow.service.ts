@@ -1,8 +1,9 @@
 import prisma from '../../shared/utils/prisma/prisma_conn.js';
 import { FollowErrors } from './follow.errors.js';
+import type { FollowResponse } from './follow.interfaces.js';
 
 export class FollowService {
-    static async followUser(followerId: number, followingId: number) {
+    static async followUser(followerId: number, followingId: number): Promise<FollowResponse> {
         const following = await prisma.vwUserPublic.findUnique({
             where: { id: followingId },
         });
@@ -19,7 +20,7 @@ export class FollowService {
         return { message: `Você começou a seguir ${following?.name}.` };
     }
 
-    static async unfollowUser(followerId: number, followingId: number) {
+    static async unfollowUser(followerId: number, followingId: number): Promise<FollowResponse> {
         const unfollowing = await prisma.vwUserPublic.findUnique({
             where: { id: followingId },
         });
