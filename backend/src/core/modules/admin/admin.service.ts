@@ -1,12 +1,17 @@
 import prisma from '../../shared/utils/prisma/prisma_conn.js';
+import type {
+    PaginatedResponse,
+    UserPublicSelect,
+    UsersStatsResponse,
+} from './admin.interfaces.js';
 
 export class AdminService {
-    static async getUsersStats() {
+    static async getUsersStats(): Promise<UsersStatsResponse> {
         const stats = await prisma.vwUsersStatusSummary.findFirst();
         return { usersStatus: stats };
     }
 
-    static async getUsersAdmin() {
+    static async getUsersAdmin(): Promise<{ users: UserPublicSelect[] }> {
         const users = await prisma.vwUserPublic.findMany({
             where: { roleId: 2 },
             select: {
@@ -21,7 +26,10 @@ export class AdminService {
         return { users };
     }
 
-    static async searchUser(email?: string, cursor?: string) {
+    static async searchUser(
+        email?: string,
+        cursor?: string,
+    ): Promise<PaginatedResponse<UserPublicSelect>> {
         if (!email) return { users: [], nextCursor: null };
 
         const users = await prisma.vwUserPublic.findMany({
@@ -47,7 +55,10 @@ export class AdminService {
         return { users: data, nextCursor };
     }
 
-    static async getUsers(cursor?: string, limit: number = 10) {
+    static async getUsers(
+        cursor?: string,
+        limit: number = 10,
+    ): Promise<PaginatedResponse<UserPublicSelect>> {
         const take = limit + 1;
 
         const users = await prisma.vwUserPublic.findMany({
