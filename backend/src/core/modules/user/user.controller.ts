@@ -4,11 +4,11 @@ import type { UserPayload } from '../auth/auth.interfaces.js';
 import { UserService } from './user.service.js';
 
 export class UserController {
-    // ==============================================
+    // =============================================
     //  @get
     //  @return: { users: data, nextCursor, total }
     //  @status:  200 OK
-    // ==============================================
+    // =============================================
     static async searchUser(req: FastifyRequest, reply: FastifyReply) {
         try {
             const { find, cursor } = req.query as { find?: string; cursor?: string };
@@ -21,12 +21,12 @@ export class UserController {
         }
     }
 
-    // ================================================================================================================
+    // ==============================================================================================
     //  @get
     //  @return: user: { ...userData, isFollowing: !!isFollowing },
     //           profile: { friendlyId, photo, banner, bio, config, followersCount, followingCount }
     //  @status:  200 OK
-    // ================================================================================================================
+    // ===============================================================================================
     static async getUser(req: FastifyRequest, reply: FastifyReply) {
         try {
             const { id } = req.params as { id: number };
@@ -39,11 +39,11 @@ export class UserController {
         }
     }
 
-    // ================================================================================================================
+    // ======================================================================================================
     //  @patch
     //  @return: { message: 'Conta deletada.', deletedAt: new Date().toISOString(), email: tokenUser.email }
     //  @status:  200 OK
-    // ================================================================================================================
+    // =======================================================================================================
     static async delete(req: FastifyRequest, reply: FastifyReply) {
         try {
             const { email } = req.body as { email: string };
