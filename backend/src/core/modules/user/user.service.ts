@@ -114,11 +114,11 @@ export class UserService {
         };
     }
 
-    static async getFollowers(tokenUser: UserPayload, cursor?: string) {
-        await UserErrors.ensureUserExistById(prisma.vwUserPublic, tokenUser.id);
+    static async getFollowers(tokenUser: UserPayload, userId: number, cursor?: string) {
+        await UserErrors.ensureUserExistById(prisma.vwUserPublic, userId);
 
         const follows = await prisma.userFollow.findMany({
-            where: { followingId: tokenUser.id },
+            where: { followingId: userId },
             orderBy: { timestamp: 'desc' },
             take: 11,
             ...(cursor && { cursor: { id: Number(cursor) }, skip: 1 }),
@@ -159,11 +159,11 @@ export class UserService {
         };
     }
 
-    static async getFollowings(tokenUser: UserPayload, cursor?: string) {
-        await UserErrors.ensureUserExistById(prisma.vwUserPublic, tokenUser.id);
+    static async getFollowings(tokenUser: UserPayload, userId: number, cursor?: string) {
+        await UserErrors.ensureUserExistById(prisma.vwUserPublic, userId);
 
         const follows = await prisma.userFollow.findMany({
-            where: { followerId: tokenUser.id },
+            where: { followerId: userId },
             orderBy: { timestamp: 'desc' },
             take: 11,
             ...(cursor && { cursor: { id: Number(cursor) }, skip: 1 }),

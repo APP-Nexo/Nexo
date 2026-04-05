@@ -59,16 +59,17 @@ export class UserController {
     }
 
     // ===============================================================================
-    //  @get: /api/user/followers
+    //  @get: /api/user/:id/followers
     //  @returns: { followers: [{ ...userData, isFollowing: boolean }], nextCursor }
     //  @status:  200 OK
     // ===============================================================================
     static async getFollowers(req: FastifyRequest, reply: FastifyReply) {
         try {
+            const { id } = req.params as ParamId
             const { cursor } = req.query as ParamCursor;
             const tokenUser = req.user as UserPayload;
 
-            const response = await UserService.getFollowers(tokenUser, cursor);
+            const response = await UserService.getFollowers(tokenUser, Number(id), cursor);
             return reply.send(response);
         } catch (error) {
             throw error;
@@ -76,16 +77,17 @@ export class UserController {
     }
 
     // ===============================================================================
-    //  @get: /api/user/followings
+    //  @get: /api/user/:id/followings
     //  @returns: { followings: [{ ...userData, isFollowing: boolean }], nextCursor }
     //  @status:  200 OK
     // ===============================================================================
     static async getFollowings(req: FastifyRequest, reply: FastifyReply) {
         try {
+            const { id } = req.params as ParamId
             const { cursor } = req.query as ParamCursor;
             const tokenUser = req.user as UserPayload;
 
-            const response = await UserService.getFollowings(tokenUser, cursor);
+            const response = await UserService.getFollowings(tokenUser, Number(id), cursor);
             return reply.send(response);
         } catch (error) {
             throw error;

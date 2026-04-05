@@ -24,14 +24,14 @@ export async function userRoutes(app: FastifyInstance) {
     );
 
     app.get(
-        '/followers',
-        { ...getFollowersSchemaSwagger, preHandler: [checkToken] },
+        '/:id/followers',
+        { preHandler: [checkToken] },
         UserController.getFollowers,
     );
 
     app.get(
-        '/followings',
-        { ...getFollowingsSchemaSwagger, preHandler: [checkToken] },
+        '/:id/followings',
+        { preHandler: [checkToken] },
         UserController.getFollowings,
     );
 }
