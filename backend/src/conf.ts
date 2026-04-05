@@ -2,12 +2,12 @@ import 'dotenv/config';
 
 import cors from '@fastify/cors';
 import fastifyJwt from '@fastify/jwt';
+import rateLimit from '@fastify/rate-limit';
 import swaggerUi from '@fastify/swagger-ui';
+import type { FastifyRequest } from 'fastify';
 import fastify from 'fastify';
 import { setupSwagger } from '../swagger.config.js';
 import { errorHandler } from './core/shared/errors/error_handler.js';
-import rateLimit from '@fastify/rate-limit';
-import type { FastifyRequest } from 'fastify';
 
 export const app = fastify({
     logger: process.env.NODE_ENV !== 'test' ? { transport: { target: 'pino-pretty' } } : false,

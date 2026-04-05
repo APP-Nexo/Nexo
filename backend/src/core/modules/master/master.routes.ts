@@ -9,21 +9,33 @@ import {
 } from './master.swagger.js';
 
 export async function masterRoutes(app: FastifyInstance) {
-    app.patch('/user/:id/promote', {
-        ...promoteUserSchemaSwagger,
-        preHandler: [checkToken, checkAccessMaster],
-        config: { rateLimit: { max: 10, timeWindow: '1 minute' } },
-    }, MasterController.promoteUser);
+    app.patch(
+        '/user/:id/promote',
+        {
+            ...promoteUserSchemaSwagger,
+            preHandler: [checkToken, checkAccessMaster],
+            config: { rateLimit: { max: 10, timeWindow: '1 minute' } },
+        },
+        MasterController.promoteUser,
+    );
 
-    app.patch('/user/:id/demote', {
-        ...demoteUserSchemaSwagger,
-        preHandler: [checkToken, checkAccessMaster],
-        config: { rateLimit: { max: 10, timeWindow: '1 minute' } },
-    }, MasterController.demoteUser);
+    app.patch(
+        '/user/:id/demote',
+        {
+            ...demoteUserSchemaSwagger,
+            preHandler: [checkToken, checkAccessMaster],
+            config: { rateLimit: { max: 10, timeWindow: '1 minute' } },
+        },
+        MasterController.demoteUser,
+    );
 
-    app.patch('/user/:id/ban', {
-        ...banUserSchemaSwagger,
-        preHandler: [checkToken, checkAccessMaster],
-        config: { rateLimit: { max: 5, timeWindow: '1 minute' } },
-    }, MasterController.banUser);
+    app.patch(
+        '/user/:id/ban',
+        {
+            ...banUserSchemaSwagger,
+            preHandler: [checkToken, checkAccessMaster],
+            config: { rateLimit: { max: 5, timeWindow: '1 minute' } },
+        },
+        MasterController.banUser,
+    );
 }
