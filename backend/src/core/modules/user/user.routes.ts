@@ -1,6 +1,5 @@
 import type { FastifyInstance } from 'fastify';
 import { checkToken } from '../../shared/middlewares/check_token.js';
-import { checkUser } from '../../shared/middlewares/check_user.js';
 import { UserController } from './user.controller.js';
 import {
     deleteUserSchemaSwagger,
@@ -9,8 +8,6 @@ import {
 } from './user.swagger.js';
 
 export async function userRoutes(app: FastifyInstance) {
-    // app.patch('/update', { ...updateUserSchemaSwagger, preHandler: [checkToken, checkUser] }, UserController.update) develop
-
     app.get(
         '/search',
         { ...searchUserSchemaSwagger, preHandler: [checkToken] },
@@ -20,7 +17,13 @@ export async function userRoutes(app: FastifyInstance) {
 
     app.patch(
         '/delete',
-        { ...deleteUserSchemaSwagger, preHandler: [checkToken, checkUser] },
+        { ...deleteUserSchemaSwagger, preHandler: [checkToken] },
         UserController.delete,
     );
+
+    // GET /api/user/:id/followers
+    app.get('/followers', { preHandler: [checkToken] }, UserController.getFollowers);
+
+    // GET /api/user/:id/followings
+    app.get('/followings', { preHandler: [checkToken] }, UserController.getFollowings);
 }

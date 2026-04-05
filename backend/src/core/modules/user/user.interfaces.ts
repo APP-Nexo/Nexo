@@ -26,3 +26,8 @@ export type DeleteUserResponse = {
     deletedAt: string;
     email: string;
 };
+
+export type SearchUserQuery = {
+    find: string;
+    cursor?: string;
+};

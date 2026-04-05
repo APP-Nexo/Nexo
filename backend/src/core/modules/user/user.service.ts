@@ -113,4 +113,94 @@ export class UserService {
             email: tokenUser.email,
         };
     }
+
+    static async getFollowers(tokenUser: UserPayload, cursor?: string) {
+        await UserErrors.ensureUserExistById(prisma.vwUserPublic, tokenUser.id);
+
+        const follows = await prisma.userFollow.findMany({
+            where: { followingId: tokenUser.id },
+            orderBy: { timestamp: 'desc' },
+            take: 11,
+            ...(cursor && { cursor: { id: Number(cursor) }, skip: 1 }),
+        });
+
+        const data = follows.slice(0, 10);
+        const followerIds = data.map((f) => f.followerId);
+
+        const users = await prisma.vwUserPublic.findMany({
+            where: { id: { in: followerIds } },
+            select: {
+                id: true,
+                name: true,
+                email: true,
+                friendlyId: true,
+                photo: true,
+                createdAt: true,
+            },
+        });
+
+        const followingBack = await prisma.userFollow.findMany({
+            where: {
+                followerId: tokenUser.id,
+                followingId: { in: followerIds },
+            },
+            select: { followingId: true },
+        });
+
+        const followingIds = new Set(followingBack.map((f) => f.followingId));
+        const nextCursor = follows.length === 11 ? (follows[10]?.id ?? null) : null;
+
+        return {
+            followers: users.map((user) => ({
+                ...user,
+                isFollowing: followingIds.has(user.id),
+            })),
+            nextCursor,
+        };
+    }
+
+    static async getFollowings(tokenUser: UserPayload, cursor?: string) {
+        await UserErrors.ensureUserExistById(prisma.vwUserPublic, tokenUser.id);
+
+        const follows = await prisma.userFollow.findMany({
+            where: { followerId: tokenUser.id },
+            orderBy: { timestamp: 'desc' },
+            take: 11,
+            ...(cursor && { cursor: { id: Number(cursor) }, skip: 1 }),
+        });
+
+        const data = follows.slice(0, 10);
+        const followingIds = data.map((f) => f.followingId);
+
+        const users = await prisma.vwUserPublic.findMany({
+            where: { id: { in: followingIds } },
+            select: {
+                id: true,
+                name: true,
+                email: true,
+                friendlyId: true,
+                photo: true,
+                createdAt: true,
+            },
+        });
+
+        const followingBack = await prisma.userFollow.findMany({
+            where: {
+                followerId: tokenUser.id,
+                followingId: { in: followingIds },
+            },
+            select: { followingId: true },
+        });
+
+        const followingBackIds = new Set(followingBack.map((f) => f.followingId));
+        const nextCursor = follows.length === 11 ? (follows[10]?.id ?? null) : null;
+
+        return {
+            followings: users.map((user) => ({
+                ...user,
+                isFollowing: followingBackIds.has(user.id),
+            })),
+            nextCursor,
+        };
+    }
 }
