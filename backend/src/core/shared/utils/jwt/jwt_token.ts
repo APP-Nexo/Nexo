@@ -24,6 +24,24 @@ export class JwtToken {
         }
     }
 
+    static async createRefresh(user: UserTokenPayload) {
+        try {
+            const refreshToken = app.jwt.sign(
+                {
+                    id: user.id,
+                    name: user.name,
+                    email: user.email,
+                    roleId: user.roleId,
+                },
+                { expiresIn: process.env.REFRESH_TOKEN_EXPIRES! },
+            );
+
+            return refreshToken;
+        } catch (e) {
+            TokenErrors.throwCreationFailed();
+        }
+    }
+
     static async getByUser(req: FastifyRequest) {
         try {
             await req.jwtVerify();

@@ -1,7 +1,6 @@
 import type { FastifyInstance } from 'fastify';
 import { AuthController } from './auth.controller.js';
-
-import { loginSchemaSwagger, registerSchemaSwagger } from './auth.swagger.js';
+import { loginSchemaSwagger, refreshSchemaSwagger, registerSchemaSwagger } from './auth.swagger.js';
 
 export async function authRoutes(app: FastifyInstance) {
     app.post(
@@ -12,7 +11,6 @@ export async function authRoutes(app: FastifyInstance) {
         },
         AuthController.register,
     );
-
     app.post(
         '/login',
         {
@@ -20,5 +18,13 @@ export async function authRoutes(app: FastifyInstance) {
             config: { rateLimit: { max: 5, timeWindow: '1 minute' } },
         },
         AuthController.login,
+    );
+    app.post(
+        '/refresh',
+        {
+            ...refreshSchemaSwagger,
+            config: { rateLimit: { max: 10, timeWindow: '1 minute' } },
+        },
+        AuthController.refresh,
     );
 }

@@ -46,4 +46,8 @@ export class AuthErrors extends Error {
         const user = await table.findUnique({ where: { email } });
         if (!user) throw new AuthErrors('Email não cadastrado.', 409);
     }
+
+    static ensureRefreshToken(token: string | undefined) {
+        if (!token) throw new AuthErrors('Refresh token não encontrado.', 401);
+    }
 }

@@ -25,5 +25,16 @@ export type FindByEmail = {
 export type AuthResponse = {
     tokenType: string;
     token: string;
+    refreshToken: string;
     expiresIn: string;
+};
+
+export type RefreshResponse = {
+    tokenType: string;
+    refreshToken: string;
+    expiresIn: string;
+};
+
+export type RefreshParam = {
+    refreshToken: string;
 };

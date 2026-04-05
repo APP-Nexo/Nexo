@@ -17,6 +17,7 @@ export const registerSchemaSwagger = {
                 properties: {
                     tokenType: { type: 'string' },
                     token: { type: 'string' },
+                    refreshToken: { type: 'string' },
                     expiresIn: { type: 'string' },
                 },
             },
@@ -41,7 +42,31 @@ export const loginSchemaSwagger = {
                 properties: {
                     tokenType: { type: 'string' },
                     token: { type: 'string' },
+                    refreshToken: { type: 'string' },
                     expiresIn: { type: 'string' },
+                },
+            },
+        },
+    },
+};
+
+export const refreshSchemaSwagger = {
+    schema: {
+        tags: ['Auth'],
+        summary: 'Refresh token',
+        body: {
+            type: 'object',
+            properties: {
+                refreshToken: { type: 'string' },
+            },
+        },
+        response: {
+            200: {
+                type: 'object',
+                properties: {
+                    tokenType: { type: 'string' },
+                    refreshToken: { type: 'string' },
+                    expiresIn: { type: 'string' }
                 },
             },
         },

@@ -6,12 +6,17 @@ import rateLimit from '@fastify/rate-limit';
 import swaggerUi from '@fastify/swagger-ui';
 import type { FastifyRequest } from 'fastify';
 import fastify from 'fastify';
+import fs from 'fs';
 import { setupSwagger } from '../swagger.config.js';
 import { errorHandler } from './core/shared/errors/error_handler.js';
 
 export const app = fastify({
     logger: process.env.NODE_ENV !== 'test' ? { transport: { target: 'pino-pretty' } } : false,
     trustProxy: true,
+    https: {
+        key: fs.readFileSync('./certs/key.pem'),
+        cert: fs.readFileSync('./certs/cert.pem'),
+    },
 });
 
 await setupSwagger(app);

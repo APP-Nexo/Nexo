@@ -1,10 +1,17 @@
 import type { FastifyReply } from 'fastify';
+import { app } from '../../../conf.js';
 import { comparePassword } from '../../shared/utils/bcrypt/compare_password.js';
 import { encryptPassword } from '../../shared/utils/bcrypt/encrypt_password.js';
+import type { UserTokenPayload } from '../../shared/utils/jwt/jwt.interfaces.js';
 import { JwtToken } from '../../shared/utils/jwt/jwt_token.js';
 import prisma from '../../shared/utils/prisma/prisma_conn.js';
 import { AuthErrors } from './auth.errors.js';
-import type { AuthResponse, RegisterPayload, UserPayload } from './auth.interfaces.js';
+import type {
+    AuthResponse,
+    RefreshResponse,
+    RegisterPayload,
+    UserPayload,
+} from './auth.interfaces.js';
 
 export class AuthService {
     static async register(payload: RegisterPayload, reply: FastifyReply): Promise<AuthResponse> {
@@ -28,10 +35,12 @@ export class AuthService {
         })) as UserPayload;
 
         const token = await JwtToken.create(createdUser, reply);
+        const refreshToken = await JwtToken.createRefresh(createdUser);
 
         return {
             tokenType: process.env.TOKEN_TYPE!,
             token,
+            refreshToken,
             expiresIn: process.env.TOKEN_EXPIRES!,
         };
     }
@@ -53,11 +62,26 @@ export class AuthService {
         const { password: _, ...userPayload } = user as UserPayload;
 
         const token = await JwtToken.create(userPayload, reply);
+        const refreshToken = await JwtToken.createRefresh(userPayload);
 
         return {
             tokenType: process.env.TOKEN_TYPE!,
             token,
+            refreshToken,
             expiresIn: process.env.TOKEN_EXPIRES!,
+        };
+    }
+
+    static async refresh(incomingRefreshToken: string): Promise<RefreshResponse> {
+        AuthErrors.ensureRefreshToken(incomingRefreshToken);
+
+        const payload = app.jwt.verify(incomingRefreshToken) as UserTokenPayload;
+        const refreshToken = await JwtToken.createRefresh(payload);
+
+        return {
+            tokenType: process.env.TOKEN_TYPE!,
+            refreshToken: refreshToken!,
+            expiresIn: process.env.REFRESH_TOKEN_EXPIRES!,
         };
     }
 }
