@@ -76,3 +76,67 @@ export const deleteUserSchemaSwagger = {
         },
     },
 };
+
+export const getFollowersSchemaSwagger = {
+    schema: {
+        tags: ['User'],
+        summary: 'Get user followers',
+        security: [{ bearerAuth: [] }],
+        params: {
+            type: 'object',
+            properties: {
+                id: { type: 'number' },
+            },
+        },
+        querystring: {
+            type: 'object',
+            properties: {
+                cursor: { type: 'string' },
+            },
+        },
+        response: {
+            200: {
+                type: 'object',
+                properties: {
+                    followers: {
+                        type: 'array',
+                        items: { type: 'object', additionalProperties: true },
+                    },
+                    nextCursor: { type: ['number', 'null'] },
+                },
+            },
+        },
+    },
+};
+
+export const getFollowingsSchemaSwagger = {
+    schema: {
+        tags: ['User'],
+        summary: 'Get user followings',
+        security: [{ bearerAuth: [] }],
+        params: {
+            type: 'object',
+            properties: {
+                id: { type: 'number' },
+            },
+        },
+        querystring: {
+            type: 'object',
+            properties: {
+                cursor: { type: 'string' },
+            },
+        },
+        response: {
+            200: {
+                type: 'object',
+                properties: {
+                    followings: {
+                        type: 'array',
+                        items: { type: 'object', additionalProperties: true },
+                    },
+                    nextCursor: { type: ['number', 'null'] },
+                },
+            },
+        },
+    },
+};

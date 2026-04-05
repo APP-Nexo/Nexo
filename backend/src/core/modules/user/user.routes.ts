@@ -3,6 +3,8 @@ import { checkToken } from '../../shared/middlewares/check_token.js';
 import { UserController } from './user.controller.js';
 import {
     deleteUserSchemaSwagger,
+    getFollowersSchemaSwagger,
+    getFollowingsSchemaSwagger,
     getUserSchemaSwagger,
     searchUserSchemaSwagger,
 } from './user.swagger.js';
@@ -21,9 +23,15 @@ export async function userRoutes(app: FastifyInstance) {
         UserController.delete,
     );
 
-    // GET /api/user/:id/followers
-    app.get('/followers', { preHandler: [checkToken] }, UserController.getFollowers);
+    app.get(
+        '/followers',
+        { ...getFollowersSchemaSwagger, preHandler: [checkToken] },
+        UserController.getFollowers,
+    );
 
-    // GET /api/user/:id/followings
-    app.get('/followings', { preHandler: [checkToken] }, UserController.getFollowings);
+    app.get(
+        '/followings',
+        { ...getFollowingsSchemaSwagger, preHandler: [checkToken] },
+        UserController.getFollowings,
+    );
 }
