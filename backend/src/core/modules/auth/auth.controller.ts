@@ -3,11 +3,11 @@ import type { LoginPayload, RegisterPayload } from './auth.interfaces.js';
 import { AuthService } from './auth.service.js';
 
 export class AuthController {
-    // =================================================================================================
+    // ================================================================================================
     //  @post? /api/auth/register
     //  @returns: { tokenType: process.env.TOKEN_TYPE!, token, expiresIn: process.env.TOKEN_EXPIRES! }
     //  @status:  201
-    // =================================================================================================
+    // ================================================================================================
     static async register(req: FastifyRequest, reply: FastifyReply) {
         try {
             const response = await AuthService.register(req.body as RegisterPayload, reply);
@@ -17,11 +17,11 @@ export class AuthController {
         }
     }
 
-    // =================================================================================================
+    // ================================================================================================
     //  @post: /api/auth/login
     //  @returns: { tokenType: process.env.TOKEN_TYPE!, token, expiresIn: process.env.TOKEN_EXPIRES! }
     //  @status:  200 OK
-    // =================================================================================================
+    // ================================================================================================
     static async login(req: FastifyRequest, reply: FastifyReply) {
         try {
             const { email, password } = req.body as LoginPayload;

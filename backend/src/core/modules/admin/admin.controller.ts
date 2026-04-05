@@ -17,11 +17,11 @@ export class AdminController {
         }
     }
 
-    // ==============================
+    // =============================
     //  @get: /api/admin/user/admin
     //  @returns: { users: users }
     //  @status:  200 OK
-    // ==============================
+    // =============================
     static async getUsersAdmin(req: FastifyRequest, reply: FastifyReply) {
         try {
             const response = await AdminService.getUsersAdmin();
@@ -31,11 +31,11 @@ export class AdminController {
         }
     }
 
-    // ========================================
+    // =======================================
     //  @get: /api/admin/user/search
     //  @returns: { users: data, nextCursor }
     //  @status:  200 OK
-    // ========================================
+    // =======================================
     static async searchUser(req: FastifyRequest, reply: FastifyReply) {
         try {
             const { email, cursor } = req.query as SearchByEmailPayload;
@@ -47,11 +47,11 @@ export class AdminController {
         }
     }
 
-    // =========================================
+    // ========================================
     //  @get: /api/admin/user-all
     //  @returns: { users: data, nextCursor }
     //  @status:  200 OK
-    // =========================================
+    // ========================================
     static async getUsers(req: FastifyRequest, reply: FastifyReply) {
         try {
             const { cursor, limit = 10 } = req.query as PaginationPayload;

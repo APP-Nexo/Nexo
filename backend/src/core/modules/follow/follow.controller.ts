@@ -4,11 +4,11 @@ import type { UserTokenPayload } from '../../shared/utils/jwt/jwt.interfaces.js'
 import { FollowService } from './follow.service.js';
 
 export class FollowController {
-    // =======================================================
+    // ====================================================================
     //  @post: /api/user/:id/follow
     //  @returns: { message: `Você começou a seguir ${following?.name}.` }
     //  @status:  201 OK
-    // =======================================================
+    // ====================================================================
     static async followUser(req: FastifyRequest, reply: FastifyReply) {
         try {
             const { id } = req.params as ParamId;
@@ -21,11 +21,11 @@ export class FollowController {
         }
     }
 
-    // =====================================================================
+    // ======================================================================
     //  @delete: /api/user/:id/unfollow
     //  @returns: { message: `Você deixou de seguir ${unfollowing?.name}.` }
     //  @status:  200 OK
-    // =====================================================================
+    // ======================================================================
     static async unfollowUser(req: FastifyRequest, reply: FastifyReply) {
         try {
             const { id } = req.params as ParamId;
