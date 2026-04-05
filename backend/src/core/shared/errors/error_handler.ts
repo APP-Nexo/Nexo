@@ -3,6 +3,7 @@ import { AuthErrors } from '../../modules/auth/auth.errors.js';
 import { FollowErrors } from '../../modules/follow/follow.errors.js';
 import { MasterErrors } from '../../modules/master/master.errors.js';
 import { NotificationErrors } from '../../modules/notification/notificiation.errors.js';
+import { UserErrors } from '../../modules/user/user.errors.js';
 import { TokenErrors } from '../utils/jwt/token.errors.js';
 
 export function errorHandler(error: Error, req: FastifyRequest, reply: FastifyReply) {
@@ -13,6 +14,8 @@ export function errorHandler(error: Error, req: FastifyRequest, reply: FastifyRe
     if (error instanceof MasterErrors)
         return reply.status(error.statusCode).send({ error: error.name, message: error.message });
     if (error instanceof NotificationErrors)
+        return reply.status(error.statusCode).send({ error: error.name, message: error.message });
+    if (error instanceof UserErrors)
         return reply.status(error.statusCode).send({ error: error.name, message: error.message });
 
     if (error instanceof TokenErrors)

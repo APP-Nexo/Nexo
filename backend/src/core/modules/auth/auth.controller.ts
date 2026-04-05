@@ -4,7 +4,7 @@ import { AuthService } from './auth.service.js';
 
 export class AuthController {
     // ================================================================================================
-    //  @post? /api/auth/register
+    //  @post: /api/auth/register
     //  @returns: { tokenType: process.env.TOKEN_TYPE!, token, expiresIn: process.env.TOKEN_EXPIRES! }
     //  @status:  201
     // ================================================================================================

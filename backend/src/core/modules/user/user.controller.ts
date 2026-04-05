@@ -65,7 +65,7 @@ export class UserController {
     // ===============================================================================
     static async getFollowers(req: FastifyRequest, reply: FastifyReply) {
         try {
-            const { id } = req.params as ParamId
+            const { id } = req.params as ParamId;
             const { cursor } = req.query as ParamCursor;
             const tokenUser = req.user as UserPayload;
 
@@ -83,7 +83,7 @@ export class UserController {
     // ===============================================================================
     static async getFollowings(req: FastifyRequest, reply: FastifyReply) {
         try {
-            const { id } = req.params as ParamId
+            const { id } = req.params as ParamId;
             const { cursor } = req.query as ParamCursor;
             const tokenUser = req.user as UserPayload;
 
