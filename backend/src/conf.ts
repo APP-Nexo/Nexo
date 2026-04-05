@@ -30,7 +30,7 @@ const routes = [
     { route: userRoutes, prefix: 'api/user' },
     { route: masterRoutes, prefix: 'api/master' },
     { route: adminRoutes, prefix: 'api/admin' },
-    { route: followRoutes, prefix: 'api/' },
+    { route: followRoutes, prefix: 'api/user' },
     { route: notificationRoutes, prefix: 'api/notification' },
 ];
 

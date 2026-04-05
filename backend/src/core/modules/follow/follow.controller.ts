@@ -5,8 +5,8 @@ import { FollowService } from './follow.service.js';
 
 export class FollowController {
     // =======================================================
-    //  @post
-    //  @return: { message: `Você começou a seguir ${following?.name}.` }
+    //  @post: /api/user/:id/follow
+    //  @returns: { message: `Você começou a seguir ${following?.name}.` }
     //  @status:  201 OK
     // =======================================================
     static async followUser(req: FastifyRequest, reply: FastifyReply) {
@@ -22,8 +22,8 @@ export class FollowController {
     }
 
     // =====================================================================
-    //  @delete
-    //  @return: { message: `Você deixou de seguir ${unfollowing?.name}.` }
+    //  @delete: /api/user/:id/unfollow
+    //  @returns: { message: `Você deixou de seguir ${unfollowing?.name}.` }
     //  @status:  200 OK
     // =====================================================================
     static async unfollowUser(req: FastifyRequest, reply: FastifyReply) {

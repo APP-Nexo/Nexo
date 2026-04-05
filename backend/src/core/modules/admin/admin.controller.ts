@@ -3,11 +3,11 @@ import type { PaginationPayload, SearchByEmailPayload } from './admin.interfaces
 import { AdminService } from './admin.service.js';
 
 export class AdminController {
-    // ==================================
-    //  @get
-    //  @return: { usersStatus: stats }
+    // ===================================
+    //  @get: /api/admin/user/stats
+    //  @returns: { usersStatus: stats }
     //  @status:  200 OK
-    // ==================================
+    // ===================================
     static async getUsersStats(req: FastifyRequest, reply: FastifyReply) {
         try {
             const response = await AdminService.getUsersStats();
@@ -17,11 +17,11 @@ export class AdminController {
         }
     }
 
-    // ============================
-    //  @get
-    //  @return: { users: users }
+    // ==============================
+    //  @get: /api/admin/user/admin
+    //  @returns: { users: users }
     //  @status:  200 OK
-    // ============================
+    // ==============================
     static async getUsersAdmin(req: FastifyRequest, reply: FastifyReply) {
         try {
             const response = await AdminService.getUsersAdmin();
@@ -31,11 +31,11 @@ export class AdminController {
         }
     }
 
-    // ===========================================
-    //  @get
-    //  @return: { users: data, nextCursor }
+    // ========================================
+    //  @get: /api/admin/user/search
+    //  @returns: { users: data, nextCursor }
     //  @status:  200 OK
-    // ===========================================
+    // ========================================
     static async searchUser(req: FastifyRequest, reply: FastifyReply) {
         try {
             const { email, cursor } = req.query as SearchByEmailPayload;
@@ -48,8 +48,8 @@ export class AdminController {
     }
 
     // =========================================
-    //  @get
-    //  @return: { users: data, nextCursor }
+    //  @get: /api/admin/user-all
+    //  @returns: { users: data, nextCursor }
     //  @status:  200 OK
     // =========================================
     static async getUsers(req: FastifyRequest, reply: FastifyReply) {

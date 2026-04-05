@@ -3,8 +3,8 @@ import { HealthService } from './health.service.js';
 
 export class HealthController {
     // ============================================================
-    //  @get
-    //  @return: { message: 'healthy', uptime: process.uptime() }
+    //  @get: /api/verify/health
+    //  @returns: { message: 'healthy', uptime: process.uptime() }
     //  @status:  200
     // ============================================================
     static async health(req: FastifyRequest, reply: FastifyReply) {
@@ -13,8 +13,8 @@ export class HealthController {
     }
 
     // ============================================================
-    //  @get
-    //  @return: { message: 'pong', timestamp: new Date() }
+    //  @get: /api/verify/ping
+    //  @returns: { message: 'pong', timestamp: new Date() }
     //  @status:  200
     // ============================================================
     static async ping(req: FastifyRequest, reply: FastifyReply) {

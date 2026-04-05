@@ -6,13 +6,13 @@ import { followUserSchemaSwagger, unfollowUserSchemaSwagger } from './follow.swa
 
 export async function followRoutes(app: FastifyInstance) {
     app.post(
-        '/user/:id/follow',
+        '/:id/follow',
         { ...followUserSchemaSwagger, preHandler: [checkToken] },
         FollowController.followUser,
     );
 
     app.delete(
-        '/user/:id/unfollow',
+        '/:id/unfollow',
         { ...unfollowUserSchemaSwagger, preHandler: [checkToken] },
         FollowController.unfollowUser,
     );

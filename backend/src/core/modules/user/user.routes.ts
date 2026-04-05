@@ -19,7 +19,7 @@ export async function userRoutes(app: FastifyInstance) {
     app.get('/:id', { ...getUserSchemaSwagger, preHandler: [checkToken] }, UserController.getUser);
 
     app.patch(
-        '/delete/:id',
+        '/delete',
         { ...deleteUserSchemaSwagger, preHandler: [checkToken, checkUser] },
         UserController.delete,
     );

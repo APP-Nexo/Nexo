@@ -5,8 +5,8 @@ import { UserService } from './user.service.js';
 
 export class UserController {
     // =============================================
-    //  @get
-    //  @return: { users: data, nextCursor, total }
+    //  @get: /api/user/search
+    //  @returns: { users: data, nextCursor, total }
     //  @status:  200 OK
     // =============================================
     static async searchUser(req: FastifyRequest, reply: FastifyReply) {
@@ -22,8 +22,8 @@ export class UserController {
     }
 
     // ==============================================================================================
-    //  @get
-    //  @return: user: { ...userData, isFollowing: !!isFollowing },
+    //  @get: /api/user/:id
+    //  @returns: user: { ...userData, isFollowing: !!isFollowing },
     //           profile: { friendlyId, photo, banner, bio, config, followersCount, followingCount }
     //  @status:  200 OK
     // ===============================================================================================
@@ -40,8 +40,8 @@ export class UserController {
     }
 
     // ======================================================================================================
-    //  @patch
-    //  @return: { message: 'Conta deletada.', deletedAt: new Date().toISOString(), email: tokenUser.email }
+    //  @patch: /api/user/delete
+    //  @returns: { message: 'Conta deletada.', deletedAt: new Date().toISOString(), email: tokenUser.email }
     //  @status:  200 OK
     // =======================================================================================================
     static async delete(req: FastifyRequest, reply: FastifyReply) {
@@ -55,4 +55,8 @@ export class UserController {
             throw error;
         }
     }
+
+    static async getFollowers(req: FastifyRequest, reply: FastifyReply) {}
+
+    static async getFollowings(req: FastifyRequest, reply: FastifyReply) {}
 }

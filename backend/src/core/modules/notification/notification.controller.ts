@@ -4,11 +4,11 @@ import type { UserTokenPayload } from '../../shared/utils/jwt/jwt.interfaces.js'
 import { NotificationService } from './notification.service.js';
 
 export class NotificationController {
-    // =======================================================
-    //  @get
-    //  @return: { notifications, nextCursor, total }
+    // ==================================================
+    //  @get: /api/notification
+    //  @returns: { notifications, nextCursor, total }
     //  @status:  200 OK
-    // =======================================================
+    // ==================================================
     static async getNotifications(req: FastifyRequest, reply: FastifyReply) {
         try {
             const { cursor } = req.query as ParamCursor;
@@ -21,11 +21,11 @@ export class NotificationController {
         }
     }
 
-    // =================================================================
-    //  @patch
-    //  @return: { message: 'Todas notificações marcadas como lidas.' }
+    // ==================================================================
+    //  @patch: /api/notification/read-all
+    //  @returns: { message: 'Todas notificações marcadas como lidas.' }
     //  @status:  200 OK
-    // =================================================================
+    // ==================================================================
     static async readAllNotifications(req: FastifyRequest, reply: FastifyReply) {
         try {
             const tokenUser = req.user as UserTokenPayload;
@@ -37,11 +37,11 @@ export class NotificationController {
         }
     }
 
-    // =======================================================
-    //  @delete
-    //  @return: { message: 'Notificação removida.' }
+    // =================================================
+    //  @delete: /api/notification/delete/:id
+    //  @returns: { message: 'Notificação removida.' }
     //  @status:  200 OK
-    // =======================================================
+    // =================================================
     static async deleteNotification(req: FastifyRequest, reply: FastifyReply) {
         try {
             const { id } = req.params as ParamId;
@@ -54,11 +54,11 @@ export class NotificationController {
         }
     }
 
-    // =======================================================
-    //  @delete
+    // ========================================================
+    //  @delete: /api/notification/delete-all
     //  @return: { message: 'Todas notificações removidas.' }
     //  @status:  200 OK
-    // =======================================================
+    // ========================================================
     static async deleteAllNotifications(req: FastifyRequest, reply: FastifyReply) {
         try {
             const tokenUser = req.user as UserTokenPayload;

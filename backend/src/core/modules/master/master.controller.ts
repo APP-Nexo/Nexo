@@ -4,8 +4,8 @@ import { MasterService } from './master.service.js';
 
 export class MasterController {
     // ===========================================================================================
-    //  @patch
-    //  @return: { message: 'Usuário promovido para admin.', email: user?.email, role: 'admin' }
+    //  @patch: /api/master/user/:id/promote
+    //  @returns: { message: 'Usuário promovido para admin.', email: user?.email, role: 'admin' }
     //  @status:  200
     // ===========================================================================================
     static async promoteUser(req: FastifyRequest, reply: FastifyReply) {
@@ -20,8 +20,8 @@ export class MasterController {
     }
 
     // =========================================================================================
-    //  @patch
-    //  @return: { message: 'Usuário rebaixado para user.', email: user?.email, role: 'user' }
+    //  @patch: /api/master/user/:id/demote
+    //  @returns: { message: 'Usuário rebaixado para user.', email: user?.email, role: 'user' }
     //  @status:  200 OK
     // =========================================================================================
     static async demoteUser(req: FastifyRequest, reply: FastifyReply) {
@@ -36,8 +36,8 @@ export class MasterController {
     }
 
     // ==================================================================================================
-    //  @patch
-    //  @return: { message: 'Usuário banido.', email: user?.email, bannedAt: new Date().toISOString() }
+    //  @patch: /api/master/user/:id/ban
+    //  @returns: { message: 'Usuário banido.', email: user?.email, bannedAt: new Date().toISOString() }
     //  @status:  200 OK
     // ==================================================================================================
     static async banUser(req: FastifyRequest, reply: FastifyReply) {

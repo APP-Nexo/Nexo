@@ -19,7 +19,7 @@ export async function adminRoutes(app: FastifyInstance) {
         AdminController.searchUser,
     );
     app.get(
-        '/user/all',
+        '/user-all',
         { ...getUsersSchemaSwagger, preHandler: [checkToken, checkAccessPerm] },
         AdminController.getUsers,
     );
