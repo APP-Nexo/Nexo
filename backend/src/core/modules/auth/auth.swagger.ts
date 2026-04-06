@@ -66,7 +66,7 @@ export const refreshSchemaSwagger = {
                 properties: {
                     tokenType: { type: 'string' },
                     refreshToken: { type: 'string' },
-                    expiresIn: { type: 'string' }
+                    expiresIn: { type: 'string' },
                 },
             },
         },
