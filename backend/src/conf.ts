@@ -53,4 +53,4 @@ const routes = [
     { route: notificationRoutes, prefix: 'api/notification' },
 ];
 
-routes.forEach(({ route, prefix }) => app.register(route, { prefix }));
+routes.map(({ route, prefix }) => app.register(route, { prefix }));

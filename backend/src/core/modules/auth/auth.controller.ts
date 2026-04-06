@@ -10,7 +10,7 @@ export class AuthController {
     // ==============================================================================================================
     static async register(req: FastifyRequest, reply: FastifyReply) {
         try {
-            const response = await AuthService.register(req.body as RegisterPayload, reply);
+            const response = await AuthService.register(req.body as RegisterPayload);
             return reply.status(201).send(response);
         } catch (error) {
             throw error;
@@ -26,7 +26,7 @@ export class AuthController {
         try {
             const { email, password } = req.body as LoginPayload;
 
-            const response = await AuthService.login(email!, password, reply);
+            const response = await AuthService.login(email!, password);
             return reply.status(200).send(response);
         } catch (error) {
             throw error;

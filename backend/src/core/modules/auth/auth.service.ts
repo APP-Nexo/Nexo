@@ -1,4 +1,3 @@
-import type { FastifyReply } from 'fastify';
 import { app } from '../../../conf.js';
 import { comparePassword } from '../../shared/utils/bcrypt/compare_password.js';
 import { encryptPassword } from '../../shared/utils/bcrypt/encrypt_password.js';
@@ -14,7 +13,7 @@ import type {
 } from './auth.interfaces.js';
 
 export class AuthService {
-    static async register(payload: RegisterPayload, reply: FastifyReply): Promise<AuthResponse> {
+    static async register(payload: RegisterPayload): Promise<AuthResponse> {
         const { name, email, password, confirmPassword } = payload;
 
         AuthErrors.ensureDataRegister({ name, email, password, confirmPassword });
@@ -34,7 +33,7 @@ export class AuthService {
             },
         })) as UserPayload;
 
-        const token = await JwtToken.create(createdUser, reply);
+        const token = await JwtToken.create(createdUser);
         const refreshToken = await JwtToken.createRefresh(createdUser);
 
         return {
@@ -48,7 +47,6 @@ export class AuthService {
     static async login(
         email: string,
         password: string,
-        reply: FastifyReply,
     ): Promise<AuthResponse> {
         AuthErrors.ensureDataLogin(email, password);
         await AuthErrors.ensureUserNotExistByEmail(prisma.user, email);
@@ -61,7 +59,7 @@ export class AuthService {
 
         const { password: _, ...userPayload } = user as UserPayload;
 
-        const token = await JwtToken.create(userPayload, reply);
+        const token = await JwtToken.create(userPayload);
         const refreshToken = await JwtToken.createRefresh(userPayload);
 
         return {

@@ -1,12 +1,12 @@
 import 'dotenv/config';
 import '@fastify/jwt';
-import type { FastifyReply, FastifyRequest } from 'fastify';
+import type { FastifyRequest } from 'fastify';
 import { app } from '../../../../conf.js';
 import type { UserTokenPayload } from './jwt.interfaces.js';
 import { TokenErrors } from './token.errors.js';
 
 export class JwtToken {
-    static async create(user: UserTokenPayload, reply: FastifyReply) {
+    static async create(user: UserTokenPayload) {
         try {
             const token = app.jwt.sign(
                 {
@@ -19,7 +19,8 @@ export class JwtToken {
             );
 
             return token;
-        } catch (e) {
+        } catch (error) {
+            console.log(error)
             TokenErrors.throwCreationFailed();
         }
     }
@@ -37,7 +38,8 @@ export class JwtToken {
             );
 
             return refreshToken;
-        } catch (e) {
+        } catch (error) {
+            console.log(error)
             TokenErrors.throwCreationFailed();
         }
     }
@@ -49,7 +51,8 @@ export class JwtToken {
             const user = req.user as UserTokenPayload;
 
             return user;
-        } catch (e) {
+        } catch (error) {
+            console.log(error)
             TokenErrors.throwInvalid();
         }
     }

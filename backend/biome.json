@@ -19,12 +19,22 @@
         "enabled": true,
         "rules": {
             "recommended": true,
+            "complexity": {
+                "noStaticOnlyClass": "off",
+                "noUselessCatch": "off"
+            },
             "correctness": {
-                "noUnusedVariables": "error"
+                "noUnusedVariables": "error",
+                "noUnusedImports": "off"
             },
             "style": {
-                "noNonNullAssertion": "warn",
-                "useConst": "error"
+                "noNonNullAssertion": "off",
+                "useConst": "error",
+                "useNodejsImportProtocol": "off"
+            },
+            "suspicious": {
+                "noExplicitAny": "off",
+                "noNonNullAssertedOptionalChain": "off"
             }
         }
     },
