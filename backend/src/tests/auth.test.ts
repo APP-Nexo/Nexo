@@ -22,6 +22,7 @@ vi.mock('../core/shared/utils/bcrypt/compare_password.js', () => ({
 vi.mock('../core/shared/utils/jwt/jwt_token.js', () => ({
     JwtToken: {
         create: vi.fn().mockResolvedValue('mocked_token_12345'),
+        createRefresh: vi.fn().mockResolvedValue('mocked_refresh_token_12345'),
     },
 }));
 
@@ -76,6 +77,7 @@ describe('Auth Routes', () => {
             expect(response.statusCode).toBe(201);
             expect(response.json()).toHaveProperty('token');
             expect(response.json()).toHaveProperty('tokenType');
+            expect(response.json()).toHaveProperty('refreshToken');
             expect(response.json()).toHaveProperty('expiresIn');
         });
     });
@@ -105,6 +107,7 @@ describe('Auth Routes', () => {
             expect(response.statusCode).toBe(200);
             expect(response.json()).toHaveProperty('token');
             expect(response.json()).toHaveProperty('tokenType');
+            expect(response.json()).toHaveProperty('refreshToken');
             expect(response.json()).toHaveProperty('expiresIn');
         });
     });
