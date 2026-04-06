@@ -20,7 +20,7 @@ export class JwtToken {
 
             return token;
         } catch (error) {
-            console.log(error)
+            console.log(error);
             TokenErrors.throwCreationFailed();
         }
     }
@@ -39,7 +39,7 @@ export class JwtToken {
 
             return refreshToken;
         } catch (error) {
-            console.log(error)
+            console.log(error);
             TokenErrors.throwCreationFailed();
         }
     }
@@ -52,7 +52,7 @@ export class JwtToken {
 
             return user;
         } catch (error) {
-            console.log(error)
+            console.log(error);
             TokenErrors.throwInvalid();
         }
     }

@@ -44,10 +44,7 @@ export class AuthService {
         };
     }
 
-    static async login(
-        email: string,
-        password: string,
-    ): Promise<AuthResponse> {
+    static async login(email: string, password: string): Promise<AuthResponse> {
         AuthErrors.ensureDataLogin(email, password);
         await AuthErrors.ensureUserNotExistByEmail(prisma.user, email);
 

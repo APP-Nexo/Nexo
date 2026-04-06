@@ -25,7 +25,7 @@ export class AuthErrors extends Error {
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new AuthErrors('Email inválido.', 400);
         if (password.length < 5)
             throw new AuthErrors('A senha deve ter no mínimo 5 caracteres.', 400);
-        if (password != confirmPassword) AuthErrors.throwPasswordMismatch();
+        if (password !== confirmPassword) AuthErrors.throwPasswordMismatch();
     }
 
     static ensureDataLogin(email: string, password: string) {

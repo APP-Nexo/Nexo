@@ -1,3 +1,1 @@
-export function loadCerts() {
-    
-}
+export function loadCerts() {}
