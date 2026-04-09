@@ -4,6 +4,7 @@ import type { FollowResponse } from './follow.interfaces.js';
 
 export class FollowService {
     static async followUser(followerId: number, followingId: number): Promise<FollowResponse> {
+        await FollowErrors.ensureUserExistById(prisma.user, followingId)
         const following = await prisma.vwUserPublic.findUnique({
             where: { id: followingId },
         });
@@ -21,6 +22,7 @@ export class FollowService {
     }
 
     static async unfollowUser(followerId: number, followingId: number): Promise<FollowResponse> {
+        await FollowErrors.ensureUserExistById(prisma.user, followingId)
         const unfollowing = await prisma.vwUserPublic.findUnique({
             where: { id: followingId },
         });

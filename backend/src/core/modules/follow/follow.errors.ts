@@ -11,6 +11,12 @@ export class FollowErrors extends Error {
         throw new FollowErrors(message, statusCode);
     }
 
+    static async ensureUserExistById(table: any, id: number) {
+        const user = await table.findUnique({ where: { id } });
+        if (!user) FollowErrors.throw('Usuário não existe.', 404);
+        return user;
+    }
+
     static async ensureFollow(
         table: any,
         followerId: number,
