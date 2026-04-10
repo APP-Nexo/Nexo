@@ -104,7 +104,7 @@ describe('Auth Routes', () => {
                 },
             });
 
-            expect(response.statusCode).toBe(200);
+            expect(response.statusCode).toBe(201);
             expect(response.json()).toHaveProperty('token');
             expect(response.json()).toHaveProperty('tokenType');
             expect(response.json()).toHaveProperty('refreshToken');
