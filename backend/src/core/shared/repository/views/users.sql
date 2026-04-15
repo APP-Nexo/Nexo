@@ -16,7 +16,8 @@ SELECT
     p."followingCount"
 FROM "User" u
 LEFT JOIN "UserProfile" p ON p."userId" = u."id"
-WHERE u."activate" = true;
+WHERE u."activate" = true
+WITH CHECK OPTION;
 
 -- 3. Recriar View de Status Estratégica
 CREATE VIEW "vw_users_status_summary"
@@ -28,3 +29,4 @@ SELECT
     COUNT(*) FILTER (WHERE "roleId" = 2)               AS "totalAdmins",
     COUNT(*) FILTER (WHERE "roleId" = 1)               AS "totalRegularUsers"
 FROM "User";
+WITH CHECK OPTION;
