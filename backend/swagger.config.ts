@@ -12,6 +12,11 @@ export async function setupSwagger(app: FastifyInstance) {
                 description: 'Documentation API',
                 version: '1.0.0',
             },
+            security: [
+                {
+                    bearerAuth: [],
+                },
+            ],
             components: {
                 securitySchemes: {
                     bearerAuth: {
