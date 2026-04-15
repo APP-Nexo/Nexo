@@ -15,7 +15,7 @@ SELECT
     p."followersCount",
     p."followingCount"
 FROM "User" u
-LEFT JOIN "UserProfile" p ON p."userId" = u."id"
+INNER JOIN "UserProfile" p ON p."userId" = u."id"
 WHERE u."activate" = true
 WITH CHECK OPTION;
 
@@ -29,4 +29,3 @@ SELECT
     COUNT(*) FILTER (WHERE "roleId" = 2)               AS "totalAdmins",
     COUNT(*) FILTER (WHERE "roleId" = 1)               AS "totalRegularUsers"
 FROM "User";
-WITH CHECK OPTION;
