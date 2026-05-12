@@ -193,11 +193,13 @@ container: {
     gap: 8,
   },
   label: {
+    fontFamily: FONT.family.display,
     color: COLORS.nexoBlue,
     fontSize: FONT.small,
     letterSpacing: 1,
   },
   input: {
+    fontFamily: FONT.family.body,
     height: 52,
     borderWidth: 1,
     borderColor: COLORS.border,
@@ -219,6 +221,7 @@ container: {
     paddingRight: 12,
   },
   passwordInput: {
+    fontFamily: FONT.family.body,
     flex: 1,
     color: COLORS.text,
     fontSize: FONT.text,
@@ -236,6 +239,7 @@ container: {
     marginTop: 4,
   },
   forgotText: {
+    fontFamily: FONT.family.display,
     color: COLORS.nexoPink,
     fontSize: FONT.small,
     letterSpacing: 1,
@@ -250,10 +254,9 @@ container: {
     justifyContent: 'center',
   },
   primaryButtonText: {
-    
+    fontFamily: FONT.family.display,
     color: COLORS.nexoBlue,
     fontSize: FONT.text,
-    fontWeight: '700',
     letterSpacing: 1,
   },
   dividerRow: {
@@ -288,6 +291,7 @@ container: {
     justifyContent: 'center',
   },
   socialButtonText: {
+    fontFamily: FONT.family.display,
     color: COLORS.textSecondary,
     fontSize: 11,
     fontWeight: '600',
@@ -300,10 +304,11 @@ container: {
   footerText: {
     color: COLORS.textSecondary,
     fontSize: FONT.text,
+    fontFamily: FONT.family.display,
   },
   createAccountText: {
     color: COLORS.nexoBlue,
     fontSize: FONT.text,
-    fontWeight: '700',
+    fontFamily: FONT.family.display,
   },
 });
