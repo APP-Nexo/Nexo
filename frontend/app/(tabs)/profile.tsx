@@ -133,7 +133,7 @@ function ActivityCard({ data }: { data: any }) {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.bodyBackground,
   },
   content: {
     padding: SPACING.lg,
@@ -149,7 +149,7 @@ const styles = StyleSheet.create({
     height: 60,
     borderRadius: 30,
     borderWidth: 1,
-    borderColor: COLORS.primary,
+    borderColor: COLORS.nexoBlue,
   },
   userInfo: {
     flex: 1,
@@ -171,7 +171,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   statValue: {
-    color: COLORS.primary,
+    color: COLORS.nexoBlue,
     fontSize: 18,
   },
   statLabel: {
@@ -180,7 +180,7 @@ const styles = StyleSheet.create({
   },
 
   section: {
-    color: COLORS.primary,
+    color: COLORS.nexoBlue,
     fontSize: 12,
   },
 

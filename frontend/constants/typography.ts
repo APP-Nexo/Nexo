@@ -1,6 +1,25 @@
 export const FONT = {
+  family: {
+    display: 'Orbitron_900Black',
+    heading: 'Orbitron_900Black',
+    logo: 'Orbitron_900Black',
+    body: 'Rajdhani_500Medium',
+    bodyStrong: 'Rajdhani_500Medium',
+    mono: 'System',
+  },
+  weight: {
+    regular: '400',
+    medium: '500',
+    semibold: '600',
+    bold: '700',
+    black: '900',
+  },
+  display: 42,
+  heading: 32,
   title: 24,
   subtitle: 18,
-  text: 14,
-  small: 12,
+  text: 16,
+  small: 14,
+  caption: 12,
+  micro: 10,
 }

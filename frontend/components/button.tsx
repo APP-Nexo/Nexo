@@ -21,7 +21,7 @@ const styles = StyleSheet.create({
 		height: 54,
 		borderRadius: 12,
 		borderWidth: 1,
-		borderColor: COLORS.primary,
+		borderColor: COLORS.nexoBlue,
 		backgroundColor: '#04141A',
 		alignItems: 'center',
 		justifyContent: 'center',
@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
 		opacity: 0.7,
 	},
 	text: {
-		color: COLORS.primary,
+		color: COLORS.nexoBlue,
 		fontSize: FONT.text,
 		fontWeight: '700',
 		letterSpacing: 1,

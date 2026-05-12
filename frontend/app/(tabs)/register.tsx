@@ -59,7 +59,7 @@ export default function RegisterScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="light-content" backgroundColor={COLORS.background} />
+      <StatusBar barStyle="light-content" backgroundColor={COLORS.bodyBackground} />
 
       <KeyboardAvoidingView
         style={styles.keyboardArea}
@@ -177,7 +177,7 @@ export default function RegisterScreen() {
 const styles = StyleSheet.create({
 safeArea: {
   flex: 1,
-  backgroundColor: COLORS.background,
+  backgroundColor: COLORS.bodyBackground,
 },
 keyboardArea: {
   flex: 1,
@@ -185,13 +185,13 @@ keyboardArea: {
 container: {
   flex: 1,
   justifyContent: 'center',
-  backgroundColor: COLORS.background,
+  backgroundColor: COLORS.bodyBackground,
   paddingHorizontal: SPACING.md,
   paddingVertical: SPACING.lg,
 },
   phoneFrame: {
   flex: 1,
-  backgroundColor: COLORS.background,
+  backgroundColor: COLORS.bodyBackground,
   paddingHorizontal: 0,
   paddingTop: 40,
   paddingBottom: 40,
@@ -208,7 +208,7 @@ container: {
     gap: 8,
   },
   label: {
-    color: COLORS.primary,
+    color: COLORS.nexoBlue,
     fontSize: 11,
     letterSpacing: 0.8,
   },
@@ -250,14 +250,14 @@ container: {
     height: 56,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: COLORS.primary,
+    borderColor: COLORS.nexoBlue,
     backgroundColor: 'rgba(0, 255, 255, 0.03)',
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 6,
   },
   primaryButtonText: {
-    color: COLORS.primary,
+    color: COLORS.nexoBlue,
     fontSize: 16,
     fontWeight: '700',
     letterSpacing: 1,
@@ -311,7 +311,7 @@ container: {
     fontSize: 15,
   },
   footerLink: {
-    color: COLORS.primary,
+    color: COLORS.nexoBlue,
     fontSize: FONT.text,
     fontWeight: '700',
   },

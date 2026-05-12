@@ -1,6 +1,7 @@
 import { StyleSheet, Text, View, TextStyle, ViewStyle } from 'react-native';
 import MaskedView from '@react-native-masked-view/masked-view';
 import { LinearGradient } from 'expo-linear-gradient';
+import { FONT } from '../constants';
 
 type LogoProps = {
   size?: number;
@@ -50,11 +51,13 @@ const styles = StyleSheet.create({
     width: 220,
   },
   logoText: {
+    fontFamily: FONT.family.display,
     fontWeight: '900',
     letterSpacing: 2,
   },
   subtitle: {
     marginTop: 6,
+    fontFamily: FONT.family.body,
     fontSize: 12,
     color: '#7F8696',
     letterSpacing: 0.4,

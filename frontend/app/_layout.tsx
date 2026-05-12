@@ -1,0 +1,33 @@
+import { Slot } from 'expo-router';
+import { Text, TextInput } from 'react-native';
+import { useFonts, Orbitron_900Black } from '@expo-google-fonts/orbitron';
+import { Rajdhani_500Medium, Rajdhani_600SemiBold } from '@expo-google-fonts/rajdhani';
+
+export default function Layout() {
+  const [fontsLoaded] = useFonts({ Orbitron_900Black, Rajdhani_500Medium, Rajdhani_600SemiBold });
+
+  if (!fontsLoaded) {
+    return null;
+  }
+
+  const TextAny = Text as any;
+  const TextInputAny = TextInput as any;
+
+  TextAny.defaultProps = {
+    ...TextAny.defaultProps,
+    style: [
+      { fontFamily: 'Rajdhani_500Medium' },
+      TextAny.defaultProps?.style,
+    ],
+  };
+
+  TextInputAny.defaultProps = {
+    ...TextInputAny.defaultProps,
+    style: [
+      { fontFamily: 'Rajdhani_500Medium' },
+      TextInputAny.defaultProps?.style,
+    ],
+  };
+
+  return <Slot />;
+}

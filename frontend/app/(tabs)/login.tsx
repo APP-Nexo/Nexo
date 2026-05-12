@@ -44,7 +44,7 @@ export default function LoginScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="light-content" backgroundColor={COLORS.background} />
+      <StatusBar barStyle="light-content" backgroundColor={COLORS.bodyBackground} />
 
       <KeyboardAvoidingView
         style={styles.keyboardArea}
@@ -136,7 +136,7 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   safeArea: {
   flex: 1,
-  backgroundColor: COLORS.background,
+  backgroundColor: COLORS.bodyBackground,
 },
 keyboardArea: {
   flex: 1,
@@ -144,13 +144,13 @@ keyboardArea: {
 container: {
   flex: 1,
   justifyContent: 'center',
-  backgroundColor: COLORS.background,
+  backgroundColor: COLORS.bodyBackground,
   paddingHorizontal: SPACING.md,
   paddingVertical: SPACING.lg,
 },
   phoneFrame: {
   flex: 1,
-  backgroundColor: COLORS.background,
+  backgroundColor: COLORS.bodyBackground,
   paddingHorizontal: 0,
   paddingTop: 40,
   paddingBottom: 28,
@@ -158,7 +158,7 @@ container: {
 },
   card: {
     borderRadius: 28,
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.bodyBackground,
     paddingHorizontal: SPACING.lg,
     paddingVertical: 36,
   },
@@ -172,13 +172,13 @@ container: {
     letterSpacing: 2,
   },
   logoBlue: {
-    color: COLORS.primary,
+    color: COLORS.nexoBlue,
   },
   logoWhite: {
     color: COLORS.text,
   },
   logoPink: {
-    color: COLORS.secondary,
+    color: COLORS.nexoPink,
   },
   tagline: {
     marginTop: 8,
@@ -193,7 +193,7 @@ container: {
     gap: 8,
   },
   label: {
-    color: COLORS.primary,
+    color: COLORS.nexoBlue,
     fontSize: FONT.small,
     letterSpacing: 1,
   },
@@ -236,7 +236,7 @@ container: {
     marginTop: 4,
   },
   forgotText: {
-    color: COLORS.secondary,
+    color: COLORS.nexoPink,
     fontSize: FONT.small,
     letterSpacing: 1,
   },
@@ -244,13 +244,14 @@ container: {
     height: 54,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: COLORS.primary,
+    borderColor: COLORS.nexoBlue,
     backgroundColor: '#04141A',
     alignItems: 'center',
     justifyContent: 'center',
   },
   primaryButtonText: {
-    color: COLORS.primary,
+    
+    color: COLORS.nexoBlue,
     fontSize: FONT.text,
     fontWeight: '700',
     letterSpacing: 1,
@@ -267,6 +268,7 @@ container: {
     backgroundColor: COLORS.border,
   },
   dividerText: {
+    fontFamily: FONT.family.display,
     color: COLORS.textSecondary,
     fontSize: 10,
     letterSpacing: 1,
@@ -300,7 +302,7 @@ container: {
     fontSize: FONT.text,
   },
   createAccountText: {
-    color: COLORS.primary,
+    color: COLORS.nexoBlue,
     fontSize: FONT.text,
     fontWeight: '700',
   },
