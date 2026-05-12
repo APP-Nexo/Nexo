@@ -15,6 +15,7 @@ import {
 } from 'react-native';
 import { Link } from 'expo-router';
 import { COLORS, SPACING, FONT } from '../../constants';
+import PrimaryButton from '@/components/PrimaryButton';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
@@ -96,9 +97,13 @@ export default function LoginScreen() {
                     <Pressable onPress={handleForgotPassword} style={styles.forgotButton}>
                       <Text style={styles.forgotText}>ESQUECI A SENHA</Text>
                     </Pressable>
-                    <Pressable onPress={handleLogin} style={styles.primaryButton}>
-                      <Text style={styles.primaryButtonText}>ENTRAR</Text>
-                    </Pressable>
+
+                    <PrimaryButton
+                      title="ENTRAR"
+                      onPress={handleLogin}
+                      style={{ }}
+                    />
+
                     <View style={styles.dividerRow}>
                       <View style={styles.divider} />
                       <Text style={styles.dividerText}>OU CONTINUE COM</Text>
@@ -115,6 +120,7 @@ export default function LoginScreen() {
                         <Text style={styles.socialButtonText}>STEAM</Text>
                       </Pressable>
                     </View>
+
                     <View style={styles.footer}>
                       <Text style={styles.footerText}>Novo por aqui?</Text>
                       <Pressable onPress={handleCreateAccount}>
@@ -242,21 +248,6 @@ container: {
     fontFamily: FONT.family.display,
     color: COLORS.nexoPink,
     fontSize: FONT.small,
-    letterSpacing: 1,
-  },
-  primaryButton: {
-    height: 54,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: COLORS.nexoBlue,
-    backgroundColor: '#04141A',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  primaryButtonText: {
-    fontFamily: FONT.family.display,
-    color: COLORS.nexoBlue,
-    fontSize: FONT.text,
     letterSpacing: 1,
   },
   dividerRow: {
