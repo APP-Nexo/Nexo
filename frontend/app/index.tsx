@@ -4,7 +4,7 @@ import { StyleSheet, Text, View } from 'react-native';
 export default function Index() {
   return (
     <View style={styles.container}>
-      <Link href="/(tabs)/login" style={styles.link}>
+      <Link href="../(auth)/login" style={styles.link}>
         Ir para Login
       </Link>
 

@@ -15,6 +15,7 @@ import {
 import { Link } from 'expo-router';
 import { COLORS, SPACING, FONT } from '../../constants';
 import Logo from '../../components/logo';
+import PrimaryButton from '@/components/PrimaryButton';
 
 export default function RegisterScreen() {
   const [email, setEmail] = useState('');
@@ -67,11 +68,9 @@ export default function RegisterScreen() {
       >
         <View style={styles.container}>
           <View style={styles.phoneFrame}>
-
-          <View style={styles.container}>
-            <View style={styles.phoneFrame}>
+            <View style={styles.card}>
               <View style={styles.logoBox}>
-                <Logo size={34} />
+                <Logo size={40} />
               </View>
 
               <View style={styles.form}>
@@ -131,9 +130,11 @@ export default function RegisterScreen() {
                   </View>
                 </View>
 
-                <Pressable style={styles.primaryButton} onPress={handleRegister}>
-                  <Text style={styles.primaryButtonText}>CADASTRAR</Text>
-                </Pressable>
+                    <PrimaryButton
+                      title="CADASTRAR"
+                      onPress={handleRegister}
+                      style={{ }}
+                    />
 
                 <View style={styles.dividerRow}>
                   <View style={styles.divider} />
@@ -158,7 +159,7 @@ export default function RegisterScreen() {
                 <View style={styles.footer}>
                   <Text style={styles.footerText}>Já tem uma conta?</Text>
 
-                  <Link href="/(tabs)/login" asChild>
+                  <Link href="../login" asChild>
                     <Pressable>
                       <Text style={styles.footerLink}>LOG IN</Text>
                     </Pressable>
@@ -168,7 +169,6 @@ export default function RegisterScreen() {
             </View>
           </View>
         </View>
-    </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -194,26 +194,34 @@ container: {
   backgroundColor: COLORS.bodyBackground,
   paddingHorizontal: 0,
   paddingTop: 40,
-  paddingBottom: 40,
+  paddingBottom: 28,
   justifyContent: 'center',
 },
+  card: {
+    borderRadius: 28,
+    backgroundColor: COLORS.bodyBackground,
+    paddingHorizontal: SPACING.lg,
+    paddingVertical: 36,
+  },
   logoBox: {
     alignItems: 'center',
-    marginBottom: 30,
+    marginBottom: 36,
   },
   form: {
-    gap: 18,
+    gap: SPACING.md,
   },
   inputGroup: {
     gap: 8,
   },
   label: {
+    fontFamily: FONT.family.display,
     color: COLORS.nexoBlue,
-    fontSize: 11,
-    letterSpacing: 0.8,
+    fontSize: FONT.small,
+    letterSpacing: 1,
   },
   input: {
-    height: 54,
+    fontFamily: FONT.family.body,
+    height: 52,
     borderWidth: 1,
     borderColor: COLORS.border,
     borderRadius: 12,
@@ -223,7 +231,7 @@ container: {
     fontSize: FONT.text,
   },
   passwordWrapper: {
-    height: 54,
+    height: 52,
     borderWidth: 1,
     borderColor: COLORS.border,
     borderRadius: 12,
@@ -234,6 +242,7 @@ container: {
     alignItems: 'center',
   },
   passwordInput: {
+    fontFamily: FONT.family.body,
     flex: 1,
     color: COLORS.text,
     fontSize: FONT.text,
@@ -274,6 +283,7 @@ container: {
     backgroundColor: COLORS.border,
   },
   dividerText: {
+    fontFamily: FONT.family.display,
     color: COLORS.textSecondary,
     fontSize: 10,
     letterSpacing: 0.6,
@@ -297,6 +307,7 @@ container: {
     fontSize: 14,
   },
   socialButtonText: {
+    fontFamily: FONT.family.display,
     color: COLORS.textSecondary,
     fontSize: 11,
     fontWeight: '600',
@@ -307,10 +318,12 @@ container: {
     gap: 8,
   },
   footerText: {
+    fontFamily: FONT.family.display,
     color: COLORS.textSecondary,
     fontSize: 15,
   },
   footerLink: {
+    fontFamily: FONT.family.display,
     color: COLORS.nexoBlue,
     fontSize: FONT.text,
     fontWeight: '700',
