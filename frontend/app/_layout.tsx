@@ -1,10 +1,18 @@
 import { Slot } from 'expo-router';
 import { Text, TextInput } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useFonts, Orbitron_900Black } from '@expo-google-fonts/orbitron';
-import { Rajdhani_500Medium, Rajdhani_600SemiBold } from '@expo-google-fonts/rajdhani';
+import {
+  Rajdhani_500Medium,
+  Rajdhani_600SemiBold,
+} from '@expo-google-fonts/rajdhani';
 
 export default function Layout() {
-  const [fontsLoaded] = useFonts({ Orbitron_900Black, Rajdhani_500Medium, Rajdhani_600SemiBold });
+  const [fontsLoaded] = useFonts({
+    Orbitron_900Black,
+    Rajdhani_500Medium,
+    Rajdhani_600SemiBold,
+  });
 
   if (!fontsLoaded) {
     return null;
@@ -29,5 +37,9 @@ export default function Layout() {
     ],
   };
 
-  return <Slot />;
+  return (
+    <SafeAreaProvider>
+      <Slot />
+    </SafeAreaProvider>
+  );
 }

@@ -169,7 +169,7 @@ export default function RegisterScreen() {
             </View>
           </View>
         </View>
-      </KeyboardAvoidingView>
+      </KeyboardAvoidingView> 
     </View>
   );
 }
