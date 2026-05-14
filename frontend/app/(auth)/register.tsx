@@ -59,7 +59,7 @@ export default function RegisterScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <View style={styles.safeArea}>
       <StatusBar barStyle="light-content" backgroundColor={COLORS.bodyBackground} />
 
       <KeyboardAvoidingView
@@ -170,7 +170,7 @@ export default function RegisterScreen() {
           </View>
         </View>
       </KeyboardAvoidingView>
-    </SafeAreaView>
+    </View>
   );
 }
 
