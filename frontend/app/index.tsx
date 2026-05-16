@@ -8,8 +8,8 @@ export default function Index() {
         Ir para Login
       </Link>
 
-      <Link href="/(tabs)/profile" style={styles.link}>
-        Ir para Perfil
+      <Link href="/(tabs)/home" style={styles.link}>
+        Ir para Home
       </Link>
     </View>
   );

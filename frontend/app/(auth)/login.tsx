@@ -125,7 +125,7 @@ export default function LoginScreen() {
                       <Text style={styles.footerText}>Novo por aqui?</Text>
                       <Pressable onPress={handleCreateAccount}>
                         <Link href="../register">
-                          <Text style={styles.createAccountText}>Criar conta</Text>
+                          <Text style={styles.createAccountText}>CRIAR CONTA</Text>
                         </Link>
                       </Pressable>
                     </View>
