@@ -6,4 +6,6 @@ export type Game = {
   category: string;
   image: string | ImageSourcePropType;
   isNew?: boolean;
+  rating: number;
+  genres: string[];
 };

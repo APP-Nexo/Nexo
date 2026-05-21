@@ -11,30 +11,9 @@ import { LinearGradient } from 'expo-linear-gradient';
 import Carousel from '@/components/Carrousel';
 import ActivityCard from '@/components/ActivityCard';
 import { COLORS, SPACING, FONT } from '@/constants';
-import type { Game } from '@/types/Game';
+import { games } from '@/data/games';
 import eldenring from '../../assets/images/Elden_Ring_capa.jpg';
-
-const games: Game[] = [
-  {
-    id: '1',
-    title: 'ELDEN RING II',
-    category: 'RPG',
-    image: eldenring,
-    isNew: true,
-  },
-  {
-    id: '2',
-    title: 'ELDEN RING II',
-    category: 'RPG',
-    image: eldenring,
-  },
-  {
-    id: '3',
-    title: 'ELDEN RING II',
-    category: 'RPG',
-    image: eldenring,
-  },
-];
+import { useRouter } from 'expo-router';
 
 const activities = [
   {
@@ -73,7 +52,7 @@ const activities = [
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState('');
-
+  const router = useRouter();
   return (
     <View style={styles.container}>
       <ScrollView
@@ -125,6 +104,7 @@ export default function Home() {
         <Carousel
           data={games}
           style={{ marginBottom: 30 }}
+          onPressItem={(game) => router.push(`/games/${game.id}`)}
         />
 
         <View style={styles.sectionHeader}>

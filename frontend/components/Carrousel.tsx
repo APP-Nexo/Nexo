@@ -69,7 +69,7 @@ function Carousel({ data, style, onPressItem }: Props) {
         }, AUTO_SCROLL_INTERVAL);
 
         return () => clearInterval(interval);
-    }, [data.length, ITEM_SIZE]);
+    }, [data?.length, ITEM_SIZE]);
 
     const keyExtractor = useCallback(
         (item: Game, index: number) =>

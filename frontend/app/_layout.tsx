@@ -1,7 +1,12 @@
-import { Slot } from 'expo-router';
+import { Stack } from 'expo-router';
 import { Text, TextInput } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { useFonts, Orbitron_900Black } from '@expo-google-fonts/orbitron';
+
+import {
+  useFonts,
+  Orbitron_900Black,
+} from '@expo-google-fonts/orbitron';
+
 import {
   Rajdhani_500Medium,
   Rajdhani_600SemiBold,
@@ -39,7 +44,12 @@ export default function Layout() {
 
   return (
     <SafeAreaProvider>
-      <Slot />
+      <Stack screenOptions={{ headerShown: false, animation: 'none' }}>
+        <Stack.Screen name="index" />
+        <Stack.Screen name="(auth)" />
+        <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="games/[id]" />
+      </Stack>
     </SafeAreaProvider>
   );
 }
