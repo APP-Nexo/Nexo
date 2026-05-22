@@ -44,7 +44,7 @@ function CustomTabBar({ state, navigation }: any) {
         { paddingBottom: insets.bottom }
       ]}
     >
-      {renderTab('index', 'HOME', Octicons, 'home')}
+      {renderTab('home', 'HOME', Octicons, 'home')}
       {renderTab(
         'nexo-avaliar-jogo',
         'JOGOS',
@@ -69,7 +69,7 @@ export default function TabLayout() {
         headerShown: false,
       }}
     >
-      <Tabs.Screen name="index" />
+      <Tabs.Screen name="home" />
       <Tabs.Screen name="nexo-avaliar-jogo" />
       <Tabs.Screen name="profile" />
     </Tabs>

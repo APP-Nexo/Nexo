@@ -326,6 +326,5 @@ container: {
     fontFamily: FONT.family.display,
     color: COLORS.nexoBlue,
     fontSize: FONT.text,
-    fontWeight: '700',
   },
 });
