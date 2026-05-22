@@ -1,4 +1,4 @@
-import React from 'react';
+import { useMemo } from 'react';
 import {
   View,
   Text,
@@ -9,75 +9,158 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
+import { COLORS, SPACING, RADIUS, FONT } from '../constants';
 
-type GameHeroProps = {
+const ACTIVE_OPACITY = 0.8;
+const HERO_HEIGHT = 430;
+const TOP_BAR_TOP_OFFSET = 12;
+const LOGO_INITIALS_LENGTH = 2;
+const DEFAULT_TOP_INSET = 60;
+
+const HERO_BG = '#0B0F1A';
+const STAR_COLOR = '#FFD43B';
+const COLOR_TEXT_PRIMARY = '#FFFFFF';
+const COLOR_TEXT_GENRE = '#DDDDDD';
+const COLOR_TEXT_REVIEW = '#999999';
+const COLOR_OVERLAY_BACK_BTN = 'rgba(0,0,0,0.45)';
+const COLOR_OVERLAY_FAV_BTN = 'rgba(0,0,0,0.35)';
+const COLOR_LOGO_BG = 'rgba(255,255,255,0.12)';
+const COLOR_GENRE_BG = 'rgba(255,255,255,0.14)';
+
+const GRADIENT_COLORS = [
+  'rgba(0,0,0,0)',
+  'rgba(0,0,0,0.25)',
+  'rgba(11,15,26,1)',
+] as const;
+
+type FeaturedGameProps = Readonly<{
   title: string;
   image: string | ImageSourcePropType;
   rating: number;
   genres?: string[];
   onFavoritePress?: () => void;
-};
+  onBackPress?: () => void;
+  isFavorited?: boolean;
+  topInset?: number;
+}>;
 
-export default function GameHero({
+type HeroTopBarProps = Readonly<{
+  topInset: number;
+  initials: string;
+  isFavorited: boolean;
+  onBackPress?: () => void;
+  onFavoritePress?: () => void;
+}>;
+
+function HeroTopBar({
+  topInset,
+  initials,
+  isFavorited,
+  onBackPress,
+  onFavoritePress,
+}: HeroTopBarProps) {
+  const containerStyle = useMemo(
+    () => [styles.topContainer, { paddingTop: topInset + TOP_BAR_TOP_OFFSET }],
+    [topInset]
+  );
+
+  return (
+    <View style={containerStyle}>
+      {onBackPress ? (
+        <TouchableOpacity
+          activeOpacity={ACTIVE_OPACITY}
+          style={styles.backButton}
+          onPress={onBackPress}
+        >
+          <Ionicons name="chevron-back" size={20} color={COLOR_TEXT_PRIMARY} />
+        </TouchableOpacity>
+      ) : (
+        <View style={styles.logoContainer}>
+          <Text style={styles.logoText}>{initials}</Text>
+        </View>
+      )}
+
+      <TouchableOpacity
+        activeOpacity={ACTIVE_OPACITY}
+        style={styles.favoriteButton}
+        onPress={onFavoritePress}
+      >
+        <Ionicons
+          name={isFavorited ? 'heart' : 'heart-outline'}
+          size={18}
+          color={isFavorited ? COLORS.nexoPink : COLOR_TEXT_PRIMARY}
+        />
+      </TouchableOpacity>
+    </View>
+  );
+}
+
+type HeroInfoProps = Readonly<{
+  title: string;
+  rating: number;
+  genres: string[];
+}>;
+
+function HeroInfo({ title, rating, genres }: HeroInfoProps) {
+  return (
+    <View style={styles.content}>
+      <View style={styles.genreContainer}>
+        {genres.map((genre) => (
+          <View key={genre} style={styles.genreTag}>
+            <Text style={styles.genreText}>{genre}</Text>
+          </View>
+        ))}
+      </View>
+
+      <Text style={styles.title}>{title}</Text>
+
+      <View style={styles.ratingContainer}>
+        <Text style={styles.stars}>★★★★★</Text>
+        <Text style={styles.rating}>{rating}</Text>
+        <Text style={styles.reviewText}> USER SCORES</Text>
+      </View>
+    </View>
+  );
+}
+
+export default function FeaturedGame({
   title,
   image,
   rating,
   genres = [],
   onFavoritePress,
-}: GameHeroProps) {
+  onBackPress,
+  isFavorited = false,
+  topInset = DEFAULT_TOP_INSET,
+}: FeaturedGameProps) {
+  const imageSource = useMemo<ImageSourcePropType>(
+    () => (typeof image === 'string' ? { uri: image } : image),
+    [image]
+  );
+
+  const logoInitials = useMemo(
+    () => title.slice(0, LOGO_INITIALS_LENGTH).toUpperCase(),
+    [title]
+  );
+
   return (
     <View style={styles.container}>
       <ImageBackground
-        source={typeof image === 'string' ? { uri: image } : image}
+        source={imageSource}
         style={styles.background}
         imageStyle={styles.image}
       >
-        <LinearGradient
-          colors={[
-            'rgba(0,0,0,0)',
-            'rgba(0,0,0,0.25)',
-            'rgba(11,15,26,1)',
-          ]}
-          style={styles.overlay}
+        <LinearGradient colors={GRADIENT_COLORS} style={styles.overlay} />
+
+        <HeroTopBar
+          topInset={topInset}
+          initials={logoInitials}
+          isFavorited={isFavorited}
+          onBackPress={onBackPress}
+          onFavoritePress={onFavoritePress}
         />
 
-        {/* TOPO */}
-        <View style={styles.topContainer}>
-          <View style={styles.logoContainer}>
-            <Text style={styles.logoText}>
-              {title.slice(0, 2).toUpperCase()}
-            </Text>
-          </View>
-
-          <TouchableOpacity
-            activeOpacity={0.8}
-            style={styles.favoriteButton}
-            onPress={onFavoritePress}
-          >
-            <Ionicons name="heart-outline" size={18} color="#FFF" />
-          </TouchableOpacity>
-        </View>
-
-        {/* CONTEÚDO */}
-        <View style={styles.content}>
-          <View style={styles.genreContainer}>
-            {genres.map((genre, index) => (
-              <View key={index} style={styles.genreTag}>
-                <Text style={styles.genreText}>{genre}</Text>
-              </View>
-            ))}
-          </View>
-
-          <Text style={styles.title}>{title}</Text>
-
-          <View style={styles.ratingContainer}>
-            <Text style={styles.stars}>★★★★★</Text>
-
-            <Text style={styles.rating}>{rating}</Text>
-
-            <Text style={styles.reviewText}> USER SCORES</Text>
-          </View>
-        </View>
+        <HeroInfo title={title} rating={rating} genres={genres} />
       </ImageBackground>
     </View>
   );
@@ -86,51 +169,53 @@ export default function GameHero({
 const styles = StyleSheet.create({
   container: {
     width: '100%',
-    height: 430,
-    backgroundColor: '#0B0F1A',
+    height: HERO_HEIGHT,
+    backgroundColor: HERO_BG,
   },
-
   background: {
     flex: 1,
     justifyContent: 'space-between',
   },
-
   image: {
     resizeMode: 'cover',
   },
-
   overlay: {
     ...StyleSheet.absoluteFillObject,
   },
 
   topContainer: {
-    paddingTop: 70,
     paddingHorizontal: 22,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-
+  backButton: {
+    width: 42,
+    height: 42,
+    borderRadius: RADIUS.xl,
+    backgroundColor: COLOR_OVERLAY_BACK_BTN,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   logoContainer: {
     width: 52,
     height: 52,
     borderRadius: 18,
-    backgroundColor: 'rgba(255,255,255,0.12)',
+    backgroundColor: COLOR_LOGO_BG,
     justifyContent: 'center',
     alignItems: 'center',
   },
-
   logoText: {
-    color: '#FFF',
-    fontSize: 16,
+    fontFamily: FONT.family.body,
+    color: COLOR_TEXT_PRIMARY,
+    fontSize: FONT.text,
     fontWeight: '900',
   },
-
   favoriteButton: {
     width: 42,
     height: 42,
-    borderRadius: 16,
-    backgroundColor: 'rgba(0,0,0,0.35)',
+    borderRadius: RADIUS.xl,
+    backgroundColor: COLOR_OVERLAY_FAV_BTN,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -139,56 +224,52 @@ const styles = StyleSheet.create({
     paddingHorizontal: 22,
     paddingBottom: 36,
   },
-
   genreContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 8,
+    gap: SPACING.xs,
     marginBottom: 14,
   },
-
   genreTag: {
-    backgroundColor: 'rgba(255,255,255,0.14)',
+    backgroundColor: COLOR_GENRE_BG,
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 10,
   },
-
   genreText: {
-    color: '#DDD',
+    fontFamily: FONT.family.body,
+    color: COLOR_TEXT_GENRE,
     fontSize: 10,
     fontWeight: '700',
   },
-
   title: {
-    color: '#FFF',
+    fontFamily: FONT.family.heading,
+    color: COLOR_TEXT_PRIMARY,
     fontSize: 40,
-    fontWeight: '900',
     lineHeight: 40,
     textTransform: 'uppercase',
-    marginBottom: 12,
+    marginBottom: SPACING.sm,
     width: '80%',
   },
-
   ratingContainer: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-
   stars: {
-    color: '#FFD43B',
-    fontSize: 12,
+    fontFamily: FONT.family.body,
+    color: STAR_COLOR,
+    fontSize: FONT.caption,
     marginRight: 6,
   },
-
   rating: {
-    color: '#FFD43B',
-    fontSize: 18,
+    fontFamily: FONT.family.body,
+    color: STAR_COLOR,
+    fontSize: FONT.subtitle,
     fontWeight: '800',
   },
-
   reviewText: {
-    color: '#999',
+    fontFamily: FONT.family.body,
+    color: COLOR_TEXT_REVIEW,
     fontSize: 9,
     marginLeft: 4,
     fontWeight: '700',

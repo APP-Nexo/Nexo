@@ -1,6 +1,8 @@
+import { useState, useEffect } from 'react';
 import { Stack } from 'expo-router';
 import { Text, TextInput } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import LoadingScreen from '../components/LoadingScreen';
 
 import {
   useFonts,
@@ -12,6 +14,8 @@ import {
   Rajdhani_600SemiBold,
 } from '@expo-google-fonts/rajdhani';
 
+const MINIMUM_LOADING_MS = 5000;
+
 export default function Layout() {
   const [fontsLoaded] = useFonts({
     Orbitron_900Black,
@@ -19,8 +23,15 @@ export default function Layout() {
     Rajdhani_600SemiBold,
   });
 
-  if (!fontsLoaded) {
-    return null;
+  const [isMinimumTimeDone, setIsMinimumTimeDone] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setIsMinimumTimeDone(true), MINIMUM_LOADING_MS);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (!fontsLoaded || !isMinimumTimeDone) {
+    return <LoadingScreen />;
   }
 
   const TextAny = Text as any;
