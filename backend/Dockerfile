@@ -9,6 +9,7 @@ RUN npm ci
 COPY prisma ./prisma
 RUN npx prisma generate
 
+COPY swagger.config.ts ./
 COPY tsconfig.json ./
 COPY certs ./certs
 COPY src ./src
