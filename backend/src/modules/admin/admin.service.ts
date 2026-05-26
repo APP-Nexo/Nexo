@@ -35,11 +35,11 @@ export class AdminService {
         const gameIds = topGames.map((g) => g.gameId);
         const games =
             gameIds.length > 0
-                ? await prisma.game.findMany({
-                      where: { id: { in: gameIds } },
-                      select: { id: true, title: true, cover: true },
-                  })
-                : [];
+            ? await prisma.game.findMany({
+                    where: { id: { in: gameIds } },
+                    select: { id: true, title: true, cover: true },
+                })
+            : [];
 
         const last7Days = Array.from({ length: 7 }, (_, i) => {
             const d = new Date();

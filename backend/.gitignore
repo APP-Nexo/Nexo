@@ -3,3 +3,7 @@ node_modules
 logs
 certs
 src/generated
+public/avatars/*
+public/banners/*
+!public/avatars/.gitkeep
+!public/banners/.gitkeep

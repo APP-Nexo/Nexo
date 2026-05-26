@@ -2,11 +2,14 @@ import 'dotenv/config';
 
 import cors from '@fastify/cors';
 import fastifyJwt from '@fastify/jwt';
+import multipart from '@fastify/multipart';
 import rateLimit from '@fastify/rate-limit';
+import staticFiles from '@fastify/static';
 import swaggerUi from '@fastify/swagger-ui';
 import type { FastifyRequest } from 'fastify';
 import fastify from 'fastify';
 import fs from 'fs';
+import path from 'path';
 import { setupSwagger } from '../swagger.config.js';
 import { errorHandler } from './shared/errors/error_handler.js';
 
@@ -23,6 +26,13 @@ await setupSwagger(app);
 await app.register(cors);
 app.setErrorHandler(errorHandler);
 await app.register(fastifyJwt, { secret: process.env.SECRET! });
+
+await app.register(multipart, { limits: { fileSize: 5 * 1024 * 1024 } });
+await app.register(staticFiles, {
+    root: path.join(process.cwd(), 'public'),
+    prefix: '/uploads/',
+    decorateReply: false,
+});
 
 await app.register(rateLimit, {
     global: true,

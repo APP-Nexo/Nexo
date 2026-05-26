@@ -12,6 +12,12 @@ export class MeController {
 
     static async updateMe(req: FastifyRequest, reply: FastifyReply) {
         const tokenUser = req.user as UserTokenPayload;
+
+        if (req.isMultipart()) {
+            const response = await MeService.updateMeMultipart(tokenUser.id, req);
+            return reply.status(200).send(response);
+        }
+
         const response = await MeService.updateMe(tokenUser.id, req.body as UpdateMePayload);
         return reply.status(200).send(response);
     }

@@ -3,6 +3,12 @@ import { comparePassword } from '../../shared/utils/argon2/compare_password.js';
 import { encryptPassword } from '../../shared/utils/argon2/encrypt_password.js';
 import prisma from '../../shared/utils/prisma/prisma_conn.js';
 import type { UpdateMePayload } from './me.interfaces.js';
+import path from 'path';
+import fs from 'fs/promises';
+import { randomUUID } from 'crypto';
+
+const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+const MAX_SIZE = 5 * 1024 * 1024;
 
 export class MeService {
     static async getMe(userId: number) {
@@ -44,6 +50,61 @@ export class MeService {
                     : {}),
             },
         });
+
+        return { message: 'Perfil atualizado.' };
+    }
+
+    static async updateMeMultipart(userId: number, req: any) {
+        const updateData: Record<string, unknown> = {};
+        const profileData: Record<string, unknown> = {};
+
+        const parts = req.files();
+        for await (const part of parts) {
+            if (part.file) {
+                if (!ALLOWED_TYPES.includes(part.mimetype)) {
+                    throw AppError.throw('Formato inválido. Use JPEG, PNG ou WebP.', 400);
+                }
+
+                const buffer = await part.toBuffer();
+                if (buffer.length > MAX_SIZE) {
+                    throw AppError.throw('Arquivo muito grande. Máximo 5MB.', 400);
+                }
+
+                const ext = path.extname(part.filename) || '.jpg';
+                const filename = `${userId}_${randomUUID()}${ext}`;
+                const subdir = part.fieldname === 'photo' ? 'avatars' : 'banners';
+                const filepath = path.join(process.cwd(), 'public', subdir, filename);
+                await fs.writeFile(filepath, buffer);
+
+                const url = `/uploads/${subdir}/${filename}`;
+                profileData[part.fieldname] = url;
+            } else {
+                const value = await part.toBuffer().then((b: Buffer) => b.toString());
+                if (part.fieldname === 'name' || part.fieldname === 'username') {
+                    if (part.fieldname === 'username') {
+                        const existing = await prisma.user.findUnique({ where: { username: value } });
+                        if (existing && existing.id !== userId) {
+                            throw AppError.throw('Username já está em uso.', 409);
+                        }
+                    }
+                    updateData[part.fieldname] = value;
+                } else if (part.fieldname === 'bio') {
+                    profileData.bio = value;
+                }
+            }
+        }
+
+        if (Object.keys(updateData).length > 0 || Object.keys(profileData).length > 0) {
+            await prisma.user.update({
+                where: { id: userId },
+                data: {
+                    ...updateData,
+                    ...(Object.keys(profileData).length > 0
+                        ? { profile: { update: profileData } }
+                        : {}),
+                },
+            });
+        }
 
         return { message: 'Perfil atualizado.' };
     }

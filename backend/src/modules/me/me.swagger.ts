@@ -35,15 +35,17 @@ export const updateMeSchemaSwagger = {
     schema: {
         tags: ['Me'],
         summary: 'Update own profile',
+        description: 'Accepta multipart/form-data (com files photo/banner) ou application/json',
         security: [{ bearerAuth: [] }],
+        consumes: ['application/json', 'multipart/form-data'],
         body: {
             type: 'object',
             properties: {
                 name: { type: 'string' },
                 username: { type: 'string' },
                 bio: { type: 'string' },
-                photo: { type: 'string' },
-                banner: { type: 'string' },
+                photo: { type: 'string', description: 'URL da foto (JSON) ou file upload (multipart)' },
+                banner: { type: 'string', description: 'URL do banner (JSON) ou file upload (multipart)' },
             },
         },
         response: {
