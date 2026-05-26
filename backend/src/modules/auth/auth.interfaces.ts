@@ -1,5 +1,6 @@
 export interface RegisterPayload {
     name: string;
+    username?: string;
     email: string;
     password: string;
     confirmPassword: string;
@@ -13,6 +14,7 @@ export interface LoginPayload {
 export interface UserPayload {
     id: number;
     name: string;
+    username?: string | null;
     email: string;
     password: string;
     roleId: number;
@@ -38,3 +40,13 @@ export type RefreshResponse = {
 export type RefreshParam = {
     refreshToken: string;
 };
+
+export type ForgotPasswordPayload = {
+    email: string;
+};
+
+export type ResetPasswordPayload = {
+    token: string;
+    password: string;
+};
+

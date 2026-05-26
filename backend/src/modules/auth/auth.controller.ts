@@ -1,5 +1,11 @@
 import type { FastifyReply, FastifyRequest } from 'fastify';
-import type { LoginPayload, RefreshParam, RegisterPayload } from './auth.interfaces.js';
+import type {
+    ForgotPasswordPayload,
+    LoginPayload,
+    RefreshParam,
+    RegisterPayload,
+    ResetPasswordPayload,
+} from './auth.interfaces.js';
 import { AuthService } from './auth.service.js';
 
 export class AuthController {
@@ -10,7 +16,6 @@ export class AuthController {
 
     static async login(req: FastifyRequest, reply: FastifyReply) {
         const { email, password } = req.body as LoginPayload;
-
         const response = await AuthService.login(email!, password);
         return reply.status(201).send(response);
     }
@@ -19,5 +24,23 @@ export class AuthController {
         const { refreshToken } = req.body as RefreshParam;
         const response = await AuthService.refresh(refreshToken);
         return reply.status(200).send(response);
+    }
+
+    static async logout(_req: FastifyRequest, reply: FastifyReply) {
+        return reply.status(200).send({ message: 'Logout realizado.' });
+    }
+
+    static async forgotPassword(req: FastifyRequest, reply: FastifyReply) {
+        const { email } = req.body as ForgotPasswordPayload;
+        await AuthService.forgotPassword(email);
+        return reply
+            .status(200)
+            .send({ message: 'Se o email existir, você receberá um link de redefinição.' });
+    }
+
+    static async resetPassword(req: FastifyRequest, reply: FastifyReply) {
+        const { token, password } = req.body as ResetPasswordPayload;
+        await AuthService.resetPassword(token, password);
+        return reply.status(200).send({ message: 'Senha redefinida com sucesso.' });
     }
 }

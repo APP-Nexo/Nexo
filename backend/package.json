@@ -37,11 +37,13 @@
         "dotenv": "17.3.1",
         "fastify": "4.28.1",
         "multer": "2.1.1",
+        "nodemailer": "^8.0.9",
         "pg": "8.20.0"
     },
     "devDependencies": {
         "@biomejs/biome": "2.4.10",
         "@types/node": "25.5.0",
+        "@types/nodemailer": "^8.0.0",
         "@types/pg": "8.18.0",
         "@vitest/coverage-v8": "2.1.8",
         "nodemon": "3.1.14",

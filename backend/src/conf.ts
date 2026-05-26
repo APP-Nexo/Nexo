@@ -37,19 +37,23 @@ await app.register(rateLimit, {
 
 import { adminRoutes } from './modules/admin/admin.routes.js';
 import { authRoutes } from './modules/auth/auth.routes.js';
-import { followRoutes } from './modules/follow/follow.routes.js';
 import { healthRoutes } from './modules/health/health.routes.js';
 import { masterRoutes } from './modules/master/master.routes.js';
+import { meRoutes } from './modules/me/me.routes.js';
 import { notificationRoutes } from './modules/notification/notification.routes.js';
-import { userRoutes } from './modules/user/user.routes.js';
+import { searchRoutes } from './modules/search/search.routes.js';
+import { socialRoutes } from './modules/social/social.routes.js';
+import { usersRoutes } from './modules/users/users.routes.js';
 
 const routes = [
     { route: healthRoutes, prefix: 'api/verify' },
     { route: authRoutes, prefix: 'api/auth' },
-    { route: userRoutes, prefix: 'api/user' },
+    { route: meRoutes, prefix: 'api/me' },
+    { route: usersRoutes, prefix: 'api/users' },
+    { route: socialRoutes, prefix: 'api/social' },
+    { route: searchRoutes, prefix: 'api/search' },
     { route: masterRoutes, prefix: 'api/master' },
     { route: adminRoutes, prefix: 'api/admin' },
-    { route: followRoutes, prefix: 'api/user' },
     { route: notificationRoutes, prefix: 'api/notification' },
 ];
 

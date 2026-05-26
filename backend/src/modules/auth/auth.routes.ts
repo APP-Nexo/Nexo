@@ -1,6 +1,13 @@
 import type { FastifyInstance } from 'fastify';
 import { AuthController } from './auth.controller.js';
-import { loginSchemaSwagger, refreshSchemaSwagger, registerSchemaSwagger } from './auth.swagger.js';
+import {
+    forgotPasswordSchemaSwagger,
+    loginSchemaSwagger,
+    logoutSchemaSwagger,
+    refreshSchemaSwagger,
+    registerSchemaSwagger,
+    resetPasswordSchemaSwagger,
+} from './auth.swagger.js';
 
 export async function authRoutes(app: FastifyInstance) {
     app.post(
@@ -26,5 +33,22 @@ export async function authRoutes(app: FastifyInstance) {
             config: { rateLimit: { max: 10, timeWindow: '1 minute' } },
         },
         AuthController.refresh,
+    );
+    app.post('/logout', { ...logoutSchemaSwagger }, AuthController.logout);
+    app.post(
+        '/forgot-password',
+        {
+            ...forgotPasswordSchemaSwagger,
+            config: { rateLimit: { max: 3, timeWindow: '1 minute' } },
+        },
+        AuthController.forgotPassword,
+    );
+    app.post(
+        '/reset-password',
+        {
+            ...resetPasswordSchemaSwagger,
+            config: { rateLimit: { max: 3, timeWindow: '1 minute' } },
+        },
+        AuthController.resetPassword,
     );
 }

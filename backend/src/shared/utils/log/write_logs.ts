@@ -18,7 +18,7 @@ export class Logs {
                 },
             },
             pino.destination({
-                dest: path.join(__dirname, '..', '..', '..', '..', '..', 'logs', `${filename}.log`),
+                dest: path.join(__dirname, '..', '..', '..', '..', 'logs', `${filename}.log`),
                 mkdir: true,
                 sync: true,
             }),

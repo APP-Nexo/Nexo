@@ -1,0 +1,36 @@
+services:
+  api:
+    container_name: nexo-api
+    build: .
+    ports:
+      - "3000:3000"
+    env_file: .env
+    environment:
+      - DATABASE_URL=postgresql://nexo:nexo@db:5432/nexo?schema=public
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./certs:/app/certs:ro
+    restart: unless-stopped
+
+  db:
+    container_name: nexo-db
+    image: postgres:16-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: nexo
+      POSTGRES_PASSWORD: nexo
+      POSTGRES_DB: nexo
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nexo"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  pgdata:

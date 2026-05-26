@@ -1,6 +1,8 @@
+import crypto from 'crypto';
 import { app } from '../../conf.js';
-import { comparePassword } from '../../shared/utils/bcrypt/compare_password.js';
-import { encryptPassword } from '../../shared/utils/bcrypt/encrypt_password.js';
+import { comparePassword } from '../../shared/utils/argon2/compare_password.js';
+import { encryptPassword } from '../../shared/utils/argon2/encrypt_password.js';
+import { sendPasswordResetEmail } from '../../shared/utils/email/mailer.js';
 import type { UserTokenPayload } from '../../shared/utils/jwt/jwt.interfaces.js';
 import { JwtToken } from '../../shared/utils/jwt/jwt_token.js';
 import prisma from '../../shared/utils/prisma/prisma_conn.js';
@@ -9,10 +11,13 @@ import type { RegisterPayload, UserPayload } from './auth.interfaces.js';
 
 export class AuthService {
     static async register(payload: RegisterPayload) {
-        const { name, email, password, confirmPassword } = payload;
+        const { name, username, email, password, confirmPassword } = payload;
 
         AuthErrors.ensureDataRegister({ name, email, password, confirmPassword });
         await AuthErrors.ensureUserExistByEmail(prisma.user, email);
+        if (username) {
+            await AuthErrors.ensureUsernameNotTaken(prisma.user, username);
+        }
 
         const defaultRole = await prisma.role.findUnique({
             where: { role: 'user' },
@@ -21,6 +26,7 @@ export class AuthService {
         const createdUser = (await prisma.user.create({
             data: {
                 name,
+                username: username ?? null,
                 email,
                 password: await encryptPassword(password),
                 roleId: defaultRole?.id!,
@@ -49,7 +55,7 @@ export class AuthService {
 
         AuthErrors.ensureMatchPassword(await comparePassword(password, user.password));
 
-        const { password: _, ...userPayload } = user as UserPayload;
+        const { password: _, ...userPayload } = user;
 
         const token = await JwtToken.create(userPayload);
         const refreshToken = await JwtToken.createRefresh(userPayload);
@@ -73,5 +79,40 @@ export class AuthService {
             refreshToken: refreshToken!,
             expiresIn: process.env.REFRESH_TOKEN_EXPIRES!,
         };
+    }
+
+    static async forgotPassword(email: string) {
+        const user = await prisma.user.findUnique({ where: { email } });
+        if (!user) return;
+
+        const token = crypto.randomBytes(32).toString('hex');
+        const expiresAt = new Date(Date.now() + 3600000);
+
+        await prisma.passwordReset.create({
+            data: { email, token, expiresAt },
+        });
+
+        await sendPasswordResetEmail(email, token).catch(() => {});
+    }
+
+    static async resetPassword(token: string, newPassword: string) {
+        const reset = await prisma.passwordReset.findUnique({ where: { token } });
+
+        if (!reset || reset.usedAt || reset.expiresAt < new Date()) {
+            throw AuthErrors.throw('Token inválido ou expirado.', 400);
+        }
+
+        const hashed = await encryptPassword(newPassword);
+
+        await prisma.$transaction([
+            prisma.user.update({
+                where: { email: reset.email },
+                data: { password: hashed },
+            }),
+            prisma.passwordReset.update({
+                where: { id: reset.id },
+                data: { usedAt: new Date() },
+            }),
+        ]);
     }
 }

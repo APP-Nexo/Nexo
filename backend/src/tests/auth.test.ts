@@ -11,11 +11,11 @@ vi.mock('../shared/utils/prisma/prisma_conn.js', () => ({
     },
 }));
 
-vi.mock('../shared/utils/bcrypt/encrypt_password.js', () => ({
+vi.mock('../shared/utils/argon2/encrypt_password.js', () => ({
     encryptPassword: vi.fn(),
 }));
 
-vi.mock('../shared/utils/bcrypt/compare_password.js', () => ({
+vi.mock('../shared/utils/argon2/compare_password.js', () => ({
     comparePassword: vi.fn(),
 }));
 

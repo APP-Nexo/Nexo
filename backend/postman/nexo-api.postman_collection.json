@@ -1,0 +1,1098 @@
+{
+    "info": {
+        "name": "Nexo API",
+        "description": "Postman collection for the Nexo API",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "variable": [
+        {
+            "key": "baseUrl",
+            "value": "https://localhost:3000/api",
+            "type": "string"
+        },
+        {
+            "key": "token",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "refreshToken",
+            "value": "",
+            "type": "string"
+        }
+    ],
+    "item": [
+        {
+            "name": "Auth",
+            "item": [
+                {
+                    "name": "Register",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 201) {",
+                                    "    const json = pm.response.json();",
+                                    "    pm.collectionVariables.set('token', json.token);",
+                                    "    pm.collectionVariables.set('refreshToken', json.refreshToken);",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"name\": \"John Doe\",\n    \"email\": \"john@example.com\",\n    \"password\": \"SecurePass123!\",\n    \"confirmPassword\": \"SecurePass123!\",\n    \"username\": \"johndoe\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/auth/register",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["auth", "register"]
+                        }
+                    }
+                },
+                {
+                    "name": "Login",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 201) {",
+                                    "    const json = pm.response.json();",
+                                    "    pm.collectionVariables.set('token', json.token);",
+                                    "    pm.collectionVariables.set('refreshToken', json.refreshToken);",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"email\": \"john@example.com\",\n    \"password\": \"SecurePass123!\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/auth/login",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["auth", "login"]
+                        }
+                    }
+                },
+                {
+                    "name": "Refresh Token",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"refreshToken\": \"{{refreshToken}}\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/auth/refresh",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["auth", "refresh"]
+                        }
+                    }
+                },
+                {
+                    "name": "Logout",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": ""
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/auth/logout",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["auth", "logout"]
+                        }
+                    }
+                },
+                {
+                    "name": "Forgot Password",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"email\": \"john@example.com\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/auth/forgot-password",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["auth", "forgot-password"]
+                        }
+                    }
+                },
+                {
+                    "name": "Reset Password",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"token\": \"reset-token-here\",\n    \"password\": \"NewSecurePass123!\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/auth/reset-password",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["auth", "reset-password"]
+                        }
+                    }
+                },
+                {
+                    "name": "OAuth Google",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"code\": \"google-auth-code\",\n    \"redirectUri\": \"https://localhost:3000/auth/callback\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/auth/oauth/google",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["auth", "oauth", "google"]
+                        }
+                    }
+                },
+                {
+                    "name": "OAuth Discord",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"code\": \"discord-auth-code\",\n    \"redirectUri\": \"https://localhost:3000/auth/callback\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/auth/oauth/discord",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["auth", "oauth", "discord"]
+                        }
+                    }
+                },
+                {
+                    "name": "OAuth Steam",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"code\": \"steam-auth-code\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/auth/oauth/steam",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["auth", "oauth", "steam"]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Me",
+            "item": [
+                {
+                    "name": "Get My Profile",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/me",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["me"]
+                        }
+                    }
+                },
+                {
+                    "name": "Update My Profile",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"name\": \"John Updated\",\n    \"username\": \"johnupdated\",\n    \"bio\": \"Gamer and reviewer\",\n    \"photo\": \"https://example.com/photo.jpg\",\n    \"banner\": \"https://example.com/banner.jpg\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/me",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["me"]
+                        }
+                    }
+                },
+                {
+                    "name": "Change Password",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"currentPassword\": \"OldPass123!\",\n    \"newPassword\": \"NewPass456!\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/me/password",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["me", "password"]
+                        }
+                    }
+                },
+                {
+                    "name": "Delete My Account",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"email\": \"john@example.com\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/me",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["me"]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Users",
+            "item": [
+                {
+                    "name": "Get User Profile",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/users/:username",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["users", ":username"],
+                            "variable": [
+                                {
+                                    "key": "username",
+                                    "value": "johndoe"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get User Reviews",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/users/:username/reviews?cursor=",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["users", ":username", "reviews"],
+                            "query": [
+                                {
+                                    "key": "cursor",
+                                    "value": "",
+                                    "description": "Pagination cursor"
+                                }
+                            ],
+                            "variable": [
+                                {
+                                    "key": "username",
+                                    "value": "johndoe"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get User Stats",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/users/:username/stats",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["users", ":username", "stats"],
+                            "variable": [
+                                {
+                                    "key": "username",
+                                    "value": "johndoe"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get User Lists",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/users/:username/lists",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["users", ":username", "lists"],
+                            "variable": [
+                                {
+                                    "key": "username",
+                                    "value": "johndoe"
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Social",
+            "item": [
+                {
+                    "name": "Follow User",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/social/:username/follow",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["social", ":username", "follow"],
+                            "variable": [
+                                {
+                                    "key": "username",
+                                    "value": "janedoe"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Unfollow User",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/social/:username/follow",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["social", ":username", "follow"],
+                            "variable": [
+                                {
+                                    "key": "username",
+                                    "value": "janedoe"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Followers",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/social/:username/followers?cursor=",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["social", ":username", "followers"],
+                            "query": [
+                                {
+                                    "key": "cursor",
+                                    "value": "",
+                                    "description": "Pagination cursor"
+                                }
+                            ],
+                            "variable": [
+                                {
+                                    "key": "username",
+                                    "value": "janedoe"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Following",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/social/:username/following?cursor=",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["social", ":username", "following"],
+                            "query": [
+                                {
+                                    "key": "cursor",
+                                    "value": "",
+                                    "description": "Pagination cursor"
+                                }
+                            ],
+                            "variable": [
+                                {
+                                    "key": "username",
+                                    "value": "janedoe"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Feed",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/social/feed",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["social", "feed"]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Search",
+            "item": [
+                {
+                    "name": "Search Users",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/search/users?q=&cursor=&limit=",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["search", "users"],
+                            "query": [
+                                {
+                                    "key": "q",
+                                    "value": "john",
+                                    "description": "Search query"
+                                },
+                                {
+                                    "key": "cursor",
+                                    "value": "",
+                                    "description": "Pagination cursor"
+                                },
+                                {
+                                    "key": "limit",
+                                    "value": "20",
+                                    "description": "Results per page"
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Admin",
+            "item": [
+                {
+                    "name": "Get Dashboard",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/dashboard",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["admin", "dashboard"]
+                        }
+                    }
+                },
+                {
+                    "name": "Search User by Email",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/user/search?email=&cursor=",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["admin", "user", "search"],
+                            "query": [
+                                {
+                                    "key": "email",
+                                    "value": "john@example.com",
+                                    "description": "User email to search"
+                                },
+                                {
+                                    "key": "cursor",
+                                    "value": "",
+                                    "description": "Pagination cursor"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get All Users",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/user-all?cursor=&limit=",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["admin", "user-all"],
+                            "query": [
+                                {
+                                    "key": "cursor",
+                                    "value": "",
+                                    "description": "Pagination cursor"
+                                },
+                                {
+                                    "key": "limit",
+                                    "value": "20",
+                                    "description": "Results per page"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Admin Users",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/user/admin",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["admin", "user", "admin"]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Users Stats",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/user/stats",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["admin", "user", "stats"]
+                        }
+                    }
+                },
+                {
+                    "name": "Get User Detail",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/users/:id",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["admin", "users", ":id"],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "1"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Block User",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"reason\": \"Violation of community guidelines\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/users/:id/block",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["admin", "users", ":id", "block"],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "1"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Unblock User",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/users/:id/block",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["admin", "users", ":id", "block"],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "1"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Delete User",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/users/:id",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["admin", "users", ":id"],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "1"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Reviews for Moderation",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/reviews?status=",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["admin", "reviews"],
+                            "query": [
+                                {
+                                    "key": "status",
+                                    "value": "pending",
+                                    "description": "Review status filter"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Delete Review",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/reviews/:id",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["admin", "reviews", ":id"],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "1"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Reports",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/reports",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["admin", "reports"]
+                        }
+                    }
+                },
+                {
+                    "name": "Resolve Report",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/reports/:id/resolve",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["admin", "reports", ":id", "resolve"],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "1"
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Master",
+            "item": [
+                {
+                    "name": "Promote User to Admin",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/master/user/:id/promote",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["master", "user", ":id", "promote"],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "1"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Demote User to Regular",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/master/user/:id/demote",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["master", "user", ":id", "demote"],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "1"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Ban User",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/master/user/:id/ban",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["master", "user", ":id", "ban"],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "1"
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Health",
+            "item": [
+                {
+                    "name": "Health Check",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/verify/health",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["verify", "health"]
+                        }
+                    }
+                },
+                {
+                    "name": "Ping",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/verify/ping",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["verify", "ping"]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Notification",
+            "item": [
+                {
+                    "name": "Get Notifications",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/notification?cursor=",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["notification"],
+                            "query": [
+                                {
+                                    "key": "cursor",
+                                    "value": "",
+                                    "description": "Pagination cursor"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Read All Notifications",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/notification/read-all",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["notification", "read-all"]
+                        }
+                    }
+                },
+                {
+                    "name": "Delete Notification",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/notification/delete/:id",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["notification", "delete", ":id"],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "1"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Delete All Notifications",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/notification/delete-all",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["notification", "delete-all"]
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}

@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client"
   output   = "../src/generated"
@@ -14,7 +8,6 @@ datasource db {
   provider = "postgresql"
 }
 
-// version
 model AppVersion {
   id         Int      @id @default(autoincrement())
   appVersion String   
@@ -24,7 +17,6 @@ model AppVersion {
   @@unique([appVersion, dbVersion])
 }
 
-// application
 model Role {
   id    Int    @id @default(autoincrement())
   role  String @unique
@@ -35,6 +27,7 @@ model Role {
 model User {
   id        Int          @id @default(autoincrement())
   name      String
+  username  String?      @unique
   email     String       @unique
   password  String
   createdAt DateTime     @default(now())
@@ -48,6 +41,11 @@ model User {
   followers      UserFollow[]   @relation("following")
   notificationsReceived Notification[] @relation("toUser")
   notificationsSent     Notification[] @relation("fromUser")
+  reviews        Review[]
+  gameLists      UserGameList[]
+  blockedUser    BlockedUser?    @relation("Blocked")
+  blockedBy      BlockedUser[]   @relation("Blocker")
+  reportsMade    Report[]        @relation("Reporter")
 }
 
 model UserProfile {
@@ -87,7 +85,118 @@ model Notification {
   fromUser   User     @relation("fromUser", fields: [fromUserId], references: [id])
 }
 
-// views
+model Game {
+  id            Int      @id @default(autoincrement())
+  title         String
+  cover         String?
+  description   String?
+  releaseDate   DateTime?
+  genre         String?
+  averageRating Float    @default(0)
+  createdAt     DateTime @default(now())
+
+  reviews        Review[]
+  listItems      UserGameListItem[]
+
+  @@index([title])
+}
+
+enum ReviewStatus {
+  pending
+  approved
+  rejected
+}
+
+model Review {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  gameId    Int
+  rating    Int
+  text      String?
+  status    ReviewStatus @default(pending)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user       User     @relation(fields: [userId], references: [id])
+  game       Game     @relation(fields: [gameId], references: [id])
+  reports    Report[]
+
+  @@unique([userId, gameId])
+  @@index([userId])
+  @@index([gameId])
+  @@index([status])
+}
+
+model UserGameList {
+  id       Int    @id @default(autoincrement())
+  userId   Int
+  name     String
+  isPublic Boolean @default(true)
+
+  user  User   @relation(fields: [userId], references: [id])
+  items UserGameListItem[]
+
+  @@unique([userId, name])
+}
+
+model UserGameListItem {
+  id      Int      @id @default(autoincrement())
+  listId  Int
+  gameId  Int
+  addedAt DateTime @default(now())
+
+  list UserGameList @relation(fields: [listId], references: [id])
+  game Game         @relation(fields: [gameId], references: [id])
+
+  @@unique([listId, gameId])
+}
+
+model PasswordReset {
+  id        Int      @id @default(autoincrement())
+  email     String
+  token     String   @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime @default(now())
+
+
+
+  @@index([email])
+}
+
+model BlockedUser {
+  id          Int      @id @default(autoincrement())
+  userId      Int      @unique
+  blockedById Int
+  reason      String?
+  createdAt   DateTime @default(now())
+
+  user      User @relation("Blocked", fields: [userId], references: [id])
+  blockedBy User @relation("Blocker", fields: [blockedById], references: [id])
+
+  @@index([blockedById])
+}
+
+enum ReportStatus {
+  pending
+  resolved
+  rejected
+}
+
+model Report {
+  id         Int      @id @default(autoincrement())
+  reporterId Int
+  reviewId   Int
+  reason     String
+  status     ReportStatus @default(pending)
+  createdAt  DateTime @default(now())
+
+  reporter User   @relation("Reporter", fields: [reporterId], references: [id])
+  review   Review @relation(fields: [reviewId], references: [id])
+
+  @@index([status])
+}
+
 view VwUserPublic {
   id         Int      @unique
   friendlyId String?  @unique 

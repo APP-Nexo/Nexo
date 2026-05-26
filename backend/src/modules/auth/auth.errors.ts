@@ -6,6 +6,10 @@ export class AuthErrors extends AppError {
         super(message, statusCode, 'Auth Errors');
     }
 
+    static throw(message: string, statusCode: number): never {
+        throw new AuthErrors(message, statusCode);
+    }
+
     static throwMissing(field: string) {
         throw new AuthErrors(`O campo ${field} é obrigatório e não foi fornecido.`, 400);
     }
@@ -46,5 +50,10 @@ export class AuthErrors extends AppError {
 
     static ensureRefreshToken(token: string | undefined) {
         if (!token) throw new AuthErrors('Refresh token não encontrado.', 401);
+    }
+
+    static async ensureUsernameNotTaken(table: any, username: string) {
+        const user = await table.findUnique({ where: { username } });
+        if (user) throw new AuthErrors('Username indisponível.', 409);
     }
 }
