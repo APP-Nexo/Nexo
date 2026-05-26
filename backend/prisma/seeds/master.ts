@@ -1,8 +1,8 @@
 import 'dotenv/config';
 
-import { encryptPassword } from '../../src/core/shared/utils/bcrypt/encrypt_password.js';
-import { Logs } from '../../src/core/shared/utils/log/write_logs.js';
-import prisma from '../../src/core/shared/utils/prisma/prisma_conn.js';
+import { encryptPassword } from '../../src/shared/utils/argon2/encrypt_password.js';
+import { Logs } from '../../src/shared/utils/log/write_logs.js';
+import prisma from '../../src/shared/utils/prisma/prisma_conn.js';
 
 export async function seedMaster() {
     const masterRole = await prisma.role.findUnique({

@@ -1,5 +1,5 @@
-import { Logs } from '../../src/core/shared/utils/log/write_logs.js';
-import prisma from '../../src/core/shared/utils/prisma/prisma_conn.js';
+import { Logs } from '../../src/shared/utils/log/write_logs.js';
+import prisma from '../../src/shared/utils/prisma/prisma_conn.js';
 import { APP_VERSION, DB_VERSION } from '../../version.js';
 
 export async function seedVersion() {

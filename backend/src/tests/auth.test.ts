@@ -4,22 +4,22 @@ import { closeApp, startApp } from './tests.setup.js';
 // ================================================================
 //  SETUP MOCKS - Must be declared before imports to ensure hoisting
 // =================================================================
-vi.mock('../core/shared/utils/prisma/prisma_conn.js', () => ({
+vi.mock('../shared/utils/prisma/prisma_conn.js', () => ({
     default: {
         user: { findUnique: vi.fn(), findFirst: vi.fn(), create: vi.fn() },
         role: { findUnique: vi.fn() },
     },
 }));
 
-vi.mock('../core/shared/utils/bcrypt/encrypt_password.js', () => ({
+vi.mock('../shared/utils/bcrypt/encrypt_password.js', () => ({
     encryptPassword: vi.fn(),
 }));
 
-vi.mock('../core/shared/utils/bcrypt/compare_password.js', () => ({
+vi.mock('../shared/utils/bcrypt/compare_password.js', () => ({
     comparePassword: vi.fn(),
 }));
 
-vi.mock('../core/shared/utils/jwt/jwt_token.js', () => ({
+vi.mock('../shared/utils/jwt/jwt_token.js', () => ({
     JwtToken: {
         create: vi.fn().mockResolvedValue('mocked_token_12345'),
         createRefresh: vi.fn().mockResolvedValue('mocked_refresh_token_12345'),
@@ -30,10 +30,10 @@ vi.mock('../core/shared/utils/jwt/jwt_token.js', () => ({
 //  IMPORTS - After mocks are hoisted
 // ============================================================
 
-import { comparePassword } from '../../src/core/shared/utils/bcrypt/compare_password.js';
-import { encryptPassword } from '../../src/core/shared/utils/bcrypt/encrypt_password.js';
 import { app } from '../conf.js';
-import prisma from '../core/shared/utils/prisma/prisma_conn.js';
+import { comparePassword } from '../shared/utils/argon2/compare_password.js';
+import { encryptPassword } from '../shared/utils/argon2/encrypt_password.js';
+import prisma from '../shared/utils/prisma/prisma_conn.js';
 
 // ============================================================
 //  TESTS

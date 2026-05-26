@@ -4,7 +4,7 @@ import { closeApp, startApp } from './tests.setup.js';
 // ================================================================
 //  SETUP MOCKS - Must be declared before imports to ensure hoisting
 // =================================================================
-vi.mock('../core/shared/utils/prisma/prisma_conn.js', () => ({
+vi.mock('../shared/utils/prisma/prisma_conn.js', () => ({
     default: {
         user: { findUnique: vi.fn(), findFirst: vi.fn(), update: vi.fn() },
         role: { findUnique: vi.fn() },
@@ -12,8 +12,8 @@ vi.mock('../core/shared/utils/prisma/prisma_conn.js', () => ({
     },
 }));
 
-vi.mock('../core/shared/middlewares/check_token.js', () => ({
-    checkToken: async (req: any, reply: any) => {
+vi.mock('../shared/middlewares/check_token.js', () => ({
+    checkToken: async (req: any, _reply: any) => {
         req.user = {
             id: 1,
             name: 'Master User',
@@ -23,15 +23,15 @@ vi.mock('../core/shared/middlewares/check_token.js', () => ({
     },
 }));
 
-vi.mock('../core/shared/middlewares/check_acess_master.js', () => ({
-    checkAccessMaster: async (req: any, reply: any) => {},
+vi.mock('../shared/middlewares/check_acess_master.js', () => ({
+    checkAccessMaster: async (_req: any, _reply: any) => {},
 }));
 
 // ============================================================
 //  IMPORTS - After mocks are hoisted
 // ============================================================
 import { app } from '../conf.js';
-import prisma from '../core/shared/utils/prisma/prisma_conn.js';
+import prisma from '../shared/utils/prisma/prisma_conn.js';
 
 // ============================================================
 //  TESTS

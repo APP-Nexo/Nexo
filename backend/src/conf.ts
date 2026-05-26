@@ -8,7 +8,7 @@ import type { FastifyRequest } from 'fastify';
 import fastify from 'fastify';
 import fs from 'fs';
 import { setupSwagger } from '../swagger.config.js';
-import { errorHandler } from './core/shared/errors/error_handler.js';
+import { errorHandler } from './shared/errors/error_handler.js';
 
 export const app = fastify({
     logger: process.env.NODE_ENV !== 'test' ? { transport: { target: 'pino-pretty' } } : false,
@@ -35,13 +35,13 @@ await app.register(rateLimit, {
     }),
 });
 
-import { adminRoutes } from './core/modules/admin/admin.routes.js';
-import { authRoutes } from './core/modules/auth/auth.routes.js';
-import { followRoutes } from './core/modules/follow/follow.routes.js';
-import { healthRoutes } from './core/modules/health/health.routes.js';
-import { masterRoutes } from './core/modules/master/master.routes.js';
-import { notificationRoutes } from './core/modules/notification/notification.routes.js';
-import { userRoutes } from './core/modules/user/user.routes.js';
+import { adminRoutes } from './modules/admin/admin.routes.js';
+import { authRoutes } from './modules/auth/auth.routes.js';
+import { followRoutes } from './modules/follow/follow.routes.js';
+import { healthRoutes } from './modules/health/health.routes.js';
+import { masterRoutes } from './modules/master/master.routes.js';
+import { notificationRoutes } from './modules/notification/notification.routes.js';
+import { userRoutes } from './modules/user/user.routes.js';
 
 const routes = [
     { route: healthRoutes, prefix: 'api/verify' },
