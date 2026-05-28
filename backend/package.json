@@ -18,6 +18,7 @@
         "sync:seeds": "tsx prisma/seeds/index.ts",
         "start:prod": "npx prisma migrate deploy && npm start",
         "test": "NODE_ENV=test vitest run --reporter=verbose",
+        "test:ci": "npx prisma migrate deploy && npx tsx prisma/seeds/index.ts && npm test",
         "test:watch": "vitest",
         "test:coverage": "vitest run --coverage",
         "format": "npx biome check --write ."

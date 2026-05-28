@@ -4,9 +4,7 @@ services:
     build: .
     ports:
       - "3000:3000"
-    env_file: .env
-    environment:
-      - DATABASE_URL=postgresql://nexo:nexo@db:5432/nexo?schema=public
+    env_file: .env.docker
     depends_on:
       db:
         condition: service_healthy

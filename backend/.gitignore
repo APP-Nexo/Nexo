@@ -1,5 +1,6 @@
 node_modules
 .env
+.env.docker
 logs
 certs
 src/generated

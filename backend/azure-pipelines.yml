@@ -1,0 +1,43 @@
+trigger:
+  branches:
+    include:
+      - main
+      - develop
+
+pool:
+  vmImage: ubuntu-latest
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    env:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: NexoAPI
+    ports:
+      - 5432:5432
+
+variables:
+  DATABASE_URL: postgresql://postgres:postgres@localhost:5432/NexoAPI?schema=public
+  NODE_ENV: test
+  SECRET: ci-secret
+  TOKEN_TYPE: Bearer
+  TOKEN_EXPIRES: 15m
+  REFRESH_TOKEN_EXPIRES: 7d
+
+steps:
+  - task: NodeTool@0
+    inputs:
+      versionSpec: 22.x
+
+  - script: npm ci
+    displayName: Install dependencies
+
+  - script: npx prisma generate
+    displayName: Generate Prisma client
+
+  - script: npm run test:ci
+    displayName: Run migrations, seeds and tests
+
+  - script: npm run format
+    displayName: Check code formatting
