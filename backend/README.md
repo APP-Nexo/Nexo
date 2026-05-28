@@ -35,24 +35,23 @@ API REST para plataforma de reviews e social de jogos. Autenticação JWT, perfi
 
 ```mermaid
 graph TB
-    subgraph "🌐 Cliente"
-        C["Postman / Frontend"]
+    subgraph "📱 Mobile App"
+        APP["App React Native"]
     end
 
-    subgraph "🚀 Nexo API"
-        API["Fastify Server<br>Porta 3000 / HTTPS"]
+    subgraph "☁️ Azure App Service"
+        API["Backend API<br>Fastify · Porta 443<br>HTTPS / REST"]
         MOD["Módulos<br>Auth · Me · Users · Social<br>Search · Admin · Master<br>Notification · Upload"]
     end
 
-    subgraph "💾 Infraestrutura"
-        DB[("PostgreSQL 16<br>Prisma ORM")]
-        FS["File System<br>📁 avatars/<br>📁 banners/"]
+    subgraph "💾 Dados"
+        DB[("Azure Database<br>for PostgreSQL 16<br>Prisma ORM")]
+        ST["Azure Blob Storage<br>📁 avatars/<br>📁 banners/"]
     end
 
-    C -->|"HTTPS REST API"| API
-    API --> MOD
-    MOD -->|"queries"| DB
-    MOD -->|"files"| FS
+    APP -->|"HTTPS · REST API"| API
+    MOD -->|"conexão banco"| DB
+    MOD -->|"upload / download"| ST
 ```
 
 ## Pré-requisitos
