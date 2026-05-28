@@ -34,58 +34,25 @@ API REST para plataforma de reviews e social de jogos. Autenticação JWT, perfi
 ## Arquitetura
 
 ```mermaid
-flowchart TD
-    A["👤 Cliente\n(Postman/Frontend)"] -->|"HTTPS /api/*"| B
-    B{"Rate Limit\n40 req/min"} -->|"excedeu"| C["429 Muitas Requisições"]
-    B -->|"ok"| D{"Rota pública\neu protegida?"}
-    D -->|"privada"| E{checkToken\nToken JWT válido?}
-    E -->|"inválido"| F["401 Não autorizado"]
-    E -->|"válido"| G{"checkAccessPerm\né admin/master?"}
-    G -->|"não"| H["403 Acesso negado"]
-    G -->|"sim"| I["🔀 Roteamento"]
+graph TB
+    subgraph "🌐 Cliente"
+        C["Postman / Frontend"]
+    end
 
-    D -->|"pública"| I
+    subgraph "🚀 Nexo API"
+        API["Fastify Server<br>Porta 3000 / HTTPS"]
+        MOD["Módulos<br>Auth · Me · Users · Social<br>Search · Admin · Master<br>Notification · Upload"]
+    end
 
-    I -->|"/auth/register"| AUTH1["Auth → cria usuário\n+ JWT"]
-    I -->|"/auth/login"| AUTH2["Auth → verifica senha\n+ JWT"]
-    I -->|"/auth/refresh"| AUTH3["Auth → renova token"]
-    I -->|"/auth/forgot-password"| AUTH4["Auth → email reset"]
-    I -->|"/auth/reset-password"| AUTH5["Auth → troca senha"]
-    I -->|"/me"| ME1["Me → GET perfil"]
-    I -->|"PUT /me"| ME2["Me → multipart\nou JSON"]
-    I -->|"/users/:username"| USERS1["Users → perfil público"]
-    I -->|"/social/:username/follow"| SOC1["Social → follow_user()"]
-    I -->|"/social/feed"| SOC2["Social → reviews\nde quem sigo"]
-    I -->|"/search/users?q="| SEARCH1["Search → pg_trgm\nbusca textual"]
-    I -->|"/admin/dashboard"| ADM1["Admin → métricas"]
-    I -->|"/admin/users/:id/block"| ADM2["Admin → blockedUser"]
-    I -->|"/admin/reviews"| ADM3["Admin → moderação"]
-    I -->|"/admin/reports"| ADM4["Admin → denúncias"]
-    I -->|"/master/user/:id/promote"| MSTR["Master → role"]
-    I -->|"/notification"| NOTIF["Notification → listar/ler/deletar"]
+    subgraph "💾 Infraestrutura"
+        DB[("PostgreSQL 16<br>Prisma ORM")]
+        FS["File System<br>📁 avatars/<br>📁 banners/"]
+    end
 
-    AUTH1 --> DB[("💾 PostgreSQL\nPrisma ORM")]
-    AUTH2 --> DB
-    AUTH3 --> DB
-    AUTH4 --> DB
-    AUTH5 --> DB
-    ME1 --> DB
-    ME2 --> DB
-    ME2 -->|"upload"| STORAGE[("📁 Storage\npublic/avatars/\npublic/banners/")]
-    USERS1 --> DB
-    SOC1 --> DB
-    SOC2 --> DB
-    SEARCH1 --> DB
-    ADM1 --> DB
-    ADM2 --> DB
-    ADM3 --> DB
-    ADM4 --> DB
-    MSTR --> DB
-    NOTIF --> DB
-
-    DB --> RESP["📤 Resposta JSON"]
-    STORAGE --> RESP
-    RESP --> A
+    C -->|"HTTPS REST API"| API
+    API --> MOD
+    MOD -->|"queries"| DB
+    MOD -->|"files"| FS
 ```
 
 ## Pré-requisitos
