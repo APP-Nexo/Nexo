@@ -31,7 +31,7 @@ vi.mock('../shared/utils/jwt/jwt_token.js', () => ({
     JwtToken: { getByUser: vi.fn().mockResolvedValue({ id: 1, roleId: 2 }) },
 }));
 
-vi.mock('../shared/middlewares/check_acess_perm.js', () => ({
+vi.mock('../shared/middlewares/check_access_perm.js', () => ({
     checkAccessPerm: async (_req: any, _reply: any) => {},
 }));
 

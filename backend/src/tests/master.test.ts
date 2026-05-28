@@ -23,7 +23,7 @@ vi.mock('../shared/middlewares/check_token.js', () => ({
     },
 }));
 
-vi.mock('../shared/middlewares/check_acess_master.js', () => ({
+vi.mock('../shared/middlewares/check_access_master.js', () => ({
     checkAccessMaster: async (_req: any, _reply: any) => {},
 }));
 

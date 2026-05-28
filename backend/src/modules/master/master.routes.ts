@@ -1,5 +1,5 @@
 import type { FastifyInstance } from 'fastify';
-import { checkAccessMaster } from '../../shared/middlewares/check_acess_master.js';
+import { checkAccessMaster } from '../../shared/middlewares/check_access_master.js';
 import { checkToken } from '../../shared/middlewares/check_token.js';
 import { MasterController } from './master.controller.js';
 import {
