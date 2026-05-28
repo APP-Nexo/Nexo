@@ -35,23 +35,28 @@ API REST para plataforma de reviews e social de jogos. Autenticação JWT, perfi
 
 ```mermaid
 graph TB
-    subgraph "📱 Mobile App"
+    USR["👤 Usuário"]
+
+    subgraph "📱 Mobile"
         APP["App React Native"]
     end
 
-    subgraph "☁️ Azure App Service"
-        API["Backend API<br>Fastify · Porta 443<br>HTTPS / REST"]
-        MOD["Módulos<br>Auth · Me · Users · Social<br>Search · Admin · Master<br>Notification · Upload"]
+    subgraph "☁️ Azure"
+        API["Backend API<br>Fastify"]
+        MOD["Módulos<br>Auth · Me · Users · Social<br>Search · Admin · Master<br>Notification"]
     end
 
     subgraph "💾 Dados"
-        DB[("Azure Database<br>for PostgreSQL 16<br>Prisma ORM")]
-        ST["Azure Blob Storage<br>📁 avatars/<br>📁 banners/"]
+        DB[("PostgreSQL<br>Prisma ORM")]
+        ST["Blob Storage<br>avatars / banners"]
     end
 
-    APP -->|"HTTPS · REST API"| API
-    MOD -->|"conexão banco"| DB
-    MOD -->|"upload / download"| ST
+    USR --> APP
+    APP -->|"HTTPS · REST"| API
+    API --> MOD
+    MOD --> DB
+    MOD --> ST
+```
 ```
 
 ## Pré-requisitos
