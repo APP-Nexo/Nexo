@@ -1,5 +1,5 @@
 import type { FastifyInstance } from 'fastify';
-import { checkAccessPerm } from '../../shared/middlewares/check_acess_perm.js';
+import { checkAccessPerm } from '../../shared/middlewares/check_access_perm.js';
 import { checkToken } from '../../shared/middlewares/check_token.js';
 import { AdminController } from './admin.controller.js';
 import {
