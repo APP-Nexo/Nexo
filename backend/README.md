@@ -43,7 +43,7 @@ graph TB
 
     subgraph "☁️ Azure"
         API["Backend API<br>Fastify"]
-        MOD["Módulos<br>Auth · Me · Users · Social<br>Search · Admin · Master<br>Notification"]
+        MOD["Módulos<br>Auth · Me · Users · Social<br>Search · Admin · Master<br>Notification · Games"]
     end
 
     subgraph "💾 Dados"
