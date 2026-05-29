@@ -243,135 +243,64 @@ banner: (arquivo .jpg/.png/.webp, máx 5MB)
 - `Notification` — notificações
 - `PasswordReset` — tokens de reset de senha
 
-## Previsão de Crescimento e Controle de Performance
+## Previsão de Crescimento e Estratégia de Banco de Dados
 
-### Crescimento esperado por entidade
+### Projeção de volume
 
-| Tabela | Crescimento | Estratégia |
-|---|---|---|
-| `User` | Linear (cadastros) | Indexado por email, username |
-| `Review` | Linear por usuário ativo | Indexado por userId + gameId (unique), status |
-| `UserFollow` | Linear por usuário ativo | Indexado composto (followerId, followingId) |
-| `Notification` | Alto (notificações por ação) | Indexado por toUserId |
-| `Report` | Baixo (denúncias) | Indexado por status |
+As tabelas com maior volume projetado são User, Game e Review. Users e Games crescem de forma linear — cadastros e catálogo tendem a estabilizar com o tempo. Review cresce em escala diferente: cada par usuário × game pode gerar uma review, então o volume potencial é o produto dos dois, o que exige atenção especial conforme a base de usuários aumenta.
 
-### Índices implementados
+### Integridade dos Dados
 
-```sql
--- Busca textual com pg_trgm (O(log n) para ILIKE)
-CREATE INDEX "Game_title_idx" ON "Game" USING gin ("title" gin_trgm_ops);
+Conforme o volume cresce, a probabilidade de operações concorrentes sobre os mesmos dados aumenta. Dois usuários seguindo o mesmo perfil ao mesmo tempo, múltiplas reviews sendo publicadas simultaneamente, um usuário alterando o perfil enquanto outro lê — sem garantias de integridade, esses cenários produzem dados inconsistentes silenciosamente. Os princípios ACID são o contrato que o PostgreSQL oferece para que isso não aconteça.
 
--- Consultas por status (filtros de moderação/dashboard)
-CREATE INDEX "Review_status_idx" ON "Review"("status");
-CREATE INDEX "Report_status_idx" ON "Report"("status");
+### Camada de queries e índices
 
--- Relacionamentos (JOINs frequentes)
-CREATE INDEX "Review_userId_idx" ON "Review"("userId");
-CREATE INDEX "Review_gameId_idx" ON "Review"("gameId");
-CREATE INDEX "BlockedUser_blockedById_idx" ON "BlockedUser"("blockedById");
+Índices pg_trgm para busca textual por nome, username e título, mantendo performance em O(log n) mesmo com milhões de registros.
 
--- Chaves únicas que evitam duplicatas
-UNIQUE("User"."email"), UNIQUE("User"."username")
-UNIQUE("Review"."userId", "Review"."gameId")
-UNIQUE("UserFollow"."followerId", "UserFollow"."followingId")
-```
+Índice composto (userId, gameId) UNIQUE na tabela Review, que serve dois propósitos ao mesmo tempo: impede reviews duplicadas por regra de banco e acelera todos os joins entre usuários e avaliações.
 
-### Paginação eficiente
+Cursor-based pagination em todas as listagens. Ao contrário do OFFSET, que degrada linearmente conforme o total de registros cresce, a paginação por cursor mantém velocidade constante independente do volume.
 
-Todas as listagens usam **cursor-based pagination** (não OFFSET), que mantém performance constante conforme os dados crescem:
+Selects direcionadas que retornam apenas os campos necessários para cada operação, evitando tráfego desnecessário entre banco e aplicação.
 
-```ts
-// Exemplo: feed social com cursor
-const { data, nextCursor } = await cursorPaginate({
-    findMany: (args) => prisma.review.findMany({ ...args, orderBy: { createdAt: 'desc' } }),
-    take: 10,
-    cursor,
-})
-```
+### Rate Limiting
 
-### Monitoramento sugerido
+Rate limiting é a primeira linha de defesa contra sobrecarga, atuando antes que a requisição chegue à aplicação ou ao banco. Ao limitar o número de requisições por usuário ou IP em uma janela de tempo, ele bloqueia abuso intencional, bots, força bruta em login e picos artificiais de tráfego que consumiriam conexões e processamento do banco desnecessariamente.
 
-```sql
--- Ativar coleta de estatísticas
-CREATE EXTENSION IF NOT EXISTS pg_stat_statements;
+### Estratégia de cache
 
--- Top 5 queries mais lentas
-SELECT query, mean_exec_time, calls
-FROM pg_stat_statements
-ORDER BY mean_exec_time DESC
-LIMIT 5;
+Queries de alto volume e baixa variação — como ranking de jogos e feeds públicos — não devem atingir o banco a cada requisição. Redis como camada de cache com invalidação por evento resolve isso: o cache do ranking é invalidado automaticamente quando uma nova review é publicada, garantindo dados frescos sem pressão constante no banco.
 
--- Tamanho das tabelas
-SELECT relname, pg_size_pretty(pg_total_relation_size(relid))
-FROM pg_catalog.pg_statio_user_tables
-ORDER BY pg_total_relation_size(relid) DESC;
-```
+### Política de backup e recuperação
 
-### Plano para escala futura
+Backup semanal isolado não é suficiente para produção — uma falha na quinta-feira representa até 6 dias de perda de dados. A estratégia recomendada é em três camadas:
+Backup incremental diário para cobrir perdas de curto prazo. Backup completo semanal para restauração de estado consistente. WAL archiving contínuo com Point-in-Time Recovery (PITR), que permite restaurar o banco para qualquer segundo específico dentro da janela de retenção — não apenas para o momento do último backup.
 
-| Volume | Ação |
-|---|---|
-| **~100k usuários** | Manter índices atuais + conexão pool (PgBouncer) |
-| **~1M usuários** | Particionar `Notification` por data (`createdAt`) |
-| **~10M reviews** | Particionar `Review` por `gameId` (hash) |
-| **Alta concorrência** | Read replicas + cache Redis para feed |
+### Segurança do Banco de Dados
 
-## Gestão de Usuários do Banco de Dados
+Conforme o volume de dados cresce, o impacto de uma brecha cresce proporcionalmente. Um banco com mil usuários comprometido é um incidente. O mesmo banco com cem mil usuários é um desastre legal, reputacional e operacional. A segurança precisa ser projetada desde o início, não adicionada depois.
 
-Atualmente o projeto usa um único usuário (`postgres`) com acesso total. Para produção, recomenda-se separar por função:
+## Gestão de Usuários do Banco — Princípio do Menor Privilégio
 
-### Estrutura sugerida
+### Por que separar?
 
-| Usuário | Permissão | Finalidade |
-|---|---|---|
-| `app_nexo` | CRUD nas tabelas (SELECT, INSERT, UPDATE, DELETE) | Operação da API |
-| `migration_nexo` | DDL (CREATE, ALTER, DROP) + CRUD | Executar migrations |
-| `readonly_nexo` | SELECT apenas | Relatórios e dashboards |
+Hoje tudo roda com superuser (postgres). Um erro na API, um SQL injection, ou um descuido de um desenvolvedor pode dropar uma tabela, alterar o schema, ou deletar dados críticos — porque o superuser tem poder ilimitado. Separar os usuários em funções distintas limita o estrago ao mínimo necessário para cada operação. Essa é a essência do princípio do menor privilégio: cada componente recebe exatamente as permissões que precisa, nada mais.
 
-### Criação dos usuários
+### readonly_nexo
 
-```sql
--- App user (menor privilégio)
-CREATE USER app_nexo WITH PASSWORD 'senha_segura';
-GRANT CONNECT ON DATABASE "NexoAPI" TO app_nexo;
-GRANT USAGE ON SCHEMA public TO app_nexo;
-GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO app_nexo;
-GRANT USAGE ON ALL SEQUENCES IN SCHEMA public TO app_nexo;
+readonly_nexo é o usuário mais restrito. Ele só consegue conectar e fazer SELECT em tabelas, views e sequences. Nada de INSERT, UPDATE, DELETE, nem DDL. Quem usa ele são os scripts de backup, dashboards, relatórios e queries analíticas — tarefas que nunca precisam escrever no banco. Se esse usuário for comprometido, o pior que acontece é vazamento de dados, mas o banco jamais é corrompido. Um backup malicioso ou bugado não apaga registros, e uma query de relatório errada não causa deadlock de escrita.
 
--- Migration user (DDL incluso)
-CREATE USER migration_nexo WITH PASSWORD 'senha_segura';
-GRANT app_nexo TO migration_nexo;  -- herda permissões do app
-GRANT CREATE ON SCHEMA public TO migration_nexo;
+### app_nexo
 
--- Read-only user
-CREATE USER readonly_nexo WITH PASSWORD 'senha_segura';
-GRANT CONNECT ON DATABASE "NexoAPI" TO readonly_nexo;
-GRANT USAGE ON SCHEMA public TO readonly_nexo;
-GRANT SELECT ON ALL TABLES IN SCHEMA public TO readonly_nexo;
-```
+app_nexo é o usuário da API em runtime. Ele tem permissão para SELECT, INSERT, UPDATE, DELETE nas tabelas e USAGE nas sequences — exatamente o que uma aplicação precisa para manipular dados do dia a dia, como criar um usuário, postar uma review, ou seguir outro perfil. Mas ele não pode criar, alterar ou dropar tabelas, índices ou funções. Se houver um SQL injection ou bug na query, o atacante consegue ler e escrever dados, mas não consegue dropar a tabela User nem alterar o schema do banco. É a camada que protege a estrutura enquanto permite a operação normal.
 
-### Configuração no .env
+### migration_nexo
 
-```env
-# App (uso normal da API)
-DATABASE_URL=postgresql://app_nexo:senha@localhost:5432/NexoAPI
+migration_nexo é o único com acesso total — ALL em schemas, tabelas, sequences e funções. Ele só existe porque migrations precisam executar DDL: criar tabelas, alterar colunas, adicionar índices, modificar constraints. Quem usa ele é exclusivamente o Prisma durante deploys e em desenvolvimento. O poder total fica restrito a uma janela curta e controlada — os minutos de uma migration. No resto do tempo, o banco opera com app_nexo, que não pode quebrar o schema. Essa separação é o que torna o sistema seguro: o poder diminui quanto maior o tempo de exposição.
 
-# Prisma migrations (prisma.config.ts usa env('DATABASE_URL'))
-# Durante migrate, trocar para o usuário com DDL:
-# DATABASE_URL=postgresql://migration_nexo:senha@localhost:5432/NexoAPI
-```
+### Usuário de emergência
 
-### No Azure Database for PostgreSQL
-
-```bash
-# Configurar firewall para permitir IP do App Service
-az postgres server firewall-rule create \
-  --resource-group nexo-rg \
-  --server nexo-pg \
-  --name allow-appservice \
-  --start-ip-address <ip-do-app-service> \
-  --end-ip-address <ip-do-app-service>
-```
+Para situações de disaster recovery — como resetar a senha de um dos usuários, revogar permissões incorretas, ou recuperar de uma falha catastrófica — existe um quarto usuário, admin_nexo, que é superuser. Ele não fica em nenhum .env, docker-compose, CI, ou arquivo versionado. É um segredo documentado exclusivamente no cofre de senhas da equipe (LastPass, 1Password, Azure Key Vault) e usado apenas manualmente em emergências.
 
 ## Testes
 
