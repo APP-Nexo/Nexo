@@ -243,6 +243,136 @@ banner: (arquivo .jpg/.png/.webp, máx 5MB)
 - `Notification` — notificações
 - `PasswordReset` — tokens de reset de senha
 
+## Previsão de Crescimento e Controle de Performance
+
+### Crescimento esperado por entidade
+
+| Tabela | Crescimento | Estratégia |
+|---|---|---|
+| `User` | Linear (cadastros) | Indexado por email, username |
+| `Review` | Linear por usuário ativo | Indexado por userId + gameId (unique), status |
+| `UserFollow` | Linear por usuário ativo | Indexado composto (followerId, followingId) |
+| `Notification` | Alto (notificações por ação) | Indexado por toUserId |
+| `Report` | Baixo (denúncias) | Indexado por status |
+
+### Índices implementados
+
+```sql
+-- Busca textual com pg_trgm (O(log n) para ILIKE)
+CREATE INDEX "Game_title_idx" ON "Game" USING gin ("title" gin_trgm_ops);
+
+-- Consultas por status (filtros de moderação/dashboard)
+CREATE INDEX "Review_status_idx" ON "Review"("status");
+CREATE INDEX "Report_status_idx" ON "Report"("status");
+
+-- Relacionamentos (JOINs frequentes)
+CREATE INDEX "Review_userId_idx" ON "Review"("userId");
+CREATE INDEX "Review_gameId_idx" ON "Review"("gameId");
+CREATE INDEX "BlockedUser_blockedById_idx" ON "BlockedUser"("blockedById");
+
+-- Chaves únicas que evitam duplicatas
+UNIQUE("User"."email"), UNIQUE("User"."username")
+UNIQUE("Review"."userId", "Review"."gameId")
+UNIQUE("UserFollow"."followerId", "UserFollow"."followingId")
+```
+
+### Paginação eficiente
+
+Todas as listagens usam **cursor-based pagination** (não OFFSET), que mantém performance constante conforme os dados crescem:
+
+```ts
+// Exemplo: feed social com cursor
+const { data, nextCursor } = await cursorPaginate({
+    findMany: (args) => prisma.review.findMany({ ...args, orderBy: { createdAt: 'desc' } }),
+    take: 10,
+    cursor,
+})
+```
+
+### Monitoramento sugerido
+
+```sql
+-- Ativar coleta de estatísticas
+CREATE EXTENSION IF NOT EXISTS pg_stat_statements;
+
+-- Top 5 queries mais lentas
+SELECT query, mean_exec_time, calls
+FROM pg_stat_statements
+ORDER BY mean_exec_time DESC
+LIMIT 5;
+
+-- Tamanho das tabelas
+SELECT relname, pg_size_pretty(pg_total_relation_size(relid))
+FROM pg_catalog.pg_statio_user_tables
+ORDER BY pg_total_relation_size(relid) DESC;
+```
+
+### Plano para escala futura
+
+| Volume | Ação |
+|---|---|
+| **~100k usuários** | Manter índices atuais + conexão pool (PgBouncer) |
+| **~1M usuários** | Particionar `Notification` por data (`createdAt`) |
+| **~10M reviews** | Particionar `Review` por `gameId` (hash) |
+| **Alta concorrência** | Read replicas + cache Redis para feed |
+
+## Gestão de Usuários do Banco de Dados
+
+Atualmente o projeto usa um único usuário (`postgres`) com acesso total. Para produção, recomenda-se separar por função:
+
+### Estrutura sugerida
+
+| Usuário | Permissão | Finalidade |
+|---|---|---|
+| `app_nexo` | CRUD nas tabelas (SELECT, INSERT, UPDATE, DELETE) | Operação da API |
+| `migration_nexo` | DDL (CREATE, ALTER, DROP) + CRUD | Executar migrations |
+| `readonly_nexo` | SELECT apenas | Relatórios e dashboards |
+
+### Criação dos usuários
+
+```sql
+-- App user (menor privilégio)
+CREATE USER app_nexo WITH PASSWORD 'senha_segura';
+GRANT CONNECT ON DATABASE "NexoAPI" TO app_nexo;
+GRANT USAGE ON SCHEMA public TO app_nexo;
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO app_nexo;
+GRANT USAGE ON ALL SEQUENCES IN SCHEMA public TO app_nexo;
+
+-- Migration user (DDL incluso)
+CREATE USER migration_nexo WITH PASSWORD 'senha_segura';
+GRANT app_nexo TO migration_nexo;  -- herda permissões do app
+GRANT CREATE ON SCHEMA public TO migration_nexo;
+
+-- Read-only user
+CREATE USER readonly_nexo WITH PASSWORD 'senha_segura';
+GRANT CONNECT ON DATABASE "NexoAPI" TO readonly_nexo;
+GRANT USAGE ON SCHEMA public TO readonly_nexo;
+GRANT SELECT ON ALL TABLES IN SCHEMA public TO readonly_nexo;
+```
+
+### Configuração no .env
+
+```env
+# App (uso normal da API)
+DATABASE_URL=postgresql://app_nexo:senha@localhost:5432/NexoAPI
+
+# Prisma migrations (prisma.config.ts usa env('DATABASE_URL'))
+# Durante migrate, trocar para o usuário com DDL:
+# DATABASE_URL=postgresql://migration_nexo:senha@localhost:5432/NexoAPI
+```
+
+### No Azure Database for PostgreSQL
+
+```bash
+# Configurar firewall para permitir IP do App Service
+az postgres server firewall-rule create \
+  --resource-group nexo-rg \
+  --server nexo-pg \
+  --name allow-appservice \
+  --start-ip-address <ip-do-app-service> \
+  --end-ip-address <ip-do-app-service>
+```
+
 ## Testes
 
 ```bash
