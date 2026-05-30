@@ -271,14 +271,64 @@ Rate limiting é a primeira linha de defesa contra sobrecarga, atuando antes que
 
 Queries de alto volume e baixa variação — como ranking de jogos e feeds públicos — não devem atingir o banco a cada requisição. Redis como camada de cache com invalidação por evento resolve isso: o cache do ranking é invalidado automaticamente quando uma nova review é publicada, garantindo dados frescos sem pressão constante no banco.
 
-### Política de backup e recuperação
-
-Backup semanal isolado não é suficiente para produção — uma falha na quinta-feira representa até 6 dias de perda de dados. A estratégia recomendada é em três camadas:
-Backup incremental diário para cobrir perdas de curto prazo. Backup completo semanal para restauração de estado consistente. WAL archiving contínuo com Point-in-Time Recovery (PITR), que permite restaurar o banco para qualquer segundo específico dentro da janela de retenção — não apenas para o momento do último backup.
-
 ### Segurança do Banco de Dados
 
 Conforme o volume de dados cresce, o impacto de uma brecha cresce proporcionalmente. Um banco com mil usuários comprometido é um incidente. O mesmo banco com cem mil usuários é um desastre legal, reputacional e operacional. A segurança precisa ser projetada desde o início, não adicionada depois.
+
+## Backup e Recuperação
+
+### Estratégia em três camadas
+
+Backup semanal isolado não é suficiente para produção — uma falha na quinta-feira representa até 6 dias de perda de dados. A estratégia recomendada é em três camadas:
+
+**Backup incremental diário** para cobrir perdas de curto prazo.
+**Backup completo semanal** para restauração de estado consistente.
+**WAL archiving contínuo com Point-in-Time Recovery (PITR)**, que permite restaurar o banco para qualquer segundo específico dentro da janela de retenção — não apenas para o momento do último backup.
+
+### Implementação atual
+
+O projeto já conta com scripts prontos em `scripts/` para operação básica:
+
+| Script | Descrição |
+|---|---|
+| `backup.sh` | `pg_dump` com compressão gzip, retenção configurável (padrão 7 dias) |
+| `restore.sh` | Restaura um arquivo `.sql.gz` via `psql` |
+| `setup-cron.sh` | Agenda backup diário (00:00) via crontab |
+
+```bash
+# Executar backup manual
+./scripts/backup.sh
+
+# Restaurar backup
+./scripts/restore.sh backups/nexo_2026-05-30_00-00-00.sql.gz
+
+# Configurar cron automático
+./scripts/setup-cron.sh
+```
+
+### Point-in-Time Recovery (PITR)
+
+Para ativar PITR é necessário configurar o WAL archiving no `postgresql.conf`:
+
+```conf
+wal_level = replica
+archive_mode = on
+archive_command = 'cp %p /backups/wal/%f'
+```
+
+Com WAL archiving ativo, a restauração pode ser feita para qualquer ponto no tempo:
+
+```bash
+# Restaurar o banco até um minuto específico antes do incidente
+pg_restore -d NexoAPI --target-time "2026-05-30 14:30:00" backup_completo.sql
+```
+
+### Recomendações para produção
+
+- Backup diário + WAL contínuo → perda máxima de segundos, não dias
+- Offsite: copiar dumps para Azure Blob Storage ou S3
+- Usar `readonly_nexo` no backup.sh em vez de superuser (ver Gestão de Usuários)
+- Testar restore periodicamente — backup que não é testado não é backup
 
 ## Gestão de Usuários do Banco — Princípio do Menor Privilégio
 
