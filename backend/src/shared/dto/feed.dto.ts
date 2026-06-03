@@ -2,7 +2,6 @@ export type FeedItemDTO = {
     id: number;
     type: 'review' | 'follow';
     userId: number;
-    userName: string;
     userUsername: string | null;
     userPhoto: string | null;
     createdAt: Date;
@@ -16,7 +15,6 @@ export type FeedItemDTO = {
     } | null;
     follow?: {
         targetId: number;
-        targetName: string;
         targetUsername: string | null;
     } | null;
 };

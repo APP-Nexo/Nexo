@@ -1,11 +1,10 @@
 export const registerSchemaSwagger = {
     schema: {
         tags: ['Auth'],
-        summary: 'Register',
+        summary: '/auth/register',
         body: {
             type: 'object',
             properties: {
-                name: { type: 'string' },
                 username: { type: 'string' },
                 email: { type: 'string' },
                 password: { type: 'string' },
@@ -29,7 +28,7 @@ export const registerSchemaSwagger = {
 export const loginSchemaSwagger = {
     schema: {
         tags: ['Auth'],
-        summary: 'Login',
+        summary: '/auth/login',
         body: {
             type: 'object',
             properties: {
@@ -54,7 +53,7 @@ export const loginSchemaSwagger = {
 export const refreshSchemaSwagger = {
     schema: {
         tags: ['Auth'],
-        summary: 'Refresh token',
+        summary: '/auth/refresh',
         body: {
             type: 'object',
             properties: {
@@ -77,7 +76,7 @@ export const refreshSchemaSwagger = {
 export const logoutSchemaSwagger = {
     schema: {
         tags: ['Auth'],
-        summary: 'Logout',
+        summary: '/auth/logout',
         response: {
             200: {
                 type: 'object',
@@ -92,7 +91,7 @@ export const logoutSchemaSwagger = {
 export const forgotPasswordSchemaSwagger = {
     schema: {
         tags: ['Auth'],
-        summary: 'Forgot password',
+        summary: '/auth/forgot-password',
         body: {
             type: 'object',
             properties: {
@@ -104,6 +103,8 @@ export const forgotPasswordSchemaSwagger = {
                 type: 'object',
                 properties: {
                     message: { type: 'string' },
+                    token: { type: 'string' },
+                    expiresAt: { type: 'string', format: 'date-time' },
                 },
             },
         },
@@ -113,7 +114,7 @@ export const forgotPasswordSchemaSwagger = {
 export const resetPasswordSchemaSwagger = {
     schema: {
         tags: ['Auth'],
-        summary: 'Reset password',
+        summary: '/auth/reset-password',
         body: {
             type: 'object',
             properties: {

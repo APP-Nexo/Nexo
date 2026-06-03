@@ -1,7 +1,7 @@
 export const healthSchemaSwagger = {
     schema: {
         tags: ['Health'],
-        summary: 'Check if the API is online',
+        summary: '/verify/health',
         response: {
             200: {
                 type: 'object',
@@ -17,7 +17,7 @@ export const healthSchemaSwagger = {
 export const pingSchemaSwagger = {
     schema: {
         tags: ['Health'],
-        summary: 'Ping',
+        summary: '/verify/ping',
         response: {
             200: {
                 type: 'object',

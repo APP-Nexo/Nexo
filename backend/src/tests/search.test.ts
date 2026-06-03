@@ -19,7 +19,6 @@ describe('Search Routes', () => {
             vi.mocked(prisma.user.findMany).mockResolvedValueOnce([
                 {
                     id: 1,
-                    name: 'Test User',
                     username: 'testuser',
                     profile: { photo: null, bio: 'hi', followersCount: 5 },
                 },
@@ -34,18 +33,26 @@ describe('Search Routes', () => {
             const body = response.json();
             expect(body).toHaveProperty('data');
             expect(body.data).toHaveLength(1);
-            expect(body.data[0]).toHaveProperty('name', 'Test User');
+            expect(body.data[0]).toHaveProperty('username', 'testuser');
             expect(body.data[0]).toHaveProperty('username', 'testuser');
         });
 
-        it('should return empty array for short query', async () => {
+        it('should return all active users for short query', async () => {
+            vi.mocked(prisma.user.findMany).mockResolvedValueOnce([
+                {
+                    id: 1,
+                    username: 'testuser',
+                    profile: { photo: null, bio: 'hi', followersCount: 5 },
+                },
+            ] as any);
+
             const response = await app.inject({
                 method: 'GET',
                 url: '/api/search/users?q=a',
             });
 
             expect(response.statusCode).toBe(200);
-            expect(response.json().data).toEqual([]);
+            expect(response.json().data).toHaveLength(1);
         });
     });
 });

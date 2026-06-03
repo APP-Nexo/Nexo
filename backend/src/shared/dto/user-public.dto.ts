@@ -1,7 +1,6 @@
 export type UserPublicDTO = {
     id: number;
     friendlyId: string | null;
-    name: string;
     email: string;
     createdAt: Date;
     roleId: number;
@@ -16,7 +15,6 @@ export type UserPublicDTO = {
 export type UserPublicSearchResult = {
     id: number;
     friendlyId: string | null;
-    name: string;
     email: string;
     photo: string | null;
     createdAt: Date;
@@ -26,7 +24,6 @@ export type UserPublicSearchResult = {
 export type UserPublicSimple = {
     id: number;
     friendlyId: string | null;
-    name: string;
     email: string;
     photo: string | null;
     createdAt: Date;

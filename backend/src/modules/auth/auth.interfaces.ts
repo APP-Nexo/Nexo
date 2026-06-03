@@ -1,23 +1,21 @@
 export interface RegisterPayload {
-    name: string;
     username?: string;
     email: string;
     password: string;
     confirmPassword: string;
 }
 
-export interface LoginPayload {
-    email: string;
-    password: string;
-}
-
 export interface UserPayload {
     id: number;
-    name: string;
     username?: string | null;
     email: string;
     password: string;
     roleId: number;
+}
+
+export interface LoginPayload {
+    email: string;
+    password: string;
 }
 
 export type FindByEmail = {

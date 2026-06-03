@@ -15,7 +15,7 @@ export class NotificationService {
                     where: { toUserId: userId },
                     include: {
                         fromUser: {
-                            select: { id: true, name: true },
+                            select: { id: true, username: true },
                         },
                     },
                     orderBy: { createdAt: 'desc' },

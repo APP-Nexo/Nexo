@@ -1,7 +1,7 @@
 export const getUserProfileSchemaSwagger = {
     schema: {
         tags: ['Users'],
-        summary: 'Get public user profile',
+        summary: '/users/:username',
         security: [{ bearerAuth: [] }],
         params: {
             type: 'object',
@@ -14,7 +14,6 @@ export const getUserProfileSchemaSwagger = {
                 type: 'object',
                 properties: {
                     id: { type: 'number' },
-                    name: { type: 'string' },
                     username: { type: 'string', nullable: true },
                     bio: { type: 'string', nullable: true },
                     photo: { type: 'string', nullable: true },
@@ -32,7 +31,7 @@ export const getUserProfileSchemaSwagger = {
 export const getUserReviewsSchemaSwagger = {
     schema: {
         tags: ['Users'],
-        summary: 'Get user reviews',
+        summary: '/users/:username/reviews',
         security: [{ bearerAuth: [] }],
         params: {
             type: 'object',
@@ -61,7 +60,7 @@ export const getUserReviewsSchemaSwagger = {
 export const getUserStatsSchemaSwagger = {
     schema: {
         tags: ['Users'],
-        summary: 'Get user stats',
+        summary: '/users/:username/stats',
         params: {
             type: 'object',
             properties: {
@@ -87,7 +86,7 @@ export const getUserStatsSchemaSwagger = {
 export const getUserListsSchemaSwagger = {
     schema: {
         tags: ['Users'],
-        summary: 'Get user game lists',
+        summary: '/users/:username/lists',
         params: {
             type: 'object',
             properties: {
@@ -99,6 +98,36 @@ export const getUserListsSchemaSwagger = {
                 type: 'object',
                 properties: {
                     lists: { type: 'array', items: { type: 'object' } },
+                },
+            },
+        },
+    },
+};
+
+export const getUserProfileByFriendlyIdSchemaSwagger = {
+    schema: {
+        tags: ['Users'],
+        summary: '/users/friendly/:friendlyId',
+        security: [{ bearerAuth: [] }],
+        params: {
+            type: 'object',
+            properties: {
+                friendlyId: { type: 'string' },
+            },
+        },
+        response: {
+            200: {
+                type: 'object',
+                properties: {
+                    id: { type: 'number' },
+                    username: { type: 'string', nullable: true },
+                    bio: { type: 'string', nullable: true },
+                    photo: { type: 'string', nullable: true },
+                    banner: { type: 'string', nullable: true },
+                    followersCount: { type: 'number' },
+                    followingCount: { type: 'number' },
+                    createdAt: { type: 'string', format: 'date-time' },
+                    isFollowing: { type: 'boolean' },
                 },
             },
         },

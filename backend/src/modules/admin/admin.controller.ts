@@ -20,8 +20,8 @@ export class AdminController {
     }
 
     static async searchUser(req: FastifyRequest, reply: FastifyReply) {
-        const { email, cursor } = req.query as SearchByEmailPayload;
-        const response = await AdminService.searchUser(email, cursor);
+        const { q, cursor } = req.query as SearchByEmailPayload;
+        const response = await AdminService.searchUser(q, cursor);
         return reply.status(200).send(response);
     }
 

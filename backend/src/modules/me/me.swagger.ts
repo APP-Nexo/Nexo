@@ -1,14 +1,13 @@
 export const getMeSchemaSwagger = {
     schema: {
         tags: ['Me'],
-        summary: 'Get own profile',
+        summary: '/me',
         security: [{ bearerAuth: [] }],
         response: {
             200: {
                 type: 'object',
                 properties: {
                     id: { type: 'number' },
-                    name: { type: 'string' },
                     username: { type: 'string', nullable: true },
                     email: { type: 'string' },
                     roleId: { type: 'number' },
@@ -34,14 +33,13 @@ export const getMeSchemaSwagger = {
 export const updateMeSchemaSwagger = {
     schema: {
         tags: ['Me'],
-        summary: 'Update own profile',
+        summary: '/me',
         description: 'Accepta multipart/form-data (com files photo/banner) ou application/json',
         security: [{ bearerAuth: [] }],
         consumes: ['application/json', 'multipart/form-data'],
         body: {
             type: 'object',
             properties: {
-                name: { type: 'string' },
                 username: { type: 'string' },
                 bio: { type: 'string' },
                 photo: { type: 'string', description: 'URL da foto (JSON) ou file upload (multipart)' },
@@ -62,7 +60,7 @@ export const updateMeSchemaSwagger = {
 export const changePasswordSchemaSwagger = {
     schema: {
         tags: ['Me'],
-        summary: 'Change password',
+        summary: '/me/password',
         security: [{ bearerAuth: [] }],
         body: {
             type: 'object',
@@ -85,7 +83,7 @@ export const changePasswordSchemaSwagger = {
 export const deleteMeSchemaSwagger = {
     schema: {
         tags: ['Me'],
-        summary: 'Delete own account',
+        summary: '/me',
         security: [{ bearerAuth: [] }],
         body: {
             type: 'object',

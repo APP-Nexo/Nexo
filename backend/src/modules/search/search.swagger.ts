@@ -1,10 +1,9 @@
 export const searchUsersSchemaSwagger = {
     schema: {
         tags: ['Search'],
-        summary: 'Search users by name or username',
+        summary: '/search/users',
         querystring: {
             type: 'object',
-            required: ['q'],
             properties: {
                 q: { type: 'string' },
                 cursor: { type: 'string' },
@@ -21,7 +20,6 @@ export const searchUsersSchemaSwagger = {
                             type: 'object',
                             properties: {
                                 id: { type: 'number' },
-                                name: { type: 'string' },
                                 username: { type: 'string', nullable: true },
                                 photo: { type: 'string', nullable: true },
                                 bio: { type: 'string', nullable: true },
@@ -30,6 +28,7 @@ export const searchUsersSchemaSwagger = {
                         },
                     },
                     total: { type: 'number' },
+                    nextCursor: { type: 'string', nullable: true },
                 },
             },
         },

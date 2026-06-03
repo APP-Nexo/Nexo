@@ -15,7 +15,7 @@ export class SocialService {
 
         await prisma.$executeRaw`SELECT follow_user(${followerId}::int, ${target.id}::int)`;
 
-        return { message: `Você começou a seguir ${target.name}.` };
+        return { message: `Você começou a seguir ${target.username ?? target.email}.` };
     }
 
     static async unfollowUser(followerId: number, targetUsername: string) {
@@ -33,7 +33,7 @@ export class SocialService {
             where: { followerId_followingId: { followerId, followingId: target.id } },
         });
 
-        return { message: `Você deixou de seguir ${target.name}.` };
+        return { message: `Você deixou de seguir ${target.username ?? target.email}.` };
     }
 
     static async getFollowers(username: string, currentUserId?: number, cursor?: string) {
@@ -69,7 +69,6 @@ export class SocialService {
         return {
             followers: profiles.map((p) => ({
                 id: p.id,
-                name: p.name,
                 username: p.username,
                 photo: p.profile?.photo ?? null,
                 isFollowing: followingIds.has(p.id),
@@ -111,7 +110,6 @@ export class SocialService {
         return {
             following: profiles.map((p) => ({
                 id: p.id,
-                name: p.name,
                 username: p.username,
                 photo: p.profile?.photo ?? null,
                 isFollowing: followingBackIds.has(p.id),
@@ -137,7 +135,6 @@ export class SocialService {
                         user: {
                             select: {
                                 id: true,
-                                name: true,
                                 username: true,
                                 profile: { select: { photo: true } },
                             },
@@ -154,7 +151,6 @@ export class SocialService {
             id: r.id,
             type: 'review' as const,
             userId: r.userId,
-            userName: r.user.name,
             userUsername: r.user.username,
             userPhoto: r.user.profile?.photo ?? null,
             createdAt: r.createdAt,

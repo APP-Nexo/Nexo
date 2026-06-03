@@ -85,13 +85,12 @@ export class AdminService {
     static async getUsersAdmin(): Promise<UsersListResponse<UserPublicSimple>> {
         const users = await prisma.vwUserPublic.findMany({
             where: { roleId: 2 },
-            select: {
-                id: true,
-                name: true,
+                    select: {
+                        id: true,
+                        friendlyId: true,
                 email: true,
                 photo: true,
                 createdAt: true,
-                friendlyId: true,
                 roleId: true,
             },
         });
@@ -99,20 +98,23 @@ export class AdminService {
     }
 
     static async searchUser(
-        email?: string,
+        query?: string,
         cursor?: string,
     ): Promise<PaginatedResponse<UserPublicSimple>> {
-        if (!email) return { users: [], nextCursor: null };
+        if (!query) return { users: [], nextCursor: null };
 
         const { data, nextCursor } = await cursorPaginate({
             findMany: (args) =>
                 prisma.vwUserPublic.findMany({
                     ...args,
-                    where: { email: { contains: email, mode: 'insensitive' } },
+                    where: {
+                        OR: [
+                            { email: { contains: query, mode: 'insensitive' } },
+                        ],
+                    },
                     select: {
                         id: true,
                         friendlyId: true,
-                        name: true,
                         email: true,
                         photo: true,
                         createdAt: true,
@@ -137,11 +139,10 @@ export class AdminService {
                     ...args,
                     select: {
                         id: true,
-                        name: true,
+                        friendlyId: true,
                         email: true,
                         photo: true,
                         createdAt: true,
-                        friendlyId: true,
                         roleId: true,
                     },
                     orderBy: { createdAt: 'desc' },
@@ -220,7 +221,7 @@ export class AdminService {
                     ...args,
                     where: { status: reviewStatus as 'pending' | 'approved' | 'rejected' },
                     include: {
-                        user: { select: { id: true, name: true, email: true } },
+                        user: { select: { id: true, username: true, email: true } },
                         game: { select: { id: true, title: true } },
                     },
                     orderBy: { createdAt: 'desc' },
@@ -244,13 +245,13 @@ export class AdminService {
         const reports = await prisma.report.findMany({
             where: { status: 'pending' },
             include: {
-                reporter: { select: { id: true, name: true } },
+                reporter: { select: { id: true, username: true } },
                 review: {
                     select: {
                         id: true,
                         rating: true,
                         text: true,
-                        user: { select: { id: true, name: true } },
+                        user: { select: { id: true, username: true } },
                     },
                 },
             },

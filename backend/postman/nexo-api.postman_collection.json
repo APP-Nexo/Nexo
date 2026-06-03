@@ -26,7 +26,7 @@
             "name": "Auth",
             "item": [
                 {
-                    "name": "Register",
+                    "name": "/auth/register",
                     "event": [
                         {
                             "listen": "test",
@@ -52,7 +52,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n    \"name\": \"John Doe\",\n    \"email\": \"john@example.com\",\n    \"password\": \"SecurePass123!\",\n    \"confirmPassword\": \"SecurePass123!\",\n    \"username\": \"johndoe\"\n}"
+                            "raw": "{\n    \"email\": \"john@example.com\",\n    \"password\": \"SecurePass123!\",\n    \"confirmPassword\": \"SecurePass123!\",\n    \"username\": \"johndoe\"\n}"
                         },
                         "url": {
                             "raw": "{{baseUrl}}/auth/register",
@@ -62,7 +62,7 @@
                     }
                 },
                 {
-                    "name": "Login",
+                    "name": "/auth/login",
                     "event": [
                         {
                             "listen": "test",
@@ -98,7 +98,7 @@
                     }
                 },
                 {
-                    "name": "Refresh Token",
+                    "name": "/auth/refresh",
                     "request": {
                         "method": "POST",
                         "header": [
@@ -119,7 +119,7 @@
                     }
                 },
                 {
-                    "name": "Logout",
+                    "name": "/auth/logout",
                     "request": {
                         "method": "POST",
                         "header": [
@@ -140,7 +140,7 @@
                     }
                 },
                 {
-                    "name": "Forgot Password",
+                    "name": "/auth/forgot-password",
                     "request": {
                         "method": "POST",
                         "header": [
@@ -161,7 +161,7 @@
                     }
                 },
                 {
-                    "name": "Reset Password",
+                    "name": "/auth/reset-password",
                     "request": {
                         "method": "POST",
                         "header": [
@@ -180,69 +180,6 @@
                             "path": ["auth", "reset-password"]
                         }
                     }
-                },
-                {
-                    "name": "OAuth Google",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n    \"code\": \"google-auth-code\",\n    \"redirectUri\": \"https://localhost:3000/auth/callback\"\n}"
-                        },
-                        "url": {
-                            "raw": "{{baseUrl}}/auth/oauth/google",
-                            "host": ["{{baseUrl}}"],
-                            "path": ["auth", "oauth", "google"]
-                        }
-                    }
-                },
-                {
-                    "name": "OAuth Discord",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n    \"code\": \"discord-auth-code\",\n    \"redirectUri\": \"https://localhost:3000/auth/callback\"\n}"
-                        },
-                        "url": {
-                            "raw": "{{baseUrl}}/auth/oauth/discord",
-                            "host": ["{{baseUrl}}"],
-                            "path": ["auth", "oauth", "discord"]
-                        }
-                    }
-                },
-                {
-                    "name": "OAuth Steam",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n    \"code\": \"steam-auth-code\"\n}"
-                        },
-                        "url": {
-                            "raw": "{{baseUrl}}/auth/oauth/steam",
-                            "host": ["{{baseUrl}}"],
-                            "path": ["auth", "oauth", "steam"]
-                        }
-                    }
                 }
             ]
         },
@@ -250,7 +187,7 @@
             "name": "Me",
             "item": [
                 {
-                    "name": "Get My Profile",
+                    "name": "/me",
                     "request": {
                         "method": "GET",
                         "header": [
@@ -267,7 +204,7 @@
                     }
                 },
                 {
-                    "name": "Update My Profile",
+                    "name": "/me",
                     "request": {
                         "method": "PUT",
                         "header": [
@@ -292,7 +229,7 @@
                     }
                 },
                 {
-                    "name": "Change Password",
+                    "name": "/me/password",
                     "request": {
                         "method": "PUT",
                         "header": [
@@ -317,7 +254,7 @@
                     }
                 },
                 {
-                    "name": "Delete My Account",
+                    "name": "/me",
                     "request": {
                         "method": "DELETE",
                         "header": [
@@ -347,7 +284,7 @@
             "name": "Users",
             "item": [
                 {
-                    "name": "Get User Profile",
+                    "name": "/users/:username",
                     "request": {
                         "method": "GET",
                         "header": [
@@ -370,7 +307,30 @@
                     }
                 },
                 {
-                    "name": "Get User Reviews",
+                    "name": "/users/friendly/:friendlyId",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/users/friendly/:friendlyId",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["users", "friendly", ":friendlyId"],
+                            "variable": [
+                                {
+                                    "key": "friendlyId",
+                                    "value": ""
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "/users/:username/reviews",
                     "request": {
                         "method": "GET",
                         "header": [
@@ -400,7 +360,7 @@
                     }
                 },
                 {
-                    "name": "Get User Stats",
+                    "name": "/users/:username/stats",
                     "request": {
                         "method": "GET",
                         "header": [],
@@ -418,7 +378,7 @@
                     }
                 },
                 {
-                    "name": "Get User Lists",
+                    "name": "/users/:username/lists",
                     "request": {
                         "method": "GET",
                         "header": [
@@ -446,7 +406,7 @@
             "name": "Social",
             "item": [
                 {
-                    "name": "Follow User",
+                    "name": "/social/:username/follow (POST)",
                     "request": {
                         "method": "POST",
                         "header": [
@@ -469,7 +429,7 @@
                     }
                 },
                 {
-                    "name": "Unfollow User",
+                    "name": "/social/:username/follow",
                     "request": {
                         "method": "DELETE",
                         "header": [
@@ -492,7 +452,7 @@
                     }
                 },
                 {
-                    "name": "Get Followers",
+                    "name": "/social/:username/followers",
                     "request": {
                         "method": "GET",
                         "header": [
@@ -522,7 +482,7 @@
                     }
                 },
                 {
-                    "name": "Get Following",
+                    "name": "/social/:username/following",
                     "request": {
                         "method": "GET",
                         "header": [
@@ -552,7 +512,7 @@
                     }
                 },
                 {
-                    "name": "Get Feed",
+                    "name": "/social/feed",
                     "request": {
                         "method": "GET",
                         "header": [
@@ -574,7 +534,7 @@
             "name": "Search",
             "item": [
                 {
-                    "name": "Search Users",
+                    "name": "/search/users",
                     "request": {
                         "method": "GET",
                         "header": [],
@@ -608,7 +568,7 @@
             "name": "Admin",
             "item": [
                 {
-                    "name": "Get Dashboard",
+                    "name": "/admin/dashboard",
                     "request": {
                         "method": "GET",
                         "header": [
@@ -625,7 +585,7 @@
                     }
                 },
                 {
-                    "name": "Search User by Email",
+                    "name": "/admin/user/search",
                     "request": {
                         "method": "GET",
                         "header": [
@@ -635,14 +595,14 @@
                             }
                         ],
                         "url": {
-                            "raw": "{{baseUrl}}/admin/user/search?email=&cursor=",
+                            "raw": "{{baseUrl}}/admin/user/search?q=&cursor=",
                             "host": ["{{baseUrl}}"],
                             "path": ["admin", "user", "search"],
                             "query": [
                                 {
-                                    "key": "email",
-                                    "value": "john@example.com",
-                                    "description": "User email to search"
+                                    "key": "q",
+                                    "value": "john",
+                                    "description": "Search query"
                                 },
                                 {
                                     "key": "cursor",
@@ -654,7 +614,7 @@
                     }
                 },
                 {
-                    "name": "Get All Users",
+                    "name": "/admin/user-all",
                     "request": {
                         "method": "GET",
                         "header": [
@@ -683,7 +643,7 @@
                     }
                 },
                 {
-                    "name": "Get Admin Users",
+                    "name": "/admin/user/admin",
                     "request": {
                         "method": "GET",
                         "header": [
@@ -700,7 +660,7 @@
                     }
                 },
                 {
-                    "name": "Get Users Stats",
+                    "name": "/admin/user/stats",
                     "request": {
                         "method": "GET",
                         "header": [
@@ -717,7 +677,7 @@
                     }
                 },
                 {
-                    "name": "Get User Detail",
+                    "name": "/admin/users/:id",
                     "request": {
                         "method": "GET",
                         "header": [
@@ -740,7 +700,7 @@
                     }
                 },
                 {
-                    "name": "Block User",
+                    "name": "/admin/users/:id/block (POST)",
                     "request": {
                         "method": "POST",
                         "header": [
@@ -771,7 +731,7 @@
                     }
                 },
                 {
-                    "name": "Unblock User",
+                    "name": "/admin/users/:id/block",
                     "request": {
                         "method": "DELETE",
                         "header": [
@@ -794,7 +754,7 @@
                     }
                 },
                 {
-                    "name": "Delete User",
+                    "name": "/admin/users/:id",
                     "request": {
                         "method": "DELETE",
                         "header": [
@@ -817,7 +777,7 @@
                     }
                 },
                 {
-                    "name": "Get Reviews for Moderation",
+                    "name": "/admin/reviews",
                     "request": {
                         "method": "GET",
                         "header": [
@@ -841,7 +801,7 @@
                     }
                 },
                 {
-                    "name": "Delete Review",
+                    "name": "/admin/reviews/:id",
                     "request": {
                         "method": "DELETE",
                         "header": [
@@ -864,7 +824,7 @@
                     }
                 },
                 {
-                    "name": "Get Reports",
+                    "name": "/admin/reports",
                     "request": {
                         "method": "GET",
                         "header": [
@@ -881,7 +841,7 @@
                     }
                 },
                 {
-                    "name": "Resolve Report",
+                    "name": "/admin/reports/:id/resolve",
                     "request": {
                         "method": "PATCH",
                         "header": [
@@ -909,7 +869,7 @@
             "name": "Master",
             "item": [
                 {
-                    "name": "Promote User to Admin",
+                    "name": "/master/user/:id/promote",
                     "request": {
                         "method": "PATCH",
                         "header": [
@@ -932,7 +892,7 @@
                     }
                 },
                 {
-                    "name": "Demote User to Regular",
+                    "name": "/master/user/:id/demote",
                     "request": {
                         "method": "PATCH",
                         "header": [
@@ -955,7 +915,7 @@
                     }
                 },
                 {
-                    "name": "Ban User",
+                    "name": "/master/user/:id/ban",
                     "request": {
                         "method": "PATCH",
                         "header": [
@@ -983,7 +943,7 @@
             "name": "Health",
             "item": [
                 {
-                    "name": "Health Check",
+                    "name": "/verify/health",
                     "request": {
                         "method": "GET",
                         "header": [],
@@ -995,7 +955,7 @@
                     }
                 },
                 {
-                    "name": "Ping",
+                    "name": "/verify/ping",
                     "request": {
                         "method": "GET",
                         "header": [],
@@ -1012,7 +972,7 @@
             "name": "Notification",
             "item": [
                 {
-                    "name": "Get Notifications",
+                    "name": "/notification",
                     "request": {
                         "method": "GET",
                         "header": [
@@ -1036,7 +996,7 @@
                     }
                 },
                 {
-                    "name": "Read All Notifications",
+                    "name": "/notification/read-all",
                     "request": {
                         "method": "PATCH",
                         "header": [
@@ -1053,7 +1013,7 @@
                     }
                 },
                 {
-                    "name": "Delete Notification",
+                    "name": "/notification/delete/:id",
                     "request": {
                         "method": "DELETE",
                         "header": [
@@ -1076,7 +1036,7 @@
                     }
                 },
                 {
-                    "name": "Delete All Notifications",
+                    "name": "/notification/delete-all",
                     "request": {
                         "method": "DELETE",
                         "header": [

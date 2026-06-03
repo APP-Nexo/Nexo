@@ -23,7 +23,7 @@ vi.mock('../shared/utils/prisma/prisma_conn.js', () => ({
 
 vi.mock('../shared/middlewares/check_token.js', () => ({
     checkToken: async (req: any, _reply: any) => {
-        req.user = { id: 1, name: 'Admin User', email: 'admin@email.com', roleId: 2 };
+        req.user = { id: 1, email: 'admin@email.com', roleId: 2 };
     },
 }));
 
@@ -72,7 +72,6 @@ describe('Admin Routes', () => {
         it('should return user details', async () => {
             vi.mocked(prisma.user.findUnique).mockResolvedValueOnce({
                 id: 2,
-                name: 'Test',
                 email: 'test@email.com',
                 username: 'test',
                 roleId: 1,
@@ -92,7 +91,7 @@ describe('Admin Routes', () => {
             });
 
             expect(response.statusCode).toBe(200);
-            expect(response.json()).toHaveProperty('name', 'Test');
+            expect(response.json()).toHaveProperty('email', 'test@email.com');
         });
     });
 

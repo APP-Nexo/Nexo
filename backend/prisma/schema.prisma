@@ -26,7 +26,6 @@ model Role {
 
 model User {
   id        Int          @id @default(autoincrement())
-  name      String
   username  String?      @unique
   email     String       @unique
   password  String
@@ -200,7 +199,6 @@ model Report {
 view VwUserPublic {
   id         Int      @unique
   friendlyId String?  @unique 
-  name       String
   email      String   @unique
   createdAt  DateTime
   roleId     Int     

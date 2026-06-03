@@ -18,8 +18,8 @@ export class AuthErrors extends AppError {
         throw new AuthErrors('As senhas não coincidem.', 400);
     }
 
-    static ensureDataRegister({ name, email, password, confirmPassword }: RegisterPayload) {
-        if (!name) AuthErrors.throwMissing('name');
+    static ensureDataRegister({ username, email, password, confirmPassword }: RegisterPayload) {
+        if (!username) AuthErrors.throwMissing('username');
         if (!email) AuthErrors.throwMissing('email');
         if (!password) AuthErrors.throwMissing('password');
         if (!confirmPassword) AuthErrors.throwMissing('confirm password');

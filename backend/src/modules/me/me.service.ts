@@ -24,20 +24,13 @@ export class MeService {
     }
 
     static async updateMe(userId: number, payload: UpdateMePayload) {
-        const { name, username, bio, photo, banner } = payload;
+        const { username, bio, photo, banner } = payload;
 
         const updateData: Record<string, unknown> = {};
         const profileData: Record<string, unknown> = {};
 
-        if (name !== undefined) updateData.name = name;
-        if (username !== undefined) {
-            const existing = await prisma.user.findUnique({ where: { username } });
-            if (existing && existing.id !== userId) {
-                throw AppError.throw('Username já está em uso.', 409);
-            }
-            updateData.username = username;
-        }
-        if (bio !== undefined) profileData.bio = bio;
+            if (username !== undefined) updateData.username = username;
+            if (bio !== undefined) profileData.bio = bio;
         if (photo !== undefined) profileData.photo = photo;
         if (banner !== undefined) profileData.banner = banner;
 
@@ -73,14 +66,16 @@ export class MeService {
                 const ext = path.extname(part.filename) || '.jpg';
                 const filename = `${userId}_${randomUUID()}${ext}`;
                 const subdir = part.fieldname === 'photo' ? 'avatars' : 'banners';
-                const filepath = path.join(process.cwd(), 'public', subdir, filename);
+                const dirpath = path.join(process.cwd(), 'public', subdir);
+                await fs.mkdir(dirpath, { recursive: true });
+                const filepath = path.join(dirpath, filename);
                 await fs.writeFile(filepath, buffer);
 
                 const url = `/uploads/${subdir}/${filename}`;
                 profileData[part.fieldname] = url;
             } else {
                 const value = await part.toBuffer().then((b: Buffer) => b.toString());
-                if (part.fieldname === 'name' || part.fieldname === 'username') {
+                if (part.fieldname === 'username') {
                     if (part.fieldname === 'username') {
                         const existing = await prisma.user.findUnique({ where: { username: value } });
                         if (existing && existing.id !== userId) {

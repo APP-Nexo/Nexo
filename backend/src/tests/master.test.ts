@@ -16,7 +16,6 @@ vi.mock('../shared/middlewares/check_token.js', () => ({
     checkToken: async (req: any, _reply: any) => {
         req.user = {
             id: 1,
-            name: 'Master User',
             email: 'master@email.com',
             roleId: 3,
         };
@@ -56,7 +55,6 @@ describe('Master Routes', () => {
             // ensureUserExistById: user.findUnique
             vi.mocked(prisma.user.findUnique).mockResolvedValueOnce({
                 id: 2,
-                name: 'User to Promote',
                 email: 'user@email.com',
                 roleId: 1,
             } as any);
@@ -110,7 +108,6 @@ describe('Master Routes', () => {
             // ensureUserExistById
             vi.mocked(prisma.user.findUnique).mockResolvedValueOnce({
                 id: 2,
-                name: 'Admin to Demote',
                 email: 'admin@email.com',
                 roleId: 2,
             } as any);
@@ -164,7 +161,6 @@ describe('Master Routes', () => {
             // ensureUserExistById
             vi.mocked(prisma.user.findUnique).mockResolvedValueOnce({
                 id: 2,
-                name: 'User to Ban',
                 email: 'banned@email.com',
                 roleId: 1,
             } as any);

@@ -1,5 +1,4 @@
 export type UpdateMePayload = {
-    name?: string;
     username?: string;
     bio?: string;
     photo?: string;

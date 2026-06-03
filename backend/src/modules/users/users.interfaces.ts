@@ -1,6 +1,5 @@
 export type UserPublicProfile = {
     id: number;
-    name: string;
     username: string | null;
     bio: string | null;
     photo: string | null;

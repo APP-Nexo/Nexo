@@ -11,9 +11,9 @@ import type { RegisterPayload, UserPayload } from './auth.interfaces.js';
 
 export class AuthService {
     static async register(payload: RegisterPayload) {
-        const { name, username, email, password, confirmPassword } = payload;
+        const { username, email, password, confirmPassword } = payload;
 
-        AuthErrors.ensureDataRegister({ name, email, password, confirmPassword });
+        AuthErrors.ensureDataRegister({ username, email, password, confirmPassword });
         await AuthErrors.ensureUserExistByEmail(prisma.user, email);
         if (username) {
             await AuthErrors.ensureUsernameNotTaken(prisma.user, username);
@@ -25,7 +25,6 @@ export class AuthService {
 
         const createdUser = (await prisma.user.create({
             data: {
-                name,
                 username: username ?? null,
                 email,
                 password: await encryptPassword(password),
@@ -92,7 +91,12 @@ export class AuthService {
             data: { email, token, expiresAt },
         });
 
-        await sendPasswordResetEmail(email, token).catch(() => {});
+        const smtpConfigured = process.env.SMTP_USER && process.env.SMTP_PASS;
+        if (smtpConfigured) {
+            await sendPasswordResetEmail(email, token).catch(() => {});
+        }
+
+        return { token, expiresAt };
     }
 
     static async resetPassword(token: string, newPassword: string) {

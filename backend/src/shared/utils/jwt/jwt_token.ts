@@ -11,7 +11,6 @@ export class JwtToken {
             const token = app.jwt.sign(
                 {
                     id: user.id,
-                    name: user.name,
                     email: user.email,
                     roleId: user.roleId,
                 },
@@ -30,7 +29,6 @@ export class JwtToken {
             const refreshToken = app.jwt.sign(
                 {
                     id: user.id,
-                    name: user.name,
                     email: user.email,
                     roleId: user.roleId,
                 },

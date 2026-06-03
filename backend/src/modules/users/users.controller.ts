@@ -10,6 +10,13 @@ export class UsersController {
         return reply.status(200).send(response);
     }
 
+    static async getProfileByFriendlyId(req: FastifyRequest, reply: FastifyReply) {
+        const { friendlyId } = req.params as { friendlyId: string };
+        const tokenUser = req.user as UserTokenPayload | undefined;
+        const response = await UsersService.getUserByFriendlyId(friendlyId, tokenUser?.id);
+        return reply.status(200).send(response);
+    }
+
     static async getReviews(req: FastifyRequest, reply: FastifyReply) {
         const { username } = req.params as { username: string };
         const { cursor } = req.query as { cursor?: string };

@@ -56,8 +56,8 @@ describe('Auth Routes', () => {
             vi.mocked(encryptPassword).mockResolvedValueOnce('hashed_password');
             vi.mocked(prisma.user.create).mockResolvedValueOnce({
                 id: 1,
-                name: 'Test User',
                 email: 'test@email.com',
+                username: 'testuser',
                 password: 'hashed_password',
                 roleId: 1,
                 createdAt: new Date(),
@@ -67,7 +67,7 @@ describe('Auth Routes', () => {
                 method: 'POST',
                 url: '/api/auth/register',
                 payload: {
-                    name: 'Test User',
+                    username: 'testuser',
                     email: 'test@email.com',
                     password: 'password123',
                     confirmPassword: 'password123',
@@ -86,7 +86,6 @@ describe('Auth Routes', () => {
         it('should login a user successfully', async () => {
             vi.mocked(prisma.user.findUnique).mockResolvedValue({
                 id: 1,
-                name: 'Test User',
                 email: 'test@email.com',
                 password: 'hashed_password_hash',
                 roleId: 1,

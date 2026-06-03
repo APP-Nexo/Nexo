@@ -7,7 +7,7 @@ export type ReviewResponse = {
     status: string;
     createdAt: Date;
     updatedAt: Date;
-    user?: { id: number; name: string; username: string | null; photo: string | null };
+    user?: { id: number; username: string | null; photo: string | null };
     game?: { id: number; title: string; cover: string | null };
 };
 

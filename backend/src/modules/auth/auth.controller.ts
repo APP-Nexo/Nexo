@@ -32,7 +32,15 @@ export class AuthController {
 
     static async forgotPassword(req: FastifyRequest, reply: FastifyReply) {
         const { email } = req.body as ForgotPasswordPayload;
-        await AuthService.forgotPassword(email);
+        const result = await AuthService.forgotPassword(email);
+        const smtpConfigured = process.env.SMTP_USER && process.env.SMTP_PASS;
+        if (result && !smtpConfigured) {
+            return reply.status(200).send({
+                message: 'Token gerado (modo desenvolvimento — configure SMTP em produção).',
+                token: result.token,
+                expiresAt: result.expiresAt,
+            });
+        }
         return reply
             .status(200)
             .send({ message: 'Se o email existir, você receberá um link de redefinição.' });

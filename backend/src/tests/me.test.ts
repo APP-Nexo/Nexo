@@ -10,7 +10,7 @@ vi.mock('../shared/utils/prisma/prisma_conn.js', () => ({
 
 vi.mock('../shared/middlewares/check_token.js', () => ({
     checkToken: async (req: any, _reply: any) => {
-        req.user = { id: 1, name: 'Test User', email: 'test@email.com', roleId: 1 };
+        req.user = { id: 1, email: 'test@email.com', roleId: 1 };
     },
 }));
 
@@ -39,7 +39,6 @@ describe('Me Routes', () => {
         it('should return current user profile', async () => {
             vi.mocked(prisma.user.findUnique).mockResolvedValueOnce({
                 id: 1,
-                name: 'Test User',
                 email: 'test@email.com',
                 username: 'testuser',
                 password: 'hash',
@@ -64,7 +63,7 @@ describe('Me Routes', () => {
 
             expect(response.statusCode).toBe(200);
             const body = response.json();
-            expect(body).toHaveProperty('name', 'Test User');
+            expect(body).toHaveProperty('username', 'testuser');
             expect(body).not.toHaveProperty('password');
         });
     });
@@ -77,7 +76,7 @@ describe('Me Routes', () => {
                 method: 'PUT',
                 url: '/api/me',
                 headers: { authorization: 'Bearer token' },
-                payload: { name: 'New Name', bio: 'Updated bio' },
+                payload: { bio: 'Updated bio' },
             });
 
             expect(response.statusCode).toBe(200);

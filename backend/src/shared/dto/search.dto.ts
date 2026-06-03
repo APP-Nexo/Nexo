@@ -1,6 +1,5 @@
 export type SearchUserResult = {
     id: number;
-    name: string;
     username: string | null;
     photo: string | null;
     bio: string | null;
@@ -10,4 +9,5 @@ export type SearchUserResult = {
 export type SearchResult<T> = {
     data: T[];
     total: number;
+    nextCursor: string | null;
 };

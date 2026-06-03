@@ -1,5 +1,5 @@
 export type SearchByEmailPayload = {
-    email?: string;
+    q: string;
     cursor?: string;
 };
 
@@ -10,7 +10,6 @@ export type PaginationPayload = {
 
 export type UserPublicSelect = {
     id: number;
-    name: string;
     email: string;
     photo: string | null;
     createdAt: Date;

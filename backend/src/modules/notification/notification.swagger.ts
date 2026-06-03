@@ -1,7 +1,7 @@
 export const getNotificationsSchemaSwagger = {
     schema: {
         tags: ['Notification'],
-        summary: 'Get notifications',
+        summary: '/notification',
         security: [{ bearerAuth: [] }],
         querystring: {
             type: 'object',
@@ -26,7 +26,7 @@ export const getNotificationsSchemaSwagger = {
                                     type: 'object',
                                     properties: {
                                         id: { type: 'number' },
-                                        name: { type: 'string' },
+                                        username: { type: 'string', nullable: true },
                                     },
                                 },
                             },
@@ -43,7 +43,7 @@ export const getNotificationsSchemaSwagger = {
 export const readAllNotificationsSchemaSwagger = {
     schema: {
         tags: ['Notification'],
-        summary: 'Read all notifications',
+        summary: '/notification/read-all',
         security: [{ bearerAuth: [] }],
         response: {
             200: {
@@ -59,7 +59,7 @@ export const readAllNotificationsSchemaSwagger = {
 export const deleteNotificationSchemaSwagger = {
     schema: {
         tags: ['Notification'],
-        summary: 'Delete notification',
+        summary: '/notification/delete/:id',
         security: [{ bearerAuth: [] }],
         params: {
             type: 'object',
@@ -82,7 +82,7 @@ export const deleteNotificationSchemaSwagger = {
 export const deleteAllNotificationsSchemaSwagger = {
     schema: {
         tags: ['Notification'],
-        summary: 'Delete all notifications',
+        summary: '/notification/delete-all',
         security: [{ bearerAuth: [] }],
         response: {
             200: {

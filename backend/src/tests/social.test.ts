@@ -17,7 +17,7 @@ vi.mock('../shared/utils/prisma/prisma_conn.js', () => ({
 
 vi.mock('../shared/middlewares/check_token.js', () => ({
     checkToken: async (req: any, _reply: any) => {
-        req.user = { id: 1, name: 'Test User', email: 'test@email.com', roleId: 1 };
+        req.user = { id: 1, email: 'test@email.com', roleId: 1 };
     },
 }));
 
@@ -36,7 +36,6 @@ describe('Social Routes', () => {
         it('should follow a user', async () => {
             vi.mocked(prisma.user.findUnique).mockResolvedValueOnce({
                 id: 2,
-                name: 'Other',
                 username: 'other',
             } as any);
             vi.mocked(prisma.userFollow.findFirst).mockResolvedValueOnce(null);
@@ -56,7 +55,6 @@ describe('Social Routes', () => {
         it('should unfollow a user', async () => {
             vi.mocked(prisma.user.findUnique).mockResolvedValueOnce({
                 id: 2,
-                name: 'Other',
                 username: 'other',
             } as any);
             vi.mocked(prisma.userFollow.findFirst).mockResolvedValueOnce({

@@ -1,6 +1,6 @@
 export type NotificationUser = {
     id: number;
-    name: string;
+    username: string | null;
 };
 
 export type Notification = {

@@ -1,7 +1,7 @@
 export const promoteUserSchemaSwagger = {
     schema: {
         tags: ['Master'],
-        summary: 'Promote user to admin',
+        summary: '/master/user/:id/promote',
         security: [{ bearerAuth: [] }],
         params: {
             type: 'object',
@@ -25,7 +25,7 @@ export const promoteUserSchemaSwagger = {
 export const demoteUserSchemaSwagger = {
     schema: {
         tags: ['Master'],
-        summary: 'Demote user to user role',
+        summary: '/master/user/:id/demote',
         security: [{ bearerAuth: [] }],
         params: {
             type: 'object',
@@ -49,7 +49,7 @@ export const demoteUserSchemaSwagger = {
 export const banUserSchemaSwagger = {
     schema: {
         tags: ['Master'],
-        summary: 'Soft ban user',
+        summary: '/master/user/:id/ban',
         security: [{ bearerAuth: [] }],
         params: {
             type: 'object',

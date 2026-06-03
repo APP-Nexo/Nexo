@@ -1,7 +1,7 @@
 export const getUsersStatsSchemaSwagger = {
     schema: {
         tags: ['Admin'],
-        summary: 'Get users stats',
+        summary: '/admin/user/stats',
         security: [{ bearerAuth: [] }],
         response: {
             200: {
@@ -27,7 +27,7 @@ export const getUsersStatsSchemaSwagger = {
 export const getUsersAdminSchemaSwagger = {
     schema: {
         tags: ['Admin'],
-        summary: 'Get all admin users',
+        summary: '/admin/user/admin',
         security: [{ bearerAuth: [] }],
         response: {
             200: {
@@ -39,7 +39,6 @@ export const getUsersAdminSchemaSwagger = {
                             type: 'object',
                             properties: {
                                 id: { type: 'number' },
-                                name: { type: 'string' },
                                 email: { type: 'string' },
                                 photo: { type: 'string', nullable: true },
                                 createdAt: { type: 'string', format: 'date-time' },
@@ -57,11 +56,11 @@ export const getUsersAdminSchemaSwagger = {
 export const searchUserAdminSchemaSwagger = {
     schema: {
         tags: ['Admin'],
-        summary: 'Search users by email',
+        summary: '/admin/user/search',
         security: [{ bearerAuth: [] }],
         querystring: {
             type: 'object',
-            properties: { email: { type: 'string' }, cursor: { type: 'string' } },
+            properties: { q: { type: 'string' }, cursor: { type: 'string' } },
         },
         response: {
             200: {
@@ -78,7 +77,7 @@ export const searchUserAdminSchemaSwagger = {
 export const getUsersSchemaSwagger = {
     schema: {
         tags: ['Admin'],
-        summary: 'Get all users with pagination',
+        summary: '/admin/user-all',
         security: [{ bearerAuth: [] }],
         querystring: {
             type: 'object',
@@ -99,7 +98,7 @@ export const getUsersSchemaSwagger = {
 export const getDashboardSchemaSwagger = {
     schema: {
         tags: ['Admin'],
-        summary: 'Get dashboard metrics',
+        summary: '/admin/dashboard',
         security: [{ bearerAuth: [] }],
         response: {
             200: {
@@ -122,7 +121,7 @@ export const getDashboardSchemaSwagger = {
 export const getUserDetailSchemaSwagger = {
     schema: {
         tags: ['Admin'],
-        summary: 'Get user details',
+        summary: '/admin/users/:id',
         security: [{ bearerAuth: [] }],
         params: { type: 'object', properties: { id: { type: 'number' } } },
         response: {
@@ -130,7 +129,6 @@ export const getUserDetailSchemaSwagger = {
                 type: 'object',
                 properties: {
                     id: { type: 'number' },
-                    name: { type: 'string' },
                     email: { type: 'string' },
                     username: { type: 'string', nullable: true },
                     roleId: { type: 'number' },
@@ -146,7 +144,7 @@ export const getUserDetailSchemaSwagger = {
 export const blockUserSchemaSwagger = {
     schema: {
         tags: ['Admin'],
-        summary: 'Block user',
+        summary: '/admin/users/:id/block',
         security: [{ bearerAuth: [] }],
         params: { type: 'object', properties: { id: { type: 'number' } } },
         body: { type: 'object', properties: { reason: { type: 'string' } } },
@@ -157,7 +155,7 @@ export const blockUserSchemaSwagger = {
 export const unblockUserSchemaSwagger = {
     schema: {
         tags: ['Admin'],
-        summary: 'Unblock user',
+        summary: '/admin/users/:id/block',
         security: [{ bearerAuth: [] }],
         params: { type: 'object', properties: { id: { type: 'number' } } },
         response: { 200: { type: 'object', properties: { message: { type: 'string' } } } },
@@ -167,7 +165,7 @@ export const unblockUserSchemaSwagger = {
 export const deleteUserAdminSchemaSwagger = {
     schema: {
         tags: ['Admin'],
-        summary: 'Delete user',
+        summary: '/admin/users/:id',
         security: [{ bearerAuth: [] }],
         params: { type: 'object', properties: { id: { type: 'number' } } },
         response: { 200: { type: 'object', properties: { message: { type: 'string' } } } },
@@ -177,7 +175,7 @@ export const deleteUserAdminSchemaSwagger = {
 export const getReviewsModerationSchemaSwagger = {
     schema: {
         tags: ['Admin'],
-        summary: 'Get reviews for moderation',
+        summary: '/admin/reviews',
         security: [{ bearerAuth: [] }],
         querystring: {
             type: 'object',
@@ -198,7 +196,7 @@ export const getReviewsModerationSchemaSwagger = {
 export const deleteReviewAdminSchemaSwagger = {
     schema: {
         tags: ['Admin'],
-        summary: 'Delete review',
+        summary: '/admin/reviews/:id',
         security: [{ bearerAuth: [] }],
         params: { type: 'object', properties: { id: { type: 'number' } } },
         response: { 200: { type: 'object', properties: { message: { type: 'string' } } } },
@@ -208,7 +206,7 @@ export const deleteReviewAdminSchemaSwagger = {
 export const getReportsSchemaSwagger = {
     schema: {
         tags: ['Admin'],
-        summary: 'Get reports',
+        summary: '/admin/reports',
         security: [{ bearerAuth: [] }],
         response: {
             200: {
@@ -222,7 +220,7 @@ export const getReportsSchemaSwagger = {
 export const resolveReportSchemaSwagger = {
     schema: {
         tags: ['Admin'],
-        summary: 'Resolve report',
+        summary: '/admin/reports/:id/resolve',
         security: [{ bearerAuth: [] }],
         params: { type: 'object', properties: { id: { type: 'number' } } },
         response: { 200: { type: 'object', properties: { message: { type: 'string' } } } },

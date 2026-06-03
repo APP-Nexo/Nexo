@@ -1,7 +1,7 @@
 export const followUserSchemaSwagger = {
     schema: {
         tags: ['Social'],
-        summary: 'Follow user',
+        summary: '/social/:username/follow',
         security: [{ bearerAuth: [] }],
         params: {
             type: 'object',
@@ -23,7 +23,7 @@ export const followUserSchemaSwagger = {
 export const unfollowUserSchemaSwagger = {
     schema: {
         tags: ['Social'],
-        summary: 'Unfollow user',
+        summary: '/social/:username/follow',
         security: [{ bearerAuth: [] }],
         params: {
             type: 'object',
@@ -45,7 +45,7 @@ export const unfollowUserSchemaSwagger = {
 export const getFollowersSchemaSwagger = {
     schema: {
         tags: ['Social'],
-        summary: 'Get followers',
+        summary: '/social/:username/followers',
         security: [{ bearerAuth: [] }],
         params: {
             type: 'object',
@@ -74,7 +74,7 @@ export const getFollowersSchemaSwagger = {
 export const getFollowingSchemaSwagger = {
     schema: {
         tags: ['Social'],
-        summary: 'Get following',
+        summary: '/social/:username/following',
         security: [{ bearerAuth: [] }],
         params: {
             type: 'object',
@@ -103,7 +103,7 @@ export const getFollowingSchemaSwagger = {
 export const getFeedSchemaSwagger = {
     schema: {
         tags: ['Social'],
-        summary: 'Get social feed',
+        summary: '/social/feed',
         security: [{ bearerAuth: [] }],
         response: {
             200: {

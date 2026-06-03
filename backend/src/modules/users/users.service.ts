@@ -23,7 +23,36 @@ export class UsersService {
         const { password, ...safeUser } = user;
         return {
             id: safeUser.id,
-            name: safeUser.name,
+            username: safeUser.username,
+            bio: safeUser.profile?.bio ?? null,
+            photo: safeUser.profile?.photo ?? null,
+            banner: safeUser.profile?.banner ?? null,
+            followersCount: safeUser.profile?.followersCount ?? 0,
+            followingCount: safeUser.profile?.followingCount ?? 0,
+            createdAt: safeUser.createdAt,
+            isFollowing,
+        };
+    }
+
+    static async getUserByFriendlyId(friendlyId: string, currentUserId?: number) {
+        const user = await prisma.user.findFirst({
+            where: { profile: { friendlyId } },
+            include: { profile: true },
+        });
+
+        if (!user || !user.activate) throw AppError.throw('Usuário não encontrado.', 404);
+
+        let isFollowing = false;
+        if (currentUserId) {
+            const follow = await prisma.userFollow.findFirst({
+                where: { followerId: currentUserId, followingId: user.id },
+            });
+            isFollowing = !!follow;
+        }
+
+        const { password, ...safeUser } = user;
+        return {
+            id: safeUser.id,
             username: safeUser.username,
             bio: safeUser.profile?.bio ?? null,
             photo: safeUser.profile?.photo ?? null,
