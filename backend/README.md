@@ -5,11 +5,11 @@ API REST para plataforma de reviews e social de jogos. Autenticação JWT, perfi
 ## Funcionalidades
 
 - **Autenticação** — registro, login, refresh token, recuperação de senha
-- **Perfil próprio** — gerenciar nome, username, bio, avatar e banner
+- **Perfil próprio** — gerenciar username, bio, avatar e banner
 - **Upload de imagens** — avatar e banner via multipart, armazenamento local com `@fastify/static`
 - **Perfis públicos** — consultar usuários, reviews, estatísticas e listas de jogos
 - **Social** — seguir/deixar de seguir, lista de seguidores e seguindo, feed de reviews
-- **Busca textual** — busca por nome/username com índice `pg_trgm` (O(log n))
+- **Busca textual** — busca por username com índice `pg_trgm` (O(log n))
 - **Módulo Admin** — dashboard de métricas, CRUD de usuários, bloqueio, moderação de reviews, denúncias
 - **Master** — promover/demover/banir usuários
 - **Notificações** — listar, marcar como lidas, deletar
@@ -159,14 +159,14 @@ A API estará em **https://localhost:3000** e o Swagger em **https://localhost:3
 
 | Método | Rota | Descrição | Auth |
 |---|---|---|---|
-| GET | `/users?q=` | Buscar usuários por nome/username | — |
+| GET | `/users?q=` | Buscar usuários por username | — |
 
 ### Admin (`/api/admin`)
 
 | Método | Rota | Descrição | Auth |
 |---|---|---|---|
 | GET | `/dashboard` | Métricas do sistema | Admin |
-| GET | `/user/search?email=` | Buscar usuário por email | Admin |
+| GET | `/user/search?q=` | Buscar usuário por email/username | Admin |
 | GET | `/user-all` | Listar todos usuários | Admin |
 | GET | `/user/admin` | Listar admins | Admin |
 | GET | `/user/stats` | Estatísticas de usuários | Admin |
@@ -205,26 +205,19 @@ A API estará em **https://localhost:3000** e o Swagger em **https://localhost:3
 
 ## Upload de Imagens
 
-O `PUT /api/me` aceita dois formatos:
+O `PUT /api/me` aceita **multipart/form-data** para upload de avatar e banner:
 
-**JSON** — informar URL externa:
-```json
-{
-  "photo": "https://exemplo.com/avatar.jpg",
-  "banner": "https://exemplo.com/banner.jpg"
-}
-```
-
-**Multipart** — upload direto de arquivo:
 ```
 PUT /api/me
 Content-Type: multipart/form-data
 
-name: "Novo Nome"
+username: "johnupdated"
 bio: "Minha bio"
 photo: (arquivo .jpg/.png/.webp, máx 5MB)
 banner: (arquivo .jpg/.png/.webp, máx 5MB)
 ```
+
+Os arquivos são salvos em `public/avatars/` e `public/banners/` e servidos estaticamente em `/uploads/`.
 
 ## Banco de Dados
 
@@ -255,7 +248,7 @@ Conforme o volume cresce, a probabilidade de operações concorrentes sobre os m
 
 ### Camada de queries e índices
 
-Índices pg_trgm para busca textual por nome, username e título, mantendo performance em O(log n) mesmo com milhões de registros.
+Índices pg_trgm para busca textual por username e título, mantendo performance em O(log n) mesmo com milhões de registros.
 
 Índice composto (userId, gameId) UNIQUE na tabela Review, que serve dois propósitos ao mesmo tempo: impede reviews duplicadas por regra de banco e acelera todos os joins entre usuários e avaliações.
 
