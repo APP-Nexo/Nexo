@@ -35,7 +35,7 @@ export async function seedMaster() {
 
     await prisma.user.create({
         data: {
-            name: 'Master',
+            username: 'master',
             email: process.env.MASTER_EMAIL!,
             password: await encryptPassword(process.env.MASTER_PASSWORD!),
             roleId: masterRole.id,

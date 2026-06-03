@@ -42,8 +42,6 @@ export const updateMeSchemaSwagger = {
             properties: {
                 username: { type: 'string' },
                 bio: { type: 'string' },
-                photo: { type: 'string', description: 'URL da foto (JSON) ou file upload (multipart)' },
-                banner: { type: 'string', description: 'URL do banner (JSON) ou file upload (multipart)' },
             },
         },
         response: {

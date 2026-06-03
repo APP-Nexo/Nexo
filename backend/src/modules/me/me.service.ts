@@ -24,15 +24,13 @@ export class MeService {
     }
 
     static async updateMe(userId: number, payload: UpdateMePayload) {
-        const { username, bio, photo, banner } = payload;
+        const { username, bio } = payload;
 
         const updateData: Record<string, unknown> = {};
         const profileData: Record<string, unknown> = {};
 
             if (username !== undefined) updateData.username = username;
             if (bio !== undefined) profileData.bio = bio;
-        if (photo !== undefined) profileData.photo = photo;
-        if (banner !== undefined) profileData.banner = banner;
 
         await prisma.user.update({
             where: { id: userId },
