@@ -92,13 +92,25 @@ npm run dev
 
 ```bash
 # 1. Configurar .env.docker (já vem com valores padrão)
-# 2. Buildar e subir
+# 2. Buildar e subir (já roda migrations + seeds automaticamente)
 docker compose up -d --build
-# 3. Rodar seeds dentro do container
-docker exec nexo-api npx tsx prisma/seeds/index.ts
 ```
 
 A API estará em **https://localhost:3000** e o Swagger em **https://localhost:3000/docs**.
+
+### Comandos Docker úteis
+
+| Comando | Descrição |
+|---|---|
+| `docker compose up -d --build` | Buildar e subir todos containers |
+| `docker compose up -d --build --no-deps api` | Rebuildar só a API (banco já rodando) |
+| `docker compose logs -f api` | Logs da API em tempo real |
+| `docker compose logs -f db` | Logs do banco em tempo real |
+| `docker compose down` | Parar todos containers |
+| `docker compose down -v` | Parar e apagar volumes (dados do banco) |
+| `docker compose ps` | Status dos containers |
+| `docker exec -it nexo-api sh` | Acessar terminal da API |
+| `docker exec -it nexo-db psql -U nexo -d nexo` | Acessar terminal do banco |
 
 ## Variáveis de Ambiente
 
@@ -120,7 +132,7 @@ A API estará em **https://localhost:3000** e o Swagger em **https://localhost:3
 
 | Método | Rota | Descrição | Auth |
 |---|---|---|---|
-| POST | `/register` | Registrar novo usuário | — |
+| POST | `/register` | Registrar novo usuário (username, email, password) | — |
 | POST | `/login` | Login | — |
 | POST | `/refresh` | Renovar refresh token | — |
 | POST | `/logout` | Logout | Bearer |
@@ -132,7 +144,7 @@ A API estará em **https://localhost:3000** e o Swagger em **https://localhost:3
 | Método | Rota | Descrição | Auth |
 |---|---|---|---|
 | GET | `/` | Dados do perfil próprio | Bearer |
-| PUT | `/` | Atualizar perfil (JSON ou multipart) | Bearer |
+| PUT | `/` | Atualizar perfil (JSON: username/bio \| multipart: + photo/banner) | Bearer |
 | PUT | `/password` | Alterar senha | Bearer |
 | DELETE | `/` | Deletar conta | Bearer |
 
@@ -140,7 +152,8 @@ A API estará em **https://localhost:3000** e o Swagger em **https://localhost:3
 
 | Método | Rota | Descrição | Auth |
 |---|---|---|---|
-| GET | `/:username` | Perfil público | Bearer |
+| GET | `/friendly/:friendlyId` | Perfil público por friendlyId | Bearer |
+| GET | `/:username` | Perfil público por username | Bearer |
 | GET | `/:username/reviews` | Reviews do usuário | Bearer |
 | GET | `/:username/stats` | Estatísticas do usuário | — |
 | GET | `/:username/lists` | Listas públicas de jogos | Bearer |
