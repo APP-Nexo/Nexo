@@ -10,6 +10,7 @@ services:
         condition: service_healthy
     volumes:
       - ./certs:/app/certs:ro
+      - ./backups:/app/backups
     restart: unless-stopped
 
   db:

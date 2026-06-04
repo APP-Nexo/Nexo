@@ -8,3 +8,5 @@ public/avatars/*
 public/banners/*
 !public/avatars/.gitkeep
 !public/banners/.gitkeep
+backups/*
+!backups/.gitkeep

@@ -1,7 +1,7 @@
 FROM node:22-alpine
 WORKDIR /app
 
-RUN apk add --no-cache openssl
+RUN apk add --no-cache openssl postgresql-client
 
 COPY package.json package-lock.json ./
 RUN npm ci
@@ -12,6 +12,7 @@ COPY version.ts ./
 
 COPY swagger.config.ts ./
 COPY tsconfig.json ./
+COPY scripts ./scripts
 COPY certs ./certs
 COPY src ./src
 COPY docker-entrypoint.sh /app/

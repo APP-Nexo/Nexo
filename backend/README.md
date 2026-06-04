@@ -295,22 +295,29 @@ Backup semanal isolado não é suficiente para produção — uma falha na quint
 
 O projeto já conta com scripts prontos em `scripts/` para operação básica:
 
-| Script | Descrição |
-|---|---|
-| `backup.sh` | `pg_dump` com compressão gzip, retenção configurável (padrão 7 dias) |
-| `restore.sh` | Restaura um arquivo `.sql.gz` via `psql` |
-| `setup-cron.sh` | Agenda backup diário (00:00) via crontab |
+| Script | Descrição | Docker |
+|---|---|---|
+| `backup.sh` | `pg_dump` com compressão gzip, retenção configurável (padrão 7 dias) | `docker exec nexo-api sh -c 'BACKUP_DIR=/app/backups /app/scripts/backup.sh'` |
+| `restore.sh` | Restaura um arquivo `.sql.gz` via `psql` | `docker exec nexo-api sh -c 'gunzip -c /app/backups/arquivo.sql.gz \| psql "$DATABASE_URL"'` |
+| `setup-cron.sh` | Agenda backup diário (00:00) via crontab | Apenas no host |
+
+> O diretório `backups/` é mapeado como volume entre o container e o host (`./backups:/app/backups` no `docker-compose.yml`), então os arquivos ficam visíveis localmente em `backend/backups/`.
 
 ```bash
-# Executar backup manual
-./scripts/backup.sh
+# Executar backup manual (via Docker)
+docker exec nexo-api sh -c 'BACKUP_DIR=/app/backups /app/scripts/backup.sh'
 
-# Restaurar backup
-./scripts/restore.sh backups/nexo_2026-05-30_00-00-00.sql.gz
+# Ver backups gerados
+ls -lh backups/
 
-# Configurar cron automático
-./scripts/setup-cron.sh
+# Restaurar backup via psql direto
+docker exec -i nexo-db psql -U nexo -d nexo < backups/nexo_2026-06-04_23-45-48.sql
+
+# ou via script dentro do container
+docker exec nexo-api sh -c 'gunzip -c /app/backups/nexo_2026-06-04_23-45-48.sql.gz | psql "$DATABASE_URL"'
 ```
+
+> O `backup.sh` sanitiza automaticamente o parâmetro `?schema=public` da `DATABASE_URL` (Prisma adiciona esse parâmetro, mas o `pg_dump` não reconhece).
 
 ### Point-in-Time Recovery (PITR)
 
