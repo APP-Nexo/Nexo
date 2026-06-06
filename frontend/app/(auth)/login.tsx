@@ -13,11 +13,12 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { Link } from 'expo-router';
+import { Link, useRouter } from 'expo-router';
 import { COLORS, SPACING, FONT } from '../../constants';
 import PrimaryButton from '@/components/PrimaryButton';
 
 export default function LoginScreen() {
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -32,7 +33,7 @@ export default function LoginScreen() {
       return;
     }
 
-    Alert.alert('Login', 'Aqui depois vocês conectam com o backend.');
+    router.replace('/(tabs)/home');
   }
 
   function handleCreateAccount() {

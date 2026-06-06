@@ -1,30 +1,5 @@
-import { Link } from 'expo-router';
-import { StyleSheet, Text, View } from 'react-native';
+import { Redirect } from 'expo-router';
 
 export default function Index() {
-  return (
-    <View style={styles.container}>
-      <Link href="../(auth)/login" style={styles.link}>
-        Ir para Login
-      </Link>
-
-      <Link href="/(tabs)/home" style={styles.link}>
-        Ir para Home
-      </Link>
-    </View>
-  );
+  return <Redirect href="/(auth)/login" />;
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: 20,
-  },
-  link: {
-    fontSize: 18,
-    color: 'blue',
-  },
-});
