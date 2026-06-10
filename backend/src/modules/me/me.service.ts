@@ -1,11 +1,11 @@
+import { randomUUID } from 'crypto';
+import fs from 'fs/promises';
+import path from 'path';
 import { AppError } from '../../shared/errors/app-error.js';
 import { comparePassword } from '../../shared/utils/argon2/compare_password.js';
 import { encryptPassword } from '../../shared/utils/argon2/encrypt_password.js';
 import prisma from '../../shared/utils/prisma/prisma_conn.js';
 import type { UpdateMePayload } from './me.interfaces.js';
-import path from 'path';
-import fs from 'fs/promises';
-import { randomUUID } from 'crypto';
 
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 const MAX_SIZE = 5 * 1024 * 1024;
@@ -29,8 +29,8 @@ export class MeService {
         const updateData: Record<string, unknown> = {};
         const profileData: Record<string, unknown> = {};
 
-            if (username !== undefined) updateData.username = username;
-            if (bio !== undefined) profileData.bio = bio;
+        if (username !== undefined) updateData.username = username;
+        if (bio !== undefined) profileData.bio = bio;
 
         await prisma.user.update({
             where: { id: userId },
@@ -75,7 +75,9 @@ export class MeService {
                 const value = await part.toBuffer().then((b: Buffer) => b.toString());
                 if (part.fieldname === 'username') {
                     if (part.fieldname === 'username') {
-                        const existing = await prisma.user.findUnique({ where: { username: value } });
+                        const existing = await prisma.user.findUnique({
+                            where: { username: value },
+                        });
                         if (existing && existing.id !== userId) {
                             throw AppError.throw('Username já está em uso.', 409);
                         }

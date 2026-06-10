@@ -56,13 +56,8 @@
                         },
                         "url": {
                             "raw": "{{baseUrl}}/auth/register",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "auth",
-                                "register"
-                            ]
+                            "host": ["{{baseUrl}}"],
+                            "path": ["auth", "register"]
                         }
                     }
                 },
@@ -97,13 +92,8 @@
                         },
                         "url": {
                             "raw": "{{baseUrl}}/auth/login",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "auth",
-                                "login"
-                            ]
+                            "host": ["{{baseUrl}}"],
+                            "path": ["auth", "login"]
                         }
                     }
                 },
@@ -123,13 +113,8 @@
                         },
                         "url": {
                             "raw": "{{baseUrl}}/auth/refresh",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "auth",
-                                "refresh"
-                            ]
+                            "host": ["{{baseUrl}}"],
+                            "path": ["auth", "refresh"]
                         }
                     }
                 },
@@ -149,13 +134,8 @@
                         },
                         "url": {
                             "raw": "{{baseUrl}}/auth/logout",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "auth",
-                                "logout"
-                            ]
+                            "host": ["{{baseUrl}}"],
+                            "path": ["auth", "logout"]
                         }
                     }
                 },
@@ -175,13 +155,8 @@
                         },
                         "url": {
                             "raw": "{{baseUrl}}/auth/forgot-password",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "auth",
-                                "forgot-password"
-                            ]
+                            "host": ["{{baseUrl}}"],
+                            "path": ["auth", "forgot-password"]
                         }
                     }
                 },
@@ -201,13 +176,8 @@
                         },
                         "url": {
                             "raw": "{{baseUrl}}/auth/reset-password",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "auth",
-                                "reset-password"
-                            ]
+                            "host": ["{{baseUrl}}"],
+                            "path": ["auth", "reset-password"]
                         }
                     }
                 }
@@ -228,12 +198,8 @@
                         ],
                         "url": {
                             "raw": "{{baseUrl}}/me",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "me"
-                            ]
+                            "host": ["{{baseUrl}}"],
+                            "path": ["me"]
                         }
                     }
                 },
@@ -274,12 +240,8 @@
                         },
                         "url": {
                             "raw": "{{baseUrl}}/me",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "me"
-                            ]
+                            "host": ["{{baseUrl}}"],
+                            "path": ["me"]
                         }
                     }
                 },
@@ -303,13 +265,8 @@
                         },
                         "url": {
                             "raw": "{{baseUrl}}/me/password",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "me",
-                                "password"
-                            ]
+                            "host": ["{{baseUrl}}"],
+                            "path": ["me", "password"]
                         }
                     }
                 },
@@ -333,12 +290,8 @@
                         },
                         "url": {
                             "raw": "{{baseUrl}}/me",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "me"
-                            ]
+                            "host": ["{{baseUrl}}"],
+                            "path": ["me"]
                         }
                     }
                 }
@@ -359,13 +312,8 @@
                         ],
                         "url": {
                             "raw": "{{baseUrl}}/users/:username",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "users",
-                                ":username"
-                            ],
+                            "host": ["{{baseUrl}}"],
+                            "path": ["users", ":username"],
                             "variable": [
                                 {
                                     "key": "username",
@@ -387,14 +335,8 @@
                         ],
                         "url": {
                             "raw": "{{baseUrl}}/users/friendly/:friendlyId",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "users",
-                                "friendly",
-                                ":friendlyId"
-                            ],
+                            "host": ["{{baseUrl}}"],
+                            "path": ["users", "friendly", ":friendlyId"],
                             "variable": [
                                 {
                                     "key": "friendlyId",
@@ -416,14 +358,8 @@
                         ],
                         "url": {
                             "raw": "{{baseUrl}}/users/:username/reviews?cursor=",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "users",
-                                ":username",
-                                "reviews"
-                            ],
+                            "host": ["{{baseUrl}}"],
+                            "path": ["users", ":username", "reviews"],
                             "query": [
                                 {
                                     "key": "cursor",
@@ -447,14 +383,8 @@
                         "header": [],
                         "url": {
                             "raw": "{{baseUrl}}/users/:username/stats",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "users",
-                                ":username",
-                                "stats"
-                            ],
+                            "host": ["{{baseUrl}}"],
+                            "path": ["users", ":username", "stats"],
                             "variable": [
                                 {
                                     "key": "username",
@@ -476,14 +406,8 @@
                         ],
                         "url": {
                             "raw": "{{baseUrl}}/users/:username/lists",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "users",
-                                ":username",
-                                "lists"
-                            ],
+                            "host": ["{{baseUrl}}"],
+                            "path": ["users", ":username", "lists"],
                             "variable": [
                                 {
                                     "key": "username",
@@ -510,14 +434,8 @@
                         ],
                         "url": {
                             "raw": "{{baseUrl}}/social/:username/follow",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "social",
-                                ":username",
-                                "follow"
-                            ],
+                            "host": ["{{baseUrl}}"],
+                            "path": ["social", ":username", "follow"],
                             "variable": [
                                 {
                                     "key": "username",
@@ -539,14 +457,8 @@
                         ],
                         "url": {
                             "raw": "{{baseUrl}}/social/:username/follow",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "social",
-                                ":username",
-                                "follow"
-                            ],
+                            "host": ["{{baseUrl}}"],
+                            "path": ["social", ":username", "follow"],
                             "variable": [
                                 {
                                     "key": "username",
@@ -568,14 +480,8 @@
                         ],
                         "url": {
                             "raw": "{{baseUrl}}/social/:username/followers?cursor=",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "social",
-                                ":username",
-                                "followers"
-                            ],
+                            "host": ["{{baseUrl}}"],
+                            "path": ["social", ":username", "followers"],
                             "query": [
                                 {
                                     "key": "cursor",
@@ -604,14 +510,8 @@
                         ],
                         "url": {
                             "raw": "{{baseUrl}}/social/:username/following?cursor=",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "social",
-                                ":username",
-                                "following"
-                            ],
+                            "host": ["{{baseUrl}}"],
+                            "path": ["social", ":username", "following"],
                             "query": [
                                 {
                                     "key": "cursor",
@@ -640,13 +540,8 @@
                         ],
                         "url": {
                             "raw": "{{baseUrl}}/social/feed",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "social",
-                                "feed"
-                            ]
+                            "host": ["{{baseUrl}}"],
+                            "path": ["social", "feed"]
                         }
                     }
                 }
@@ -662,13 +557,8 @@
                         "header": [],
                         "url": {
                             "raw": "{{baseUrl}}/search/users?q=&cursor=&limit=",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "search",
-                                "users"
-                            ],
+                            "host": ["{{baseUrl}}"],
+                            "path": ["search", "users"],
                             "query": [
                                 {
                                     "key": "q",
@@ -706,13 +596,8 @@
                         ],
                         "url": {
                             "raw": "{{baseUrl}}/admin/dashboard",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "admin",
-                                "dashboard"
-                            ]
+                            "host": ["{{baseUrl}}"],
+                            "path": ["admin", "dashboard"]
                         }
                     }
                 },
@@ -728,14 +613,8 @@
                         ],
                         "url": {
                             "raw": "{{baseUrl}}/admin/user/search?q=&cursor=",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "admin",
-                                "user",
-                                "search"
-                            ],
+                            "host": ["{{baseUrl}}"],
+                            "path": ["admin", "user", "search"],
                             "query": [
                                 {
                                     "key": "q",
@@ -763,13 +642,8 @@
                         ],
                         "url": {
                             "raw": "{{baseUrl}}/admin/user-all?cursor=&limit=",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "admin",
-                                "user-all"
-                            ],
+                            "host": ["{{baseUrl}}"],
+                            "path": ["admin", "user-all"],
                             "query": [
                                 {
                                     "key": "cursor",
@@ -797,14 +671,8 @@
                         ],
                         "url": {
                             "raw": "{{baseUrl}}/admin/user/admin",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "admin",
-                                "user",
-                                "admin"
-                            ]
+                            "host": ["{{baseUrl}}"],
+                            "path": ["admin", "user", "admin"]
                         }
                     }
                 },
@@ -820,14 +688,8 @@
                         ],
                         "url": {
                             "raw": "{{baseUrl}}/admin/user/stats",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "admin",
-                                "user",
-                                "stats"
-                            ]
+                            "host": ["{{baseUrl}}"],
+                            "path": ["admin", "user", "stats"]
                         }
                     }
                 },
@@ -843,14 +705,8 @@
                         ],
                         "url": {
                             "raw": "{{baseUrl}}/admin/users/:id",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "admin",
-                                "users",
-                                ":id"
-                            ],
+                            "host": ["{{baseUrl}}"],
+                            "path": ["admin", "users", ":id"],
                             "variable": [
                                 {
                                     "key": "id",
@@ -880,15 +736,8 @@
                         },
                         "url": {
                             "raw": "{{baseUrl}}/admin/users/:id/block",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "admin",
-                                "users",
-                                ":id",
-                                "block"
-                            ],
+                            "host": ["{{baseUrl}}"],
+                            "path": ["admin", "users", ":id", "block"],
                             "variable": [
                                 {
                                     "key": "id",
@@ -910,15 +759,8 @@
                         ],
                         "url": {
                             "raw": "{{baseUrl}}/admin/users/:id/block",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "admin",
-                                "users",
-                                ":id",
-                                "block"
-                            ],
+                            "host": ["{{baseUrl}}"],
+                            "path": ["admin", "users", ":id", "block"],
                             "variable": [
                                 {
                                     "key": "id",
@@ -940,14 +782,8 @@
                         ],
                         "url": {
                             "raw": "{{baseUrl}}/admin/users/:id",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "admin",
-                                "users",
-                                ":id"
-                            ],
+                            "host": ["{{baseUrl}}"],
+                            "path": ["admin", "users", ":id"],
                             "variable": [
                                 {
                                     "key": "id",
@@ -969,13 +805,8 @@
                         ],
                         "url": {
                             "raw": "{{baseUrl}}/admin/reviews?status=",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "admin",
-                                "reviews"
-                            ],
+                            "host": ["{{baseUrl}}"],
+                            "path": ["admin", "reviews"],
                             "query": [
                                 {
                                     "key": "status",
@@ -998,14 +829,8 @@
                         ],
                         "url": {
                             "raw": "{{baseUrl}}/admin/reviews/:id",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "admin",
-                                "reviews",
-                                ":id"
-                            ],
+                            "host": ["{{baseUrl}}"],
+                            "path": ["admin", "reviews", ":id"],
                             "variable": [
                                 {
                                     "key": "id",
@@ -1027,13 +852,8 @@
                         ],
                         "url": {
                             "raw": "{{baseUrl}}/admin/reports",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "admin",
-                                "reports"
-                            ]
+                            "host": ["{{baseUrl}}"],
+                            "path": ["admin", "reports"]
                         }
                     }
                 },
@@ -1049,15 +869,8 @@
                         ],
                         "url": {
                             "raw": "{{baseUrl}}/admin/reports/:id/resolve",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "admin",
-                                "reports",
-                                ":id",
-                                "resolve"
-                            ],
+                            "host": ["{{baseUrl}}"],
+                            "path": ["admin", "reports", ":id", "resolve"],
                             "variable": [
                                 {
                                     "key": "id",
@@ -1084,15 +897,8 @@
                         ],
                         "url": {
                             "raw": "{{baseUrl}}/master/user/:id/promote",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "master",
-                                "user",
-                                ":id",
-                                "promote"
-                            ],
+                            "host": ["{{baseUrl}}"],
+                            "path": ["master", "user", ":id", "promote"],
                             "variable": [
                                 {
                                     "key": "id",
@@ -1114,15 +920,8 @@
                         ],
                         "url": {
                             "raw": "{{baseUrl}}/master/user/:id/demote",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "master",
-                                "user",
-                                ":id",
-                                "demote"
-                            ],
+                            "host": ["{{baseUrl}}"],
+                            "path": ["master", "user", ":id", "demote"],
                             "variable": [
                                 {
                                     "key": "id",
@@ -1144,15 +943,8 @@
                         ],
                         "url": {
                             "raw": "{{baseUrl}}/master/user/:id/ban",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "master",
-                                "user",
-                                ":id",
-                                "ban"
-                            ],
+                            "host": ["{{baseUrl}}"],
+                            "path": ["master", "user", ":id", "ban"],
                             "variable": [
                                 {
                                     "key": "id",
@@ -1174,13 +966,8 @@
                         "header": [],
                         "url": {
                             "raw": "{{baseUrl}}/verify/health",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "verify",
-                                "health"
-                            ]
+                            "host": ["{{baseUrl}}"],
+                            "path": ["verify", "health"]
                         }
                     }
                 },
@@ -1191,13 +978,8 @@
                         "header": [],
                         "url": {
                             "raw": "{{baseUrl}}/verify/ping",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "verify",
-                                "ping"
-                            ]
+                            "host": ["{{baseUrl}}"],
+                            "path": ["verify", "ping"]
                         }
                     }
                 }
@@ -1218,12 +1000,8 @@
                         ],
                         "url": {
                             "raw": "{{baseUrl}}/notification?cursor=",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "notification"
-                            ],
+                            "host": ["{{baseUrl}}"],
+                            "path": ["notification"],
                             "query": [
                                 {
                                     "key": "cursor",
@@ -1246,13 +1024,8 @@
                         ],
                         "url": {
                             "raw": "{{baseUrl}}/notification/read-all",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "notification",
-                                "read-all"
-                            ]
+                            "host": ["{{baseUrl}}"],
+                            "path": ["notification", "read-all"]
                         }
                     }
                 },
@@ -1268,14 +1041,8 @@
                         ],
                         "url": {
                             "raw": "{{baseUrl}}/notification/delete/:id",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "notification",
-                                "delete",
-                                ":id"
-                            ],
+                            "host": ["{{baseUrl}}"],
+                            "path": ["notification", "delete", ":id"],
                             "variable": [
                                 {
                                     "key": "id",
@@ -1297,13 +1064,8 @@
                         ],
                         "url": {
                             "raw": "{{baseUrl}}/notification/delete-all",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "notification",
-                                "delete-all"
-                            ]
+                            "host": ["{{baseUrl}}"],
+                            "path": ["notification", "delete-all"]
                         }
                     }
                 }

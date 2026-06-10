@@ -10,7 +10,7 @@ export class UsersService {
             include: { profile: true },
         });
 
-        if (!user || !user.activate) throw AppError.throw('Usuário não encontrado.', 404);
+        if (!user?.activate) throw AppError.throw('Usuário não encontrado.', 404);
 
         let isFollowing = false;
         if (currentUserId) {
@@ -40,7 +40,7 @@ export class UsersService {
             include: { profile: true },
         });
 
-        if (!user || !user.activate) throw AppError.throw('Usuário não encontrado.', 404);
+        if (!user?.activate) throw AppError.throw('Usuário não encontrado.', 404);
 
         let isFollowing = false;
         if (currentUserId) {

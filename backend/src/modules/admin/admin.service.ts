@@ -35,11 +35,11 @@ export class AdminService {
         const gameIds = topGames.map((g) => g.gameId);
         const games =
             gameIds.length > 0
-            ? await prisma.game.findMany({
-                    where: { id: { in: gameIds } },
-                    select: { id: true, title: true, cover: true },
-                })
-            : [];
+                ? await prisma.game.findMany({
+                      where: { id: { in: gameIds } },
+                      select: { id: true, title: true, cover: true },
+                  })
+                : [];
 
         const last7Days = Array.from({ length: 7 }, (_, i) => {
             const d = new Date();
@@ -85,9 +85,9 @@ export class AdminService {
     static async getUsersAdmin(): Promise<UsersListResponse<UserPublicSimple>> {
         const users = await prisma.vwUserPublic.findMany({
             where: { roleId: 2 },
-                    select: {
-                        id: true,
-                        friendlyId: true,
+            select: {
+                id: true,
+                friendlyId: true,
                 email: true,
                 photo: true,
                 createdAt: true,
@@ -108,9 +108,7 @@ export class AdminService {
                 prisma.vwUserPublic.findMany({
                     ...args,
                     where: {
-                        OR: [
-                            { email: { contains: query, mode: 'insensitive' } },
-                        ],
+                        OR: [{ email: { contains: query, mode: 'insensitive' } }],
                     },
                     select: {
                         id: true,

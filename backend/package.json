@@ -21,7 +21,7 @@
         "test:ci": "npx prisma db push --accept-data-loss && npx tsx prisma/seeds/index.ts && npm test",
         "test:watch": "vitest",
         "test:coverage": "vitest run --coverage",
-        "format": "npx biome check --write ."
+        "format": "biome check --write ."
     },
     "keywords": [],
     "author": "",

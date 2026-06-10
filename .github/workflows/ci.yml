@@ -25,12 +25,23 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Check formatting
-        run: npx biome ci .
+        run: npx @biomejs/biome ci .
 
   test:
-    name: Tests
+    name: Test - ${{ matrix.test-file }}
     runs-on: ubuntu-latest
     needs: lint
+    strategy:
+      fail-fast: false
+      matrix:
+        test-file:
+          - health
+          - auth
+          - master
+          - admin
+          - search
+          - me
+          - social
     services:
       postgres:
         image: postgres:16-alpine
@@ -65,8 +76,8 @@ jobs:
         run: npx prisma db push --accept-data-loss && npx tsx prisma/seeds/index.ts
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/NexoAPI?schema=public
-      - name: Run tests
-        run: npm test
+      - name: Run ${{ matrix.test-file }} tests
+        run: npx vitest run src/tests/${{ matrix.test-file }}.test.ts --reporter=verbose
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/NexoAPI?schema=public
           NODE_ENV: test
