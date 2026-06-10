@@ -11,12 +11,9 @@ import {
 import { Image } from 'expo-image';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { COLORS, SPACING, RADIUS, FONT } from '../../constants';
+import { games } from '../../data/games';
 import {
   MOCK_USER,
-  MOCK_FAVORITES,
-  MOCK_RATINGS,
-  MOCK_ACTIVITIES,
-  MOCK_LOG,
   MOCK_LISTS,
   type FavoriteGame,
   type RatingEntry,
@@ -29,6 +26,56 @@ type ListTab = 'todas' | 'listas';
 
 const MAX_RATING = 5;
 const LOG_COLUMNS = 3;
+
+const favoriteGames: FavoriteGame[] = games.slice(0, 4).map((game) => ({
+  id: game.id,
+  title: game.title,
+  image: game.image,
+  rating: game.rating,
+}));
+
+const ratingEntries: RatingEntry[] = games.slice(0, 5).map((game) => ({
+  id: game.id,
+  title: game.title,
+  rating: game.rating,
+}));
+
+const activityItems: ActivityEntry[] = [
+  {
+    id: '1',
+    gameTitle: games.find((game) => game.id === '1')?.title ?? 'ELDEN RING',
+    actionType: 'review',
+    actionLabel: 'review publicada',
+    date: '2 dias atrás',
+    rating: games.find((game) => game.id === '1')?.rating ?? 5,
+    image: games.find((game) => game.id === '1')?.image ?? games[0].image,
+  },
+  {
+    id: '2',
+    gameTitle: games.find((game) => game.id === '3')?.title ?? 'HADES II',
+    actionType: 'rating',
+    actionLabel: 'nota atualizada',
+    date: '4 dias atrás',
+    rating: games.find((game) => game.id === '3')?.rating ?? 4,
+    image: games.find((game) => game.id === '3')?.image ?? games[0].image,
+  },
+  {
+    id: '3',
+    gameTitle: games.find((game) => game.id === '6')?.title ?? 'THE LAST OF US 2',
+    actionType: 'favorite',
+    actionLabel: 'adicionado aos favoritos',
+    date: '1 semana atrás',
+    rating: games.find((game) => game.id === '6')?.rating ?? 5,
+    image: games.find((game) => game.id === '6')?.image ?? games[0].image,
+  },
+];
+
+const logEntries: LogEntry[] = games.map((game) => ({
+  id: game.id,
+  title: game.title,
+  image: game.image,
+  rating: game.rating,
+}));
 
 function renderStars(rating: number): string {
   const filled = Math.round(rating);
@@ -104,7 +151,7 @@ export default function ProfileScreen() {
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.horizontalList}
           >
-            {MOCK_FAVORITES.map((game) => (
+            {favoriteGames.map((game) => (
               <FavoriteCard key={game.id} game={game} />
             ))}
           </ScrollView>
@@ -113,12 +160,12 @@ export default function ProfileScreen() {
         <View style={styles.section}>
           <SectionHeader title="SUAS NOTAS" action="VER MAIS" />
           <View style={styles.ratingChart}>
-            {MOCK_RATINGS.map((entry, index) => (
+            {ratingEntries.map((entry, index) => (
               <RatingRow
                 key={entry.id}
                 entry={entry}
                 barColor={ratingBarColor(index)}
-                isLast={index === MOCK_RATINGS.length - 1}
+                isLast={index === ratingEntries.length - 1}
               />
             ))}
           </View>
@@ -126,7 +173,7 @@ export default function ProfileScreen() {
 
         <View style={styles.section}>
           <SectionHeader title="ATIVIDADE RECENTE" action="VER TUDO" />
-          {MOCK_ACTIVITIES.map((item) => (
+          {activityItems.map((item) => (
             <ActivityItem key={item.id} item={item} />
           ))}
         </View>
@@ -134,7 +181,7 @@ export default function ProfileScreen() {
         <View style={styles.section}>
           <SectionHeader title="LOG DE JOGOS" action="VER TODOS" />
           <View style={styles.logGrid}>
-            {MOCK_LOG.map((game) => (
+            {logEntries.map((game) => (
               <LogCard key={game.id} game={game} itemWidth={logItemWidth} />
             ))}
           </View>

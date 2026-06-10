@@ -5,6 +5,7 @@ import {
   StyleSheet,
   Text,
   TextInput,
+  type ImageSourcePropType,
 } from 'react-native';
 import MaskedView from '@react-native-masked-view/masked-view';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -12,43 +13,67 @@ import Carousel from '@/components/Carrousel';
 import ActivityCard from '@/components/ActivityCard';
 import { COLORS, SPACING, FONT } from '@/constants';
 import { games } from '@/data/games';
-import eldenring from '../../assets/images/Elden_Ring_capa.jpg';
 import { useRouter } from 'expo-router';
 
-const activities = [
+const reviewers = [
+  { id: 'u1', initials: 'LK', username: 'Lucas K.' },
+  { id: 'u2', initials: 'RA', username: 'Raquel A.' },
+  { id: 'u3', initials: 'MM', username: 'Mauro M.' },
+];
+
+const reviewGames = [
   {
-    id: 'a1',
-    userInitials: 'LK',
-    username: 'Lucas K.',
-    time: '5m atrás',
-    action: 'avaliou',
-    gameTitle: 'ELDEN RING II',
-    rating: 5,
-    comment: 'Melhor sequência de todos os tempos!',
-    gameImage: eldenring,
-  },
-  {
-    id: 'a2',
-    userInitials: 'RA',
-    username: 'Raquel A.',
-    time: '20m atrás',
-    action: 'completou',
-    gameTitle: 'ELDEN RING II',
-    rating: 4,
-    comment: 'História e jogabilidade incríveis.',
-    gameImage: eldenring,
-  },
-  {
-    id: 'a3',
-    userInitials: 'MM',
-    username: 'Mauro M.',
+    id: '1',
+    gameId: '2',
+    reviewerId: 'u1',
+    comment: 'Poucos RPGs me prenderam tanto quanto este. Visual incrível e trilha sonora memorável.',
     time: '1h atrás',
-    action: 'favoritou',
-    gameTitle: 'ELDEN RING II',
-    rating: 2,
-    gameImage: eldenring,
+  },
+  {
+    id: '2',
+    gameId: '3',
+    reviewerId: 'u2',
+    comment: 'Combate rápido e viciante, perfeito para partidas curtas e longas.',
+    time: '2h atrás',
+  },
+  {
+    id: '3',
+    gameId: '1',
+    reviewerId: 'u3',
+    comment: 'O, Death. Become my blade, once more.',
+    time: 'agora',
   },
 ];
+
+const activities = reviewGames
+  .map((review, index) => {
+    const game = games.find((item) => item.id === review.gameId);
+    const reviewer = reviewers.find((user) => user.id === review.reviewerId);
+    if (!game) return null;
+
+    return {
+      id: `a${index + 1}`,
+      userInitials: reviewer?.initials ?? 'EU',
+      username: reviewer?.username ?? 'Você',
+      time: review.time,
+      action: 'avaliou',
+      gameTitle: game.title,
+      rating: game.rating,
+      comment: review.comment,
+      gameImage: game.image as ImageSourcePropType,
+    };
+  })
+  .filter(Boolean) as Array<{
+    id: string;
+    userInitials: string;
+    username: string;
+    time: string;
+    action: string;
+    gameTitle: string;
+    rating: number;
+    comment: string;
+    gameImage: ImageSourcePropType;
+  }>;
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -61,7 +86,6 @@ export default function Home() {
       >
         <View style={styles.header}>
           <View style={styles.headerContent}>
-            {/* Logo NEXO com gradiente */}
             <MaskedView
               maskElement={
                 <View style={styles.maskContainer}>
@@ -76,7 +100,6 @@ export default function Home() {
                 style={[styles.gradient, { height: 30 * 1.25 }]}
               />
             </MaskedView>
-            {/* Fim do logo NEXO */}
             <View style={{ flex: 1 }} />
             <View style={styles.profileIcon}>
               <Text style={styles.profileText}>KZ</Text>

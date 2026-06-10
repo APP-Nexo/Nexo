@@ -8,24 +8,11 @@ import {
   Dimensions,
 } from 'react-native';
 import { Image } from 'expo-image';
-import eldenring from '../../assets/images/Elden_Ring_capa.jpg';
 import { COLORS, SPACING, FONT } from '../../constants';
+import { games } from '../../data/games';
 
 const { width } = Dimensions.get('window');
 const CARD_WIDTH = (width - 48) / 2;
-
-const DATA = [
-  {
-    id: '1',
-    title: 'RESIDENT EVIL\nREQUIEM',
-    image: eldenring,
-  },
-  {
-    id: '2',
-    title: 'THE LAST OF US II',
-    image: eldenring,
-  },
-];
 
 export default function GamesScreen() {
   return (
@@ -39,7 +26,7 @@ export default function GamesScreen() {
       />
 
       <FlatList
-        data={DATA}
+        data={games}
         keyExtractor={(item) => item.id}
         numColumns={2}
         columnWrapperStyle={{ justifyContent: 'space-between' }}
@@ -66,9 +53,12 @@ export default function GamesScreen() {
               >
                 {item.title}
               </Text>
-              <Text style={styles.genre}>AÇÃO • RPG</Text>
+              <Text style={styles.genre}>{item.category}</Text>
+              <Text style={styles.genre} numberOfLines={1}>
+                {item.genres?.slice(0, 2).join(' • ')}
+              </Text>
 
-              <Text style={styles.stars}>★★★★★</Text>
+              <Text style={styles.stars}>{item.rating.toFixed(1)} ★</Text>
             </View>
           </View>
         )}
@@ -87,7 +77,8 @@ const styles = StyleSheet.create({
 
   title: {
     color: '#FFFFFF',
-    fontSize: 22,
+    fontFamily: FONT.family.heading,
+    fontSize: FONT.heading,
     fontWeight: '700',
     marginBottom: 16,
   },
@@ -117,8 +108,23 @@ const styles = StyleSheet.create({
 
   cardTitle: {
     color: '#FFFFFF',
-    fontSize: 13,
+    fontFamily: FONT.family.heading,
+    fontSize: 16,
     fontWeight: '600',
+  },
+
+  genre: {
+    color: '#6B7280',
+    fontFamily: FONT.family.heading,
+    fontSize: 11,
+    marginTop: 4,
+  },
+
+  stars: {
+    color: '#00E0FF',
+    fontFamily: FONT.family.heading,
+    marginTop: 6,
+    fontSize: 12,
   },
 
   imageContainer: {
@@ -150,15 +156,4 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
   },
 
-  genre: {
-    color: '#6B7280',
-    fontSize: 10,
-    marginTop: 4,
-  },
-
-  stars: {
-    color: '#00E0FF',
-    marginTop: 6,
-    fontSize: 12,
-  },
 });
