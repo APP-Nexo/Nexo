@@ -18,5 +18,6 @@ COPY src ./src
 COPY docker-entrypoint.sh /app/
 RUN chmod +x docker-entrypoint.sh
 
+ENTRYPOINT []
 EXPOSE 3000
 CMD ["/app/docker-entrypoint.sh"]
