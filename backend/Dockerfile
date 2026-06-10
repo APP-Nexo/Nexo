@@ -15,9 +15,7 @@ COPY tsconfig.json ./
 COPY scripts ./scripts
 COPY certs ./certs
 COPY src ./src
-COPY docker-entrypoint.sh /app/
-RUN chmod +x docker-entrypoint.sh
 
 ENTRYPOINT []
 EXPOSE 3000
-CMD ["/app/docker-entrypoint.sh"]
+CMD npx prisma generate && npx prisma db push --accept-data-loss && npx tsx prisma/seeds/index.ts && npx tsx src/server.ts
