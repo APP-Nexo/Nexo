@@ -37,7 +37,7 @@ steps:
     displayName: Generate Prisma client
 
   - script: npm run test:ci
-    displayName: Run migrations, seeds and tests
+    displayName: Run migrations (db push), seeds and tests
 
-  - script: npm run format
+  - script: npx biome check --write .
     displayName: Check code formatting
