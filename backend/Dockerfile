@@ -18,4 +18,4 @@ COPY src ./src
 
 ENTRYPOINT []
 EXPOSE 3000
-CMD npx prisma generate && npx prisma db push --accept-data-loss && npx tsx prisma/seeds/index.ts && npx tsx src/server.ts
+CMD if [ ! -f certs/key.pem ]; then sh certs/generate; fi && npx prisma generate && npx prisma db push --accept-data-loss && npx tsx prisma/seeds/index.ts && npx tsx src/server.ts
