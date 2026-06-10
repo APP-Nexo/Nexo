@@ -25,6 +25,10 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 
+    defaults:
+      run:
+        working-directory: backend
+
     steps:
       - uses: actions/checkout@v4
 
@@ -32,6 +36,7 @@ jobs:
         with:
           node-version: 22
           cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
 
       - run: npm ci
 
