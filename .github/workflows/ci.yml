@@ -25,7 +25,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Check formatting
-        run: npx biome check --write .
+        run: npx biome ci .
 
   test:
     name: Tests
@@ -61,8 +61,12 @@ jobs:
         run: npm ci
       - name: Generate Prisma client
         run: npx prisma generate
-      - name: Run CI
-        run: npm run test:ci
+      - name: Setup database
+        run: npx prisma db push --accept-data-loss && npx tsx prisma/seeds/index.ts
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/NexoAPI?schema=public
+      - name: Run tests
+        run: npm test
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/NexoAPI?schema=public
           NODE_ENV: test
