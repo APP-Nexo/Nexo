@@ -18,4 +18,4 @@ COPY src ./src
 
 ENTRYPOINT []
 EXPOSE 3000
-CMD npx prisma generate --schema=prisma/schema.prisma && npx prisma db push --schema=prisma/schema.prisma --accept-data-loss && npx tsx prisma/seeds/index.ts && npx tsx src/server.ts
+CMD npx prisma generate && npx prisma db push --accept-data-loss && npx tsx prisma/seeds/index.ts && npx tsx src/server.ts
