@@ -1,20 +1,28 @@
 import { app } from './conf.js';
-import 'dotenv/config';
-import { bootstrap } from './bootstrap.js';
+import { assertRuntimeEnv, env } from './shared/config/env.js';
+import prisma from './shared/utils/prisma/prisma_conn.js';
 
-const PORT: number = Number(process.env.PORT);
-const HOST: string = String(process.env.HOST);
+async function shutdown(signal: string) {
+    app.log.info({ signal }, 'Encerrando servidor');
+    await app.close();
+    await prisma.$disconnect();
+}
 
 async function main() {
     try {
-        await app.listen({ host: HOST, port: PORT });
-        app.log.info(`🚀 Server running at https://${HOST}:${PORT}`);
-        app.log.info(`📚 Swagger running at https://${HOST}:${PORT}/docs`);
-        await bootstrap();
-    } catch (e) {
-        app.log.error(e);
-        process.exit(1);
+        assertRuntimeEnv();
+        await app.listen({ host: env.host, port: env.port });
+        const protocol = env.tlsKeyPath && env.tlsCertPath ? 'https' : 'http';
+        app.log.info(`Servidor disponível em ${protocol}://${env.host}:${env.port}`);
+        app.log.info(`Swagger disponível em ${protocol}://${env.host}:${env.port}/docs`);
+
+        process.once('SIGINT', () => void shutdown('SIGINT'));
+        process.once('SIGTERM', () => void shutdown('SIGTERM'));
+    } catch (error) {
+        app.log.error(error);
+        await prisma.$disconnect();
+        process.exitCode = 1;
     }
 }
 
-main();
+void main();

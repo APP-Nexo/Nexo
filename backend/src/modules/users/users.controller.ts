@@ -1,5 +1,6 @@
 import type { FastifyReply, FastifyRequest } from 'fastify';
 import type { UserTokenPayload } from '../../shared/utils/jwt/jwt.interfaces.js';
+import type { UsersPaginationQuery } from './users.interfaces.js';
 import { UsersService } from './users.service.js';
 
 export class UsersController {
@@ -19,7 +20,7 @@ export class UsersController {
 
     static async getReviews(req: FastifyRequest, reply: FastifyReply) {
         const { username } = req.params as { username: string };
-        const { cursor } = req.query as { cursor?: string };
+        const { cursor } = req.query as UsersPaginationQuery;
         const response = await UsersService.getUserReviews(username, cursor);
         return reply.status(200).send(response);
     }

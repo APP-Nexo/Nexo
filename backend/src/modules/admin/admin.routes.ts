@@ -13,9 +13,11 @@ import {
     getUsersAdminSchemaSwagger,
     getUsersSchemaSwagger,
     getUsersStatsSchemaSwagger,
+    moderateReviewSchemaSwagger,
     resolveReportSchemaSwagger,
     searchUserAdminSchemaSwagger,
     unblockUserSchemaSwagger,
+    updateReportSchemaSwagger,
 } from './admin.swagger.js';
 
 export async function adminRoutes(app: FastifyInstance) {
@@ -74,10 +76,20 @@ export async function adminRoutes(app: FastifyInstance) {
         { ...deleteReviewAdminSchemaSwagger, preHandler: [checkToken, checkAccessPerm] },
         AdminController.deleteReview,
     );
+    app.patch(
+        '/reviews/:id/moderation',
+        { ...moderateReviewSchemaSwagger, preHandler: [checkToken, checkAccessPerm] },
+        AdminController.moderateReview,
+    );
     app.get(
         '/reports',
         { ...getReportsSchemaSwagger, preHandler: [checkToken, checkAccessPerm] },
         AdminController.getReports,
+    );
+    app.patch(
+        '/reports/:id',
+        { ...updateReportSchemaSwagger, preHandler: [checkToken, checkAccessPerm] },
+        AdminController.updateReport,
     );
     app.patch(
         '/reports/:id/resolve',

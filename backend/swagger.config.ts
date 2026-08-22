@@ -6,17 +6,18 @@ import type { FastifyInstance } from 'fastify';
 
 export async function setupSwagger(app: FastifyInstance) {
     await app.register(swagger, {
+        transform: ({ schema, url }) => ({
+            schema,
+            url: url.length > 1 ? url.replace(/\/$/, '') : url,
+        }),
         openapi: {
+            openapi: '3.1.0',
             info: {
                 title: 'Nexo API',
-                description: 'Documentation API',
-                version: '1.0.0',
+                description: 'API da plataforma social de jogos Nexo',
+                version: '2.0.0',
             },
-            security: [
-                {
-                    bearerAuth: [],
-                },
-            ],
+            servers: [{ url: '/', description: 'Servidor atual' }],
             components: {
                 securitySchemes: {
                     bearerAuth: {

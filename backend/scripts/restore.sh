@@ -1,16 +1,25 @@
 #!/bin/sh
-set -e
+set -eu
 
-if [ -z "$1" ]; then
-    echo "Uso: $1 <arquivo.sql.gz>"
+if [ "$#" -ne 1 ] || [ ! -r "$1" ]; then
+    printf 'Uso: %s <arquivo.sql.gz>\n' "$0" >&2
     exit 1
 fi
 
-DB_NAME="${DB_NAME:-NexoAPI}"
-DB_USER="${DB_USER:-postgres}"
-DB_HOST="${DB_HOST:-localhost}"
-DB_PORT="${DB_PORT:-5432}"
+DB_URL="${DATABASE_URL:?DATABASE_URL is required}"
+DB_URL_CLEAN=$(
+    printf '%s' "$DB_URL" |
+        sed -E 's/([?&])schema=[^&]*&?/\1/; s/\?&/?/; s/[?&]$//'
+)
+TEMP_SQL=$(mktemp "${TMPDIR:-/tmp}/nexo_restore.sql.XXXXXX")
+cleanup() {
+    rm -f "$TEMP_SQL"
+}
+trap cleanup EXIT INT TERM
 
-gunzip -c "$1" | psql "postgresql://${DB_USER}@${DB_HOST}:${DB_PORT}/${DB_NAME}"
+gzip -t "$1"
+gunzip -c "$1" > "$TEMP_SQL"
+test -s "$TEMP_SQL"
+psql "$DB_URL_CLEAN" --set ON_ERROR_STOP=1 --single-transaction --file "$TEMP_SQL"
 
-echo "Restaurado de: $1"
+printf 'Restaurado de: %s\n' "$1"

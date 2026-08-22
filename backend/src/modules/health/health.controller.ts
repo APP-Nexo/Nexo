@@ -12,6 +12,11 @@ export class HealthController {
         return reply.send(response);
     }
 
+    static async ready(_req: FastifyRequest, reply: FastifyReply) {
+        const response = await HealthService.ready();
+        return reply.send(response);
+    }
+
     // ============================================================
     //  @get: /api/verify/ping
     //  @returns: { message: 'pong', timestamp: new Date() }

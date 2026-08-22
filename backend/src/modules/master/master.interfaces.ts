@@ -1,11 +1,11 @@
 export type RoleActionResponse = {
     message: string;
-    email: string | undefined;
+    email: string;
     role: string;
 };
 
 export type BanResponse = {
     message: string;
-    email: string | undefined;
+    email: string;
     bannedAt: string;
 };

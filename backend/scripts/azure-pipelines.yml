@@ -20,7 +20,7 @@ services:
 variables:
   DATABASE_URL: postgresql://postgres:postgres@localhost:5432/NexoAPI?schema=public
   NODE_ENV: test
-  SECRET: ci-secret
+  SECRET: ci-only-secret-with-at-least-32-characters
   TOKEN_TYPE: Bearer
   TOKEN_EXPIRES: 15m
   REFRESH_TOKEN_EXPIRES: 7d
@@ -32,12 +32,28 @@ steps:
 
   - script: npm ci
     displayName: Install dependencies
+    workingDirectory: $(Build.SourcesDirectory)/backend
 
-  - script: npx prisma generate
+  - script: npm audit --omit=dev --audit-level=high
+    displayName: Audit production dependencies
+    workingDirectory: $(Build.SourcesDirectory)/backend
+
+  - script: npm run generate
     displayName: Generate Prisma client
+    workingDirectory: $(Build.SourcesDirectory)/backend
+
+  - script: npm run format:check
+    displayName: Check code formatting
+    workingDirectory: $(Build.SourcesDirectory)/backend
+
+  - script: npm run typecheck
+    displayName: Typecheck
+    workingDirectory: $(Build.SourcesDirectory)/backend
 
   - script: npm run test:ci
-    displayName: Run migrations (db push), seeds and tests
+    displayName: Run migrations, seeds and tests
+    workingDirectory: $(Build.SourcesDirectory)/backend
 
-  - script: npx biome check --write .
-    displayName: Check code formatting
+  - script: npm run build
+    displayName: Build backend
+    workingDirectory: $(Build.SourcesDirectory)/backend

@@ -1,48 +1,91 @@
-import type { SearchUserResult } from '../../shared/dto/search.dto.js';
+import type { Prisma } from '../../generated/client.js';
+import { AppError } from '../../shared/errors/app-error.js';
 import prisma from '../../shared/utils/prisma/prisma_conn.js';
+import type { SearchUser, SearchUsersResponse } from './search.interfaces.js';
 
-type UserWithProfile = {
-    id: number;
-    username: string | null;
-    email: string;
-    profile: { photo: string | null; bio: string | null; followersCount: number } | null;
-};
+const DEFAULT_LIMIT = 20;
+const MAX_LIMIT = 50;
+const PRISMA_INT_MAX = 2_147_483_647;
+
+function normalizeLimit(limit: number | undefined): number {
+    const value = limit ?? DEFAULT_LIMIT;
+    if (!Number.isInteger(value) || value < 1) {
+        AppError.throw('O limite deve ser um número inteiro positivo.', 400);
+    }
+    return Math.min(value, MAX_LIMIT);
+}
+
+function normalizeCursor(cursor: string | number | undefined): number | undefined {
+    if (cursor === undefined) return undefined;
+
+    const value = Number(cursor);
+    if (!Number.isSafeInteger(value) || value <= 0 || value > PRISMA_INT_MAX) {
+        AppError.throw('Cursor inválido.', 400);
+    }
+    return value;
+}
 
 export class SearchService {
-    static async searchUsers(query?: string, cursor?: string, limit = 20) {
-        const actualLimit = Math.min(limit, 50);
-
-        const where: any = { activate: true };
-
-        if (query && query.length >= 2) {
-            where.OR = [
-                { username: { contains: query, mode: 'insensitive' as const } },
-                { email: { contains: query, mode: 'insensitive' as const } },
-            ];
+    static async searchUsers(
+        query?: string,
+        cursor?: string | number,
+        limit?: number,
+        suggested = false,
+    ): Promise<SearchUsersResponse> {
+        const normalizedQuery = query?.trim() ?? '';
+        if (normalizedQuery.length === 0 && !suggested) {
+            AppError.throw('Informe uma busca com ao menos 2 caracteres.', 400);
+        }
+        if (normalizedQuery.length === 1) {
+            AppError.throw('A busca deve ter ao menos 2 caracteres.', 400);
         }
 
-        const take = actualLimit + 1;
-        const users = (await prisma.user.findMany({
-            where,
-            include: { profile: { select: { photo: true, bio: true, followersCount: true } } },
-            orderBy: [{ username: { sort: 'asc', nulls: 'last' } }],
-            take,
-            ...(cursor ? { cursor: { id: Number(cursor) }, skip: 1 } : {}),
-        })) as unknown as UserWithProfile[];
+        const actualLimit = normalizeLimit(limit);
+        const cursorId = normalizeCursor(cursor);
+        const where: Prisma.UserWhereInput = {
+            activate: true,
+            deletedAt: null,
+            blockedUser: null,
+            ...(normalizedQuery
+                ? { username: { contains: normalizedQuery, mode: 'insensitive' } }
+                : {}),
+        };
+        const orderBy: Prisma.UserOrderByWithRelationInput[] = normalizedQuery
+            ? [{ username: 'asc' }, { id: 'asc' }]
+            : [{ profile: { followersCount: 'desc' } }, { id: 'desc' }];
+
+        const [users, total] = await Promise.all([
+            prisma.user.findMany({
+                where,
+                select: {
+                    id: true,
+                    username: true,
+                    profile: {
+                        select: { photo: true, bio: true, followersCount: true },
+                    },
+                },
+                orderBy,
+                take: actualLimit + 1,
+                ...(cursorId !== undefined ? { cursor: { id: cursorId }, skip: 1 } : {}),
+            }),
+            prisma.user.count({ where }),
+        ]);
 
         const hasMore = users.length > actualLimit;
-        const data = users.slice(0, actualLimit).map((u) => ({
-            id: u.id,
-            username: u.username,
-            photo: u.profile?.photo ?? null,
-            bio: u.profile?.bio ?? null,
-            followersCount: u.profile?.followersCount ?? 0,
-        })) satisfies SearchUserResult[];
+        const page = users.slice(0, actualLimit);
+        const data: SearchUser[] = page.map((user) => ({
+            id: user.id,
+            username: user.username,
+            photo: user.profile?.photo ?? null,
+            bio: user.profile?.bio ?? null,
+            followersCount: user.profile?.followersCount ?? 0,
+        }));
 
         return {
             data,
-            total: data.length,
-            nextCursor: hasMore ? String(data[data.length - 1]!.id) : null,
+            total,
+            hasMore,
+            nextCursor: hasMore ? String(page.at(-1)!.id) : null,
         };
     }
 }

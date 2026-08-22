@@ -28,7 +28,7 @@ export async function cursorPaginate<T extends { id: number }>(
     });
 
     const data = items.slice(0, take);
-    const nextCursor = items.length === takeWithExtra ? (items[take]?.id ?? null) : null;
+    const nextCursor = items.length === takeWithExtra ? (data[data.length - 1]?.id ?? null) : null;
 
     return { data, nextCursor };
 }

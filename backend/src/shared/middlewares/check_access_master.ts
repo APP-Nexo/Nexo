@@ -1,18 +1,28 @@
 import type { FastifyRequest } from 'fastify';
-import type { Role } from '../../generated/client.js';
-import { JwtToken } from '../utils/jwt/jwt_token.js';
+import type { UserTokenPayload } from '../utils/jwt/jwt.interfaces.js';
 import { TokenErrors } from '../utils/jwt/token.errors.js';
 import prisma from '../utils/prisma/prisma_conn.js';
+import { checkToken } from './check_token.js';
 
 export async function checkAccessMaster(req: FastifyRequest) {
     if (!req.headers.authorization) TokenErrors.throwMissing();
 
-    const user = await JwtToken.getByUser(req);
-    if (!user) TokenErrors.throwAccessDenied();
+    if (!req.user) await checkToken(req);
 
-    const role = await prisma.role.findUnique({ where: { id: user.roleId } });
+    const tokenUser = req.user as UserTokenPayload | undefined;
+    if (!tokenUser || !Number.isInteger(tokenUser.id)) TokenErrors.throwAccessDenied();
 
-    if (role?.role !== 'master') {
+    const user = await prisma.user.findUnique({
+        where: { id: tokenUser.id },
+        select: {
+            activate: true,
+            deletedAt: true,
+            blockedUser: { select: { id: true } },
+            role: { select: { role: true } },
+        },
+    });
+
+    if (!user?.activate || user.deletedAt || user.blockedUser || user.role.role !== 'master') {
         TokenErrors.throwUnauthorizedAction();
     }
 }

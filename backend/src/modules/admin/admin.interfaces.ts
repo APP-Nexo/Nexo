@@ -1,26 +1,28 @@
 export type SearchByEmailPayload = {
     q: string;
-    cursor?: string;
+    cursor?: string | number;
 };
 
 export type PaginationPayload = {
-    cursor?: string;
+    cursor?: string | number;
     limit?: number;
 };
 
-export type UserPublicSelect = {
-    id: number;
-    email: string;
-    photo: string | null;
-    createdAt: Date;
-    roleId: number;
+export type ReviewsQuery = PaginationPayload & {
+    status?: 'pending' | 'approved' | 'rejected';
 };
 
-export type PaginatedResponse<T> = {
-    users: T[];
-    nextCursor: number | null;
+export type ReportsQuery = PaginationPayload & {
+    status?: 'pending' | 'resolved' | 'rejected';
 };
 
-export type UsersStatsResponse = {
-    usersStatus: object | null;
+export type ReviewModerationPayload = {
+    action: 'approve' | 'reject';
+    reason?: string;
+};
+
+export type ReportResolutionPayload = {
+    status: 'resolved' | 'rejected';
+    action?: 'reject_review';
+    reason?: string;
 };

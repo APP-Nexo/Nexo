@@ -1,24 +1,30 @@
+const PRISMA_INT_MAX = 2_147_483_647;
+
+const idParamsSchema = {
+    type: 'object',
+    additionalProperties: false,
+    required: ['id'],
+    properties: { id: { type: 'integer', minimum: 1, maximum: PRISMA_INT_MAX } },
+};
+
+const roleActionResponseSchema = {
+    type: 'object',
+    additionalProperties: false,
+    required: ['message', 'email', 'role'],
+    properties: {
+        message: { type: 'string' },
+        email: { type: 'string', format: 'email' },
+        role: { type: 'string', enum: ['admin', 'user'] },
+    },
+};
+
 export const promoteUserSchemaSwagger = {
     schema: {
         tags: ['Master'],
         summary: '/master/user/:id/promote',
         security: [{ bearerAuth: [] }],
-        params: {
-            type: 'object',
-            properties: {
-                id: { type: 'number' },
-            },
-        },
-        response: {
-            200: {
-                type: 'object',
-                properties: {
-                    message: { type: 'string' },
-                    email: { type: 'string' },
-                    role: { type: 'string' },
-                },
-            },
-        },
+        params: idParamsSchema,
+        response: { 200: roleActionResponseSchema },
     },
 };
 
@@ -27,22 +33,8 @@ export const demoteUserSchemaSwagger = {
         tags: ['Master'],
         summary: '/master/user/:id/demote',
         security: [{ bearerAuth: [] }],
-        params: {
-            type: 'object',
-            properties: {
-                id: { type: 'number' },
-            },
-        },
-        response: {
-            200: {
-                type: 'object',
-                properties: {
-                    message: { type: 'string' },
-                    email: { type: 'string' },
-                    role: { type: 'string' },
-                },
-            },
-        },
+        params: idParamsSchema,
+        response: { 200: roleActionResponseSchema },
     },
 };
 
@@ -51,19 +43,16 @@ export const banUserSchemaSwagger = {
         tags: ['Master'],
         summary: '/master/user/:id/ban',
         security: [{ bearerAuth: [] }],
-        params: {
-            type: 'object',
-            properties: {
-                id: { type: 'number' },
-            },
-        },
+        params: idParamsSchema,
         response: {
             200: {
                 type: 'object',
+                additionalProperties: false,
+                required: ['message', 'email', 'bannedAt'],
                 properties: {
                     message: { type: 'string' },
-                    email: { type: 'string' },
-                    bannedAt: { type: 'string' },
+                    email: { type: 'string', format: 'email' },
+                    bannedAt: { type: 'string', format: 'date-time' },
                 },
             },
         },

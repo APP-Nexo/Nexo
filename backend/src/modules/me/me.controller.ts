@@ -1,6 +1,6 @@
 import type { FastifyReply, FastifyRequest } from 'fastify';
 import type { UserTokenPayload } from '../../shared/utils/jwt/jwt.interfaces.js';
-import type { ChangePasswordPayload, UpdateMePayload } from './me.interfaces.js';
+import type { ChangePasswordPayload, DeleteMePayload, UpdateMePayload } from './me.interfaces.js';
 import { MeService } from './me.service.js';
 
 export class MeController {
@@ -31,8 +31,8 @@ export class MeController {
 
     static async deleteMe(req: FastifyRequest, reply: FastifyReply) {
         const tokenUser = req.user as UserTokenPayload;
-        const { email } = req.body as { email: string };
-        const response = await MeService.deleteMe(tokenUser.id, email);
+        const { password } = req.body as DeleteMePayload;
+        const response = await MeService.deleteMe(tokenUser.id, password);
         return reply.status(200).send(response);
     }
 }

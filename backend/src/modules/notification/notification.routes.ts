@@ -6,6 +6,7 @@ import {
     deleteNotificationSchemaSwagger,
     getNotificationsSchemaSwagger,
     readAllNotificationsSchemaSwagger,
+    readNotificationSchemaSwagger,
 } from './notification.swagger.js';
 
 export async function notificationRoutes(app: FastifyInstance) {
@@ -27,6 +28,16 @@ export async function notificationRoutes(app: FastifyInstance) {
             config: { rateLimit: { max: 10, timeWindow: '1 minute' } },
         },
         NotificationController.readAllNotifications,
+    );
+
+    app.patch(
+        '/:id/read',
+        {
+            ...readNotificationSchemaSwagger,
+            preHandler: [checkToken],
+            config: { rateLimit: { max: 30, timeWindow: '1 minute' } },
+        },
+        NotificationController.readNotification,
     );
 
     app.delete(

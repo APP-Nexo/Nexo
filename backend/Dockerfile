@@ -1,21 +1,34 @@
-FROM node:22-alpine
+FROM node:22-alpine AS build
+
 WORKDIR /app
-
-RUN apk add --no-cache openssl postgresql-client
-
+ENV DATABASE_URL=postgresql://build:build@127.0.0.1:5432/build
 COPY package.json package-lock.json ./
 RUN npm ci
 
 COPY prisma ./prisma
-COPY prisma.config.ts ./
-COPY version.ts ./
-
-COPY swagger.config.ts ./
-COPY tsconfig.json ./
-COPY scripts ./scripts
-COPY certs ./certs
+COPY prisma.config.ts tsconfig.json version.ts swagger.config.ts ./
 COPY src ./src
+RUN npx prisma generate && npm run build
 
-ENTRYPOINT []
+FROM build AS migration
+
+ENV NODE_ENV=production
+USER node
+CMD ["sh", "-c", "npx prisma migrate deploy && node dist/prisma/seeds/index.js"]
+
+FROM node:22-alpine AS runtime
+
+ENV NODE_ENV=production
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+RUN npm ci --omit=dev && npm cache clean --force
+
+COPY --chown=node:node prisma ./prisma
+COPY --chown=node:node prisma.config.ts version.ts swagger.config.ts ./
+COPY --chown=node:node public ./public
+COPY --chown=node:node --from=build /app/dist ./dist
+
+USER node
 EXPOSE 3000
-CMD if [ ! -f certs/key.pem ]; then sh certs/generate; fi && npx prisma generate && npx prisma db push --accept-data-loss && npx tsx prisma/seeds/index.ts && npx tsx src/server.ts
+CMD ["npm", "start"]

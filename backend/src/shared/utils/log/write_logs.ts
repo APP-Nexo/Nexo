@@ -39,7 +39,13 @@ export class Logs {
         });
     }
 
-    static write(data: object, message: string, type: Level, pretty = false, file = true) {
+    static write(
+        data: object,
+        message: string,
+        type: Level,
+        pretty = false,
+        file = process.env.NODE_ENV !== 'production',
+    ) {
         const keys = Object.keys(data);
         const logFilename: any = keys.length > 0 ? keys[0] : 'default';
 

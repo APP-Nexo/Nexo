@@ -1,4 +1,5 @@
 import type { FastifyInstance } from 'fastify';
+import { checkToken } from '../../shared/middlewares/check_token.js';
 import { AuthController } from './auth.controller.js';
 import {
     forgotPasswordSchemaSwagger,
@@ -34,7 +35,11 @@ export async function authRoutes(app: FastifyInstance) {
         },
         AuthController.refresh,
     );
-    app.post('/logout', { ...logoutSchemaSwagger }, AuthController.logout);
+    app.post(
+        '/logout',
+        { ...logoutSchemaSwagger, preHandler: [checkToken] },
+        AuthController.logout,
+    );
     app.post(
         '/forgot-password',
         {

@@ -1,5 +1,5 @@
 export interface RegisterPayload {
-    username?: string;
+    username: string;
     email: string;
     password: string;
     confirmPassword: string;
@@ -7,20 +7,17 @@ export interface RegisterPayload {
 
 export interface UserPayload {
     id: number;
-    username?: string | null;
+    username: string;
     email: string;
     password: string;
     roleId: number;
 }
 
 export interface LoginPayload {
-    email: string;
+    identifier?: string;
+    email?: string;
     password: string;
 }
-
-export type FindByEmail = {
-    findUnique: (args: { where: { email: string } }) => Promise<unknown>;
-};
 
 export type AuthResponse = {
     tokenType: string;
@@ -29,11 +26,7 @@ export type AuthResponse = {
     expiresIn: string;
 };
 
-export type RefreshResponse = {
-    tokenType: string;
-    refreshToken: string;
-    expiresIn: string;
-};
+export type RefreshResponse = AuthResponse;
 
 export type RefreshParam = {
     refreshToken: string;
@@ -46,4 +39,13 @@ export type ForgotPasswordPayload = {
 export type ResetPasswordPayload = {
     token: string;
     password: string;
+};
+
+export type LogoutPayload = {
+    allSessions?: boolean;
+};
+
+export type SessionMetadata = {
+    ipAddress?: string;
+    userAgent?: string;
 };

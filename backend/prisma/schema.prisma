@@ -1,7 +1,6 @@
 generator client {
   provider = "prisma-client"
   output   = "../src/generated"
-  previewFeatures = ["views"]
 }
 
 datasource db {
@@ -10,9 +9,9 @@ datasource db {
 
 model AppVersion {
   id         Int      @id @default(autoincrement())
-  appVersion String   
-  dbVersion  String   
-  timestamp  DateTime @default(now()) 
+  appVersion String
+  dbVersion  String
+  timestamp  DateTime @default(now())
 
   @@unique([appVersion, dbVersion])
 }
@@ -20,45 +19,54 @@ model AppVersion {
 model Role {
   id    Int    @id @default(autoincrement())
   role  String @unique
-  
   users User[]
 }
 
 model User {
-  id        Int          @id @default(autoincrement())
-  username  String?      @unique
-  email     String       @unique
-  password  String
-  createdAt DateTime     @default(now())
-  deletedAt DateTime?   
-  activate  Boolean      @default(true)
-  roleId    Int
+  id                Int       @id @default(autoincrement())
+  username          String    @unique
+  email             String    @unique
+  password          String
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  deletedAt         DateTime?
+  activate          Boolean   @default(true)
+  roleId            Int
+  credentialVersion Int       @default(0)
 
-  role      Role         @relation(fields: [roleId], references: [id])
-  profile   UserProfile?
-  following      UserFollow[]   @relation("follower")
-  followers      UserFollow[]   @relation("following")
-  notificationsReceived Notification[] @relation("toUser")
-  notificationsSent     Notification[] @relation("fromUser")
-  reviews        Review[]
-  gameLists      UserGameList[]
-  blockedUser    BlockedUser?    @relation("Blocked")
-  blockedBy      BlockedUser[]   @relation("Blocker")
-  reportsMade    Report[]        @relation("Reporter")
+  role                  Role            @relation(fields: [roleId], references: [id])
+  profile               UserProfile?
+  following             UserFollow[]    @relation("follower")
+  followers             UserFollow[]    @relation("following")
+  notificationsReceived Notification[]  @relation("NotificationRecipient")
+  notificationsSent     Notification[]  @relation("NotificationActor")
+  reviews               Review[]
+  gameLists             UserGameList[]
+  games                 UserGame[]
+  blockedUser           BlockedUser?    @relation("Blocked")
+  blockedBy             BlockedUser[]   @relation("Blocker")
+  reportsMade           Report[]        @relation("Reporter")
+  reportsResolved       Report[]        @relation("ReportResolver")
+  sessions              AuthSession[]
+  passwordResets        PasswordReset[]
+  adminActions          AdminAuditLog[] @relation("AuditActor")
+  auditTargets          AdminAuditLog[] @relation("AuditTarget")
+
+  @@index([activate, createdAt])
 }
 
 model UserProfile {
-  id             Int       @id @default(autoincrement())
-  friendlyId     String    @unique @default(cuid()) 
+  id             Int     @id @default(autoincrement())
+  friendlyId     String  @unique @default(cuid())
   photo          String?
   banner         String?
   config         Json?
   bio            String?
-  userId         Int       @unique
-  followersCount Int       @default(0) 
-  followingCount Int       @default(0)
-  
-  user     User    @relation(fields: [userId], references: [id])
+  userId         Int     @unique
+  followersCount Int     @default(0)
+  followingCount Int     @default(0)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model UserFollow {
@@ -67,37 +75,98 @@ model UserFollow {
   followingId Int
   timestamp   DateTime @default(now())
 
-  follower    User @relation("follower", fields: [followerId], references: [id])
-  following   User @relation("following", fields: [followingId], references: [id])
+  follower  User @relation("follower", fields: [followerId], references: [id], onDelete: Cascade)
+  following User @relation("following", fields: [followingId], references: [id], onDelete: Cascade)
 
   @@unique([followerId, followingId])
+  @@index([followingId, timestamp, id])
+  @@index([followerId, timestamp, id])
+}
+
+enum NotificationType {
+  follow
+  review
+  report
+  moderation
+  system
 }
 
 model Notification {
-  id         Int      @id @default(autoincrement())
-  read       Boolean  @default(false)
-  createdAt  DateTime @default(now())
+  id         Int              @id @default(autoincrement())
+  type       NotificationType
+  read       Boolean          @default(false)
+  readAt     DateTime?
+  entityType String?
+  entityId   Int?
+  metadata   Json?
+  createdAt  DateTime         @default(now())
   toUserId   Int
-  fromUserId Int
+  fromUserId Int?
 
-  toUser     User     @relation("toUser",   fields: [toUserId],   references: [id])
-  fromUser   User     @relation("fromUser", fields: [fromUserId], references: [id])
+  toUser   User  @relation("NotificationRecipient", fields: [toUserId], references: [id], onDelete: Cascade)
+  fromUser User? @relation("NotificationActor", fields: [fromUserId], references: [id], onDelete: SetNull)
+
+  @@index([toUserId, createdAt, id])
+  @@index([toUserId, read])
+}
+
+model AuthSession {
+  id                     String    @id @default(cuid())
+  userId                 Int
+  tokenHash              String    @unique
+  previousTokenHash      String?
+  previousTokenExpiresAt DateTime?
+  familyId               String
+  expiresAt              DateTime
+  revokedAt              DateTime?
+  lastUsedAt             DateTime?
+  ipAddress              String?
+  userAgent              String?
+  credentialVersion      Int       @default(0)
+  createdAt              DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, revokedAt])
+  @@index([familyId])
+  @@index([expiresAt])
 }
 
 model Game {
-  id            Int      @id @default(autoincrement())
-  title         String
-  cover         String?
-  description   String?
-  releaseDate   DateTime?
-  genre         String?
-  averageRating Float    @default(0)
-  createdAt     DateTime @default(now())
+  id              Int       @id @default(autoincrement())
+  source          String    @default("igdb")
+  externalId      String?
+  slug            String    @unique
+  title           String
+  cover           String?
+  artwork         String?
+  description     String?
+  releaseDate     DateTime?
+  genres          String[]  @default([])
+  platforms       String[]  @default([])
+  developer       String?
+  publisher       String?
+  popularity      Float     @default(0)
+  trendingRank    Int?
+  trendingAt      DateTime?
+  igdbRating      Float?
+  igdbRatingCount Int       @default(0)
+  ratingSum       Int       @default(0)
+  ratingCount     Int       @default(0)
+  averageRating   Float     @default(0)
+  cachedAt        DateTime  @default(now())
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 
-  reviews        Review[]
-  listItems      UserGameListItem[]
+  reviews   Review[]
+  listItems UserGameListItem[]
+  users     UserGame[]
 
+  @@unique([source, externalId])
   @@index([title])
+  @@index([popularity, id])
+  @@index([trendingRank, id])
+  @@index([releaseDate, id])
 }
 
 enum ReviewStatus {
@@ -107,35 +176,69 @@ enum ReviewStatus {
 }
 
 model Review {
-  id        Int      @id @default(autoincrement())
-  userId    Int
-  gameId    Int
-  rating    Int
-  text      String?
-  status    ReviewStatus @default(pending)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id               Int          @id @default(autoincrement())
+  userId           Int
+  gameId           Int
+  rating           Int
+  text             String?
+  status           ReviewStatus @default(approved)
+  moderationReason String?
+  version          Int          @default(1)
+  deletedAt        DateTime?
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
 
-  user       User     @relation(fields: [userId], references: [id])
-  game       Game     @relation(fields: [gameId], references: [id])
-  reports    Report[]
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  game    Game     @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  reports Report[]
 
   @@unique([userId, gameId])
-  @@index([userId])
-  @@index([gameId])
-  @@index([status])
+  @@index([userId, status, createdAt, id])
+  @@index([gameId, status, createdAt, id])
+  @@index([status, createdAt, id])
+}
+
+enum UserGameStatus {
+  want_to_play
+  playing
+  completed
+  tried
+  abandoned
+}
+
+model UserGame {
+  id          Int            @id @default(autoincrement())
+  userId      Int
+  gameId      Int
+  status      UserGameStatus @default(want_to_play)
+  isFavorite  Boolean        @default(false)
+  progress    Int?
+  startedAt   DateTime?
+  completedAt DateTime?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  game Game @relation(fields: [gameId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, gameId])
+  @@index([userId, isFavorite, updatedAt, id])
+  @@index([userId, status, updatedAt, id])
 }
 
 model UserGameList {
-  id       Int    @id @default(autoincrement())
-  userId   Int
-  name     String
-  isPublic Boolean @default(true)
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  name      String
+  isPublic  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  user  User   @relation(fields: [userId], references: [id])
+  user  User               @relation(fields: [userId], references: [id], onDelete: Cascade)
   items UserGameListItem[]
 
   @@unique([userId, name])
+  @@index([userId, updatedAt, id])
 }
 
 model UserGameListItem {
@@ -144,23 +247,24 @@ model UserGameListItem {
   gameId  Int
   addedAt DateTime @default(now())
 
-  list UserGameList @relation(fields: [listId], references: [id])
-  game Game         @relation(fields: [gameId], references: [id])
+  list UserGameList @relation(fields: [listId], references: [id], onDelete: Cascade)
+  game Game         @relation(fields: [gameId], references: [id], onDelete: Cascade)
 
   @@unique([listId, gameId])
+  @@index([gameId])
 }
 
 model PasswordReset {
-  id        Int      @id @default(autoincrement())
-  email     String
-  token     String   @unique
+  id        String    @id @default(cuid())
+  userId    Int       @unique
+  tokenHash String    @unique
   expiresAt DateTime
   usedAt    DateTime?
-  createdAt DateTime @default(now())
+  createdAt DateTime  @default(now())
 
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-
-  @@index([email])
+  @@index([userId, expiresAt])
 }
 
 model BlockedUser {
@@ -170,8 +274,8 @@ model BlockedUser {
   reason      String?
   createdAt   DateTime @default(now())
 
-  user      User @relation("Blocked", fields: [userId], references: [id])
-  blockedBy User @relation("Blocker", fields: [blockedById], references: [id])
+  user      User @relation("Blocked", fields: [userId], references: [id], onDelete: Cascade)
+  blockedBy User @relation("Blocker", fields: [blockedById], references: [id], onDelete: Restrict)
 
   @@index([blockedById])
 }
@@ -183,41 +287,44 @@ enum ReportStatus {
 }
 
 model Report {
-  id         Int      @id @default(autoincrement())
-  reporterId Int
-  reviewId   Int
-  reason     String
-  status     ReportStatus @default(pending)
-  createdAt  DateTime @default(now())
+  id               Int          @id @default(autoincrement())
+  reporterId       Int
+  reviewId         Int
+  reason           String
+  reviewRating     Int
+  reviewText       String?
+  reviewCreatedAt  DateTime
+  reviewVersion    Int
+  status           ReportStatus @default(pending)
+  resolvedById     Int?
+  resolutionReason String?
+  resolvedAt       DateTime?
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
 
-  reporter User   @relation("Reporter", fields: [reporterId], references: [id])
-  review   Review @relation(fields: [reviewId], references: [id])
+  reporter   User   @relation("Reporter", fields: [reporterId], references: [id], onDelete: Cascade)
+  review     Review @relation(fields: [reviewId], references: [id], onDelete: Restrict)
+  resolvedBy User?  @relation("ReportResolver", fields: [resolvedById], references: [id], onDelete: SetNull)
 
-  @@index([status])
+  @@unique([reporterId, reviewId, reviewVersion])
+  @@index([status, createdAt, id])
+  @@index([reviewId])
 }
 
-view VwUserPublic {
-  id         Int      @unique
-  friendlyId String?  @unique 
-  email      String   @unique
-  createdAt  DateTime
-  roleId     Int     
-  photo      String?
-  banner     String?
-  config     Json?
-  bio        String?
-  followersCount Int?
-  followingCount Int?
+model AdminAuditLog {
+  id           Int      @id @default(autoincrement())
+  actorId      Int
+  targetUserId Int?
+  action       String
+  entityType   String?
+  entityId     Int?
+  metadata     Json?
+  createdAt    DateTime @default(now())
 
-  @@map("vw_user_public")
-}
+  actor      User  @relation("AuditActor", fields: [actorId], references: [id], onDelete: Restrict)
+  targetUser User? @relation("AuditTarget", fields: [targetUserId], references: [id], onDelete: SetNull)
 
-view VwUsersStatusSummary {
-  totalUsers        Int 
-  totalActive       Int 
-  totalDeactivated  Int 
-  totalAdmins       Int 
-  totalRegularUsers Int 
-
-  @@map("vw_users_status_summary")
+  @@index([actorId, createdAt, id])
+  @@index([targetUserId, createdAt, id])
+  @@index([entityType, entityId])
 }

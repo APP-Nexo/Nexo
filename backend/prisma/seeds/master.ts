@@ -5,12 +5,21 @@ import { Logs } from '../../src/shared/utils/log/write_logs.js';
 import prisma from '../../src/shared/utils/prisma/prisma_conn.js';
 
 export async function seedMaster() {
+    const email = process.env.MASTER_EMAIL?.trim().toLowerCase();
+    const password = process.env.MASTER_PASSWORD;
+    if (!email && !password) return;
+    if (!email || !password || password.length < 12) {
+        throw new Error(
+            'MASTER_EMAIL e MASTER_PASSWORD (mínimo de 12 caracteres) são obrigatórios.',
+        );
+    }
+
     const masterRole = await prisma.role.findUnique({
         where: { role: 'master' },
     });
     if (!masterRole) {
         Logs.write(
-            { master: { email: process.env.MASTER_EMAIL } },
+            { master: { configured: true } },
             `Role 'master' not found, run sync:roles first`,
             'warn',
             true,
@@ -24,7 +33,7 @@ export async function seedMaster() {
     });
     if (existing) {
         Logs.write(
-            { master: { email: process.env.MASTER_EMAIL } },
+            { master: { configured: true } },
             `Master user already exists`,
             'info',
             true,
@@ -36,23 +45,21 @@ export async function seedMaster() {
     await prisma.user.create({
         data: {
             username: 'master',
-            email: process.env.MASTER_EMAIL!,
-            password: await encryptPassword(process.env.MASTER_PASSWORD!),
+            email,
+            password: await encryptPassword(password),
             roleId: masterRole.id,
             profile: { create: {} },
         },
     });
 
-    Logs.write(
-        { master: { email: process.env.MASTER_EMAIL } },
-        `Master user created`,
-        'info',
-        true,
-    );
+    Logs.write({ master: { configured: true } }, `Master user created`, 'info', true);
 }
 
 if (process.argv[1]?.includes('master')) {
     seedMaster()
-        .catch(console.error)
+        .catch((error) => {
+            console.error(error);
+            process.exitCode = 1;
+        })
         .finally(() => prisma.$disconnect());
 }

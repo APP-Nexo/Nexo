@@ -1,35 +1,97 @@
 services:
+  migrate:
+    build:
+      context: .
+      target: migration
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: ${MIGRATION_DATABASE_URL:-postgresql://${POSTGRES_USER:-nexo}:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-nexo}?schema=public}
+      SECRET: ${SECRET:?Set SECRET with at least 32 characters}
+      MASTER_EMAIL: ${MASTER_EMAIL:-}
+      MASTER_PASSWORD: ${MASTER_PASSWORD:-}
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: "no"
+
   api:
     container_name: nexo-api
     build: .
     ports:
-      - "3000:3000"
-    env_file: .env.docker
+      - "${API_BIND_ADDRESS:-127.0.0.1}:3000:3000"
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      HOST: 0.0.0.0
+      DATABASE_URL: ${APP_DATABASE_URL:-postgresql://${POSTGRES_USER:-nexo}:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-nexo}?schema=public}
+      SECRET: ${SECRET:?Set SECRET with at least 32 characters}
+      TOKEN_TYPE: Bearer
+      TOKEN_EXPIRES: ${TOKEN_EXPIRES:-15m}
+      REFRESH_TOKEN_EXPIRES: ${REFRESH_TOKEN_EXPIRES:-7d}
+      JWT_ISSUER: ${JWT_ISSUER:-nexo-api}
+      JWT_AUDIENCE: ${JWT_AUDIENCE:-nexo-app}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:8081}
+      TRUST_PROXY: ${TRUST_PROXY:-}
+      TLS_KEY_PATH: ${TLS_KEY_PATH:-}
+      TLS_CERT_PATH: ${TLS_CERT_PATH:-}
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}
+      APP_URL: ${APP_URL:-http://localhost:8081}
+      IGDB_CLIENT_ID: ${IGDB_CLIENT_ID:-}
+      IGDB_CLIENT_SECRET: ${IGDB_CLIENT_SECRET:-}
+      IGDB_CACHE_TTL_MINUTES: ${IGDB_CACHE_TTL_MINUTES:-1440}
+    depends_on:
+      db:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    volumes:
+      - uploads:/app/public
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/api/verify/ready').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    restart: unless-stopped
+
+  db-tools:
+    image: postgres:16-alpine
+    profiles: ["tools"]
+    user: "${BACKUP_UID:-1000}:${BACKUP_GID:-1000}"
+    working_dir: /backups
+    entrypoint: ["/bin/sh"]
+    command: ["/scripts/backup.sh"]
+    environment:
+      DATABASE_URL: ${BACKUP_DATABASE_URL:-${MIGRATION_DATABASE_URL:-postgresql://${POSTGRES_USER:-nexo}:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-nexo}?schema=public}}
+      BACKUP_DIR: /backups
+      RETENTION_DAYS: ${RETENTION_DAYS:-7}
     depends_on:
       db:
         condition: service_healthy
     volumes:
-      - ./certs:/app/certs:ro
-      - ./backups:/app/backups
-    restart: unless-stopped
+      - ./scripts:/scripts:ro
+      - ./backups:/backups
+    restart: "no"
 
   db:
     container_name: nexo-db
     image: postgres:16-alpine
-    ports:
-      - "5433:5432"
     environment:
-      POSTGRES_USER: nexo
-      POSTGRES_PASSWORD: nexo
-      POSTGRES_DB: nexo
+      POSTGRES_USER: ${POSTGRES_USER:-nexo}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-nexo}
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U nexo"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-nexo} -d ${POSTGRES_DB:-nexo}"]
       interval: 5s
       timeout: 5s
-      retries: 5
+      retries: 10
     restart: unless-stopped
 
 volumes:
   pgdata:
+  uploads:
