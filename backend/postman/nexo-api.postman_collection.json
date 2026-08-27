@@ -1,44 +1,158 @@
 {
     "info": {
         "name": "Nexo API",
-        "description": "Postman collection for the Nexo API",
+        "description": "Collection for the current Nexo API. Set the collection variables before running protected or admin requests.",
         "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
     },
     "variable": [
         {
             "key": "baseUrl",
-            "value": "https://localhost:3000/api",
-            "type": "string"
+            "value": "http://127.0.0.1:3000/api",
+            "type": "string",
+            "description": "Local Docker API base URL."
         },
         {
             "key": "token",
             "value": "",
-            "type": "string"
+            "type": "string",
+            "description": "Access token captured by register, login or refresh."
         },
         {
             "key": "refreshToken",
             "value": "",
+            "type": "string",
+            "description": "Refresh token captured by register, login or refresh."
+        },
+        {
+            "key": "adminToken",
+            "value": "",
+            "type": "string",
+            "description": "Paste an admin or master access token here."
+        },
+        {
+            "key": "masterToken",
+            "value": "",
+            "type": "string",
+            "description": "Paste a master access token here."
+        },
+        {
+            "key": "username",
+            "value": "johndoe",
+            "type": "string"
+        },
+        {
+            "key": "email",
+            "value": "john@example.com",
+            "type": "string"
+        },
+        {
+            "key": "password",
+            "value": "SecurePass123!",
+            "type": "string"
+        },
+        {
+            "key": "newPassword",
+            "value": "NewSecurePass123!",
+            "type": "string"
+        },
+        {
+            "key": "targetUsername",
+            "value": "janedoe",
+            "type": "string"
+        },
+        {
+            "key": "friendlyId",
+            "value": "replace-with-friendly-id",
+            "type": "string"
+        },
+        {
+            "key": "userId",
+            "value": "1",
+            "type": "string"
+        },
+        {
+            "key": "gameId",
+            "value": "1",
+            "type": "string"
+        },
+        {
+            "key": "reviewId",
+            "value": "1",
+            "type": "string"
+        },
+        {
+            "key": "reportId",
+            "value": "1",
+            "type": "string"
+        },
+        {
+            "key": "notificationId",
+            "value": "1",
+            "type": "string"
+        },
+        {
+            "key": "listId",
+            "value": "1",
+            "type": "string"
+        },
+        {
+            "key": "cursor",
+            "value": "1",
+            "type": "string"
+        },
+        {
+            "key": "limit",
+            "value": "20",
             "type": "string"
         }
     ],
     "item": [
         {
+            "name": "Health",
+            "item": [
+                {
+                    "name": "GET /verify/health",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": "{{baseUrl}}/verify/health"
+                    }
+                },
+                {
+                    "name": "GET /verify/ready",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": "{{baseUrl}}/verify/ready"
+                    }
+                },
+                {
+                    "name": "GET /verify/ping",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": "{{baseUrl}}/verify/ping"
+                    }
+                }
+            ]
+        },
+        {
             "name": "Auth",
             "item": [
                 {
-                    "name": "/auth/register",
+                    "name": "POST /auth/register",
                     "event": [
                         {
                             "listen": "test",
                             "script": {
+                                "type": "text/javascript",
                                 "exec": [
-                                    "if (pm.response.code === 201) {",
+                                    "if ([200, 201].includes(pm.response.code)) {",
                                     "    const json = pm.response.json();",
                                     "    pm.collectionVariables.set('token', json.token);",
                                     "    pm.collectionVariables.set('refreshToken', json.refreshToken);",
                                     "}"
-                                ],
-                                "type": "text/javascript"
+                                ]
                             }
                         }
                     ],
@@ -52,29 +166,25 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n    \"email\": \"john@example.com\",\n    \"password\": \"SecurePass123!\",\n    \"confirmPassword\": \"SecurePass123!\",\n    \"username\": \"johndoe\"\n}"
+                            "raw": "{\n    \"username\": \"{{username}}\",\n    \"email\": \"{{email}}\",\n    \"password\": \"{{password}}\",\n    \"confirmPassword\": \"{{password}}\"\n}"
                         },
-                        "url": {
-                            "raw": "{{baseUrl}}/auth/register",
-                            "host": ["{{baseUrl}}"],
-                            "path": ["auth", "register"]
-                        }
+                        "url": "{{baseUrl}}/auth/register"
                     }
                 },
                 {
-                    "name": "/auth/login",
+                    "name": "POST /auth/login",
                     "event": [
                         {
                             "listen": "test",
                             "script": {
+                                "type": "text/javascript",
                                 "exec": [
-                                    "if (pm.response.code === 201) {",
+                                    "if (pm.response.code === 200) {",
                                     "    const json = pm.response.json();",
                                     "    pm.collectionVariables.set('token', json.token);",
                                     "    pm.collectionVariables.set('refreshToken', json.refreshToken);",
                                     "}"
-                                ],
-                                "type": "text/javascript"
+                                ]
                             }
                         }
                     ],
@@ -88,17 +198,28 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n    \"email\": \"john@example.com\",\n    \"password\": \"SecurePass123!\"\n}"
+                            "raw": "{\n    \"identifier\": \"{{username}}\",\n    \"password\": \"{{password}}\"\n}"
                         },
-                        "url": {
-                            "raw": "{{baseUrl}}/auth/login",
-                            "host": ["{{baseUrl}}"],
-                            "path": ["auth", "login"]
-                        }
+                        "url": "{{baseUrl}}/auth/login"
                     }
                 },
                 {
-                    "name": "/auth/refresh",
+                    "name": "POST /auth/refresh",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "if (pm.response.code === 200) {",
+                                    "    const json = pm.response.json();",
+                                    "    pm.collectionVariables.set('token', json.token);",
+                                    "    pm.collectionVariables.set('refreshToken', json.refreshToken);",
+                                    "}"
+                                ]
+                            }
+                        }
+                    ],
                     "request": {
                         "method": "POST",
                         "header": [
@@ -111,18 +232,18 @@
                             "mode": "raw",
                             "raw": "{\n    \"refreshToken\": \"{{refreshToken}}\"\n}"
                         },
-                        "url": {
-                            "raw": "{{baseUrl}}/auth/refresh",
-                            "host": ["{{baseUrl}}"],
-                            "path": ["auth", "refresh"]
-                        }
+                        "url": "{{baseUrl}}/auth/refresh"
                     }
                 },
                 {
-                    "name": "/auth/logout",
+                    "name": "POST /auth/logout",
                     "request": {
                         "method": "POST",
                         "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
                             {
                                 "key": "Authorization",
                                 "value": "Bearer {{token}}"
@@ -130,17 +251,13 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": ""
+                            "raw": "{\n    \"allSessions\": false\n}"
                         },
-                        "url": {
-                            "raw": "{{baseUrl}}/auth/logout",
-                            "host": ["{{baseUrl}}"],
-                            "path": ["auth", "logout"]
-                        }
+                        "url": "{{baseUrl}}/auth/logout"
                     }
                 },
                 {
-                    "name": "/auth/forgot-password",
+                    "name": "POST /auth/forgot-password",
                     "request": {
                         "method": "POST",
                         "header": [
@@ -151,17 +268,13 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n    \"email\": \"john@example.com\"\n}"
+                            "raw": "{\n    \"email\": \"{{email}}\"\n}"
                         },
-                        "url": {
-                            "raw": "{{baseUrl}}/auth/forgot-password",
-                            "host": ["{{baseUrl}}"],
-                            "path": ["auth", "forgot-password"]
-                        }
+                        "url": "{{baseUrl}}/auth/forgot-password"
                     }
                 },
                 {
-                    "name": "/auth/reset-password",
+                    "name": "POST /auth/reset-password",
                     "request": {
                         "method": "POST",
                         "header": [
@@ -172,13 +285,9 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n    \"token\": \"reset-token-here\",\n    \"password\": \"NewSecurePass123!\"\n}"
+                            "raw": "{\n    \"token\": \"0000000000000000000000000000000000000000000000000000000000000000\",\n    \"password\": \"{{newPassword}}\"\n}"
                         },
-                        "url": {
-                            "raw": "{{baseUrl}}/auth/reset-password",
-                            "host": ["{{baseUrl}}"],
-                            "path": ["auth", "reset-password"]
-                        }
+                        "url": "{{baseUrl}}/auth/reset-password"
                     }
                 }
             ]
@@ -187,7 +296,7 @@
             "name": "Me",
             "item": [
                 {
-                    "name": "/me",
+                    "name": "GET /me",
                     "request": {
                         "method": "GET",
                         "header": [
@@ -196,15 +305,32 @@
                                 "value": "Bearer {{token}}"
                             }
                         ],
-                        "url": {
-                            "raw": "{{baseUrl}}/me",
-                            "host": ["{{baseUrl}}"],
-                            "path": ["me"]
-                        }
+                        "url": "{{baseUrl}}/me"
                     }
                 },
                 {
-                    "name": "/me",
+                    "name": "PUT /me (JSON)",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"bio\": \"Gamer and reviewer\"\n}"
+                        },
+                        "url": "{{baseUrl}}/me"
+                    }
+                },
+                {
+                    "name": "PUT /me (multipart)",
                     "request": {
                         "method": "PUT",
                         "header": [
@@ -218,35 +344,33 @@
                             "formdata": [
                                 {
                                     "key": "username",
-                                    "value": "johnupdated",
+                                    "value": "{{username}}",
                                     "type": "text"
                                 },
                                 {
                                     "key": "bio",
-                                    "value": "Gamer and reviewer",
+                                    "value": "Updated from Postman",
                                     "type": "text"
                                 },
                                 {
                                     "key": "photo",
                                     "type": "file",
-                                    "src": ""
+                                    "src": "",
+                                    "disabled": true
                                 },
                                 {
                                     "key": "banner",
                                     "type": "file",
-                                    "src": ""
+                                    "src": "",
+                                    "disabled": true
                                 }
                             ]
                         },
-                        "url": {
-                            "raw": "{{baseUrl}}/me",
-                            "host": ["{{baseUrl}}"],
-                            "path": ["me"]
-                        }
+                        "url": "{{baseUrl}}/me"
                     }
                 },
                 {
-                    "name": "/me/password",
+                    "name": "PUT /me/password",
                     "request": {
                         "method": "PUT",
                         "header": [
@@ -261,17 +385,13 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n    \"currentPassword\": \"OldPass123!\",\n    \"newPassword\": \"NewPass456!\"\n}"
+                            "raw": "{\n    \"currentPassword\": \"{{password}}\",\n    \"newPassword\": \"{{newPassword}}\"\n}"
                         },
-                        "url": {
-                            "raw": "{{baseUrl}}/me/password",
-                            "host": ["{{baseUrl}}"],
-                            "path": ["me", "password"]
-                        }
+                        "url": "{{baseUrl}}/me/password"
                     }
                 },
                 {
-                    "name": "/me",
+                    "name": "DELETE /me (destructive)",
                     "request": {
                         "method": "DELETE",
                         "header": [
@@ -286,13 +406,9 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n    \"email\": \"john@example.com\"\n}"
+                            "raw": "{\n    \"password\": \"{{password}}\"\n}"
                         },
-                        "url": {
-                            "raw": "{{baseUrl}}/me",
-                            "host": ["{{baseUrl}}"],
-                            "path": ["me"]
-                        }
+                        "url": "{{baseUrl}}/me"
                     }
                 }
             ]
@@ -301,7 +417,7 @@
             "name": "Users",
             "item": [
                 {
-                    "name": "/users/:username",
+                    "name": "GET /users/:username",
                     "request": {
                         "method": "GET",
                         "header": [
@@ -310,21 +426,11 @@
                                 "value": "Bearer {{token}}"
                             }
                         ],
-                        "url": {
-                            "raw": "{{baseUrl}}/users/:username",
-                            "host": ["{{baseUrl}}"],
-                            "path": ["users", ":username"],
-                            "variable": [
-                                {
-                                    "key": "username",
-                                    "value": "johndoe"
-                                }
-                            ]
-                        }
+                        "url": "{{baseUrl}}/users/{{username}}"
                     }
                 },
                 {
-                    "name": "/users/friendly/:friendlyId",
+                    "name": "GET /users/friendly/:friendlyId",
                     "request": {
                         "method": "GET",
                         "header": [
@@ -333,21 +439,11 @@
                                 "value": "Bearer {{token}}"
                             }
                         ],
-                        "url": {
-                            "raw": "{{baseUrl}}/users/friendly/:friendlyId",
-                            "host": ["{{baseUrl}}"],
-                            "path": ["users", "friendly", ":friendlyId"],
-                            "variable": [
-                                {
-                                    "key": "friendlyId",
-                                    "value": ""
-                                }
-                            ]
-                        }
+                        "url": "{{baseUrl}}/users/friendly/{{friendlyId}}"
                     }
                 },
                 {
-                    "name": "/users/:username/reviews",
+                    "name": "GET /users/:username/reviews",
                     "request": {
                         "method": "GET",
                         "header": [
@@ -356,46 +452,19 @@
                                 "value": "Bearer {{token}}"
                             }
                         ],
-                        "url": {
-                            "raw": "{{baseUrl}}/users/:username/reviews?cursor=",
-                            "host": ["{{baseUrl}}"],
-                            "path": ["users", ":username", "reviews"],
-                            "query": [
-                                {
-                                    "key": "cursor",
-                                    "value": "",
-                                    "description": "Pagination cursor"
-                                }
-                            ],
-                            "variable": [
-                                {
-                                    "key": "username",
-                                    "value": "johndoe"
-                                }
-                            ]
-                        }
+                        "url": "{{baseUrl}}/users/{{username}}/reviews?cursor={{cursor}}"
                     }
                 },
                 {
-                    "name": "/users/:username/stats",
+                    "name": "GET /users/:username/stats",
                     "request": {
                         "method": "GET",
                         "header": [],
-                        "url": {
-                            "raw": "{{baseUrl}}/users/:username/stats",
-                            "host": ["{{baseUrl}}"],
-                            "path": ["users", ":username", "stats"],
-                            "variable": [
-                                {
-                                    "key": "username",
-                                    "value": "johndoe"
-                                }
-                            ]
-                        }
+                        "url": "{{baseUrl}}/users/{{username}}/stats"
                     }
                 },
                 {
-                    "name": "/users/:username/lists",
+                    "name": "GET /users/:username/lists",
                     "request": {
                         "method": "GET",
                         "header": [
@@ -404,17 +473,7 @@
                                 "value": "Bearer {{token}}"
                             }
                         ],
-                        "url": {
-                            "raw": "{{baseUrl}}/users/:username/lists",
-                            "host": ["{{baseUrl}}"],
-                            "path": ["users", ":username", "lists"],
-                            "variable": [
-                                {
-                                    "key": "username",
-                                    "value": "johndoe"
-                                }
-                            ]
-                        }
+                        "url": "{{baseUrl}}/users/{{username}}/lists"
                     }
                 }
             ]
@@ -423,7 +482,7 @@
             "name": "Social",
             "item": [
                 {
-                    "name": "/social/:username/follow (POST)",
+                    "name": "POST /social/:username/follow",
                     "request": {
                         "method": "POST",
                         "header": [
@@ -432,21 +491,11 @@
                                 "value": "Bearer {{token}}"
                             }
                         ],
-                        "url": {
-                            "raw": "{{baseUrl}}/social/:username/follow",
-                            "host": ["{{baseUrl}}"],
-                            "path": ["social", ":username", "follow"],
-                            "variable": [
-                                {
-                                    "key": "username",
-                                    "value": "janedoe"
-                                }
-                            ]
-                        }
+                        "url": "{{baseUrl}}/social/{{targetUsername}}/follow"
                     }
                 },
                 {
-                    "name": "/social/:username/follow",
+                    "name": "DELETE /social/:username/follow",
                     "request": {
                         "method": "DELETE",
                         "header": [
@@ -455,21 +504,11 @@
                                 "value": "Bearer {{token}}"
                             }
                         ],
-                        "url": {
-                            "raw": "{{baseUrl}}/social/:username/follow",
-                            "host": ["{{baseUrl}}"],
-                            "path": ["social", ":username", "follow"],
-                            "variable": [
-                                {
-                                    "key": "username",
-                                    "value": "janedoe"
-                                }
-                            ]
-                        }
+                        "url": "{{baseUrl}}/social/{{targetUsername}}/follow"
                     }
                 },
                 {
-                    "name": "/social/:username/followers",
+                    "name": "GET /social/:username/followers",
                     "request": {
                         "method": "GET",
                         "header": [
@@ -478,28 +517,11 @@
                                 "value": "Bearer {{token}}"
                             }
                         ],
-                        "url": {
-                            "raw": "{{baseUrl}}/social/:username/followers?cursor=",
-                            "host": ["{{baseUrl}}"],
-                            "path": ["social", ":username", "followers"],
-                            "query": [
-                                {
-                                    "key": "cursor",
-                                    "value": "",
-                                    "description": "Pagination cursor"
-                                }
-                            ],
-                            "variable": [
-                                {
-                                    "key": "username",
-                                    "value": "janedoe"
-                                }
-                            ]
-                        }
+                        "url": "{{baseUrl}}/social/{{targetUsername}}/followers?cursor={{cursor}}"
                     }
                 },
                 {
-                    "name": "/social/:username/following",
+                    "name": "GET /social/:username/following",
                     "request": {
                         "method": "GET",
                         "header": [
@@ -508,28 +530,11 @@
                                 "value": "Bearer {{token}}"
                             }
                         ],
-                        "url": {
-                            "raw": "{{baseUrl}}/social/:username/following?cursor=",
-                            "host": ["{{baseUrl}}"],
-                            "path": ["social", ":username", "following"],
-                            "query": [
-                                {
-                                    "key": "cursor",
-                                    "value": "",
-                                    "description": "Pagination cursor"
-                                }
-                            ],
-                            "variable": [
-                                {
-                                    "key": "username",
-                                    "value": "janedoe"
-                                }
-                            ]
-                        }
+                        "url": "{{baseUrl}}/social/{{targetUsername}}/following?cursor={{cursor}}"
                     }
                 },
                 {
-                    "name": "/social/feed",
+                    "name": "GET /social/feed",
                     "request": {
                         "method": "GET",
                         "header": [
@@ -538,11 +543,7 @@
                                 "value": "Bearer {{token}}"
                             }
                         ],
-                        "url": {
-                            "raw": "{{baseUrl}}/social/feed",
-                            "host": ["{{baseUrl}}"],
-                            "path": ["social", "feed"]
-                        }
+                        "url": "{{baseUrl}}/social/feed?cursor={{cursor}}"
                     }
                 }
             ]
@@ -551,41 +552,52 @@
             "name": "Search",
             "item": [
                 {
-                    "name": "/search/users",
+                    "name": "GET /search/users",
                     "request": {
                         "method": "GET",
                         "header": [],
-                        "url": {
-                            "raw": "{{baseUrl}}/search/users?q=&cursor=&limit=",
-                            "host": ["{{baseUrl}}"],
-                            "path": ["search", "users"],
-                            "query": [
-                                {
-                                    "key": "q",
-                                    "value": "john",
-                                    "description": "Search query"
-                                },
-                                {
-                                    "key": "cursor",
-                                    "value": "",
-                                    "description": "Pagination cursor"
-                                },
-                                {
-                                    "key": "limit",
-                                    "value": "20",
-                                    "description": "Results per page"
-                                }
-                            ]
-                        }
+                        "url": "{{baseUrl}}/search/users?q={{username}}&limit={{limit}}"
                     }
                 }
             ]
         },
         {
-            "name": "Admin",
+            "name": "Games",
             "item": [
                 {
-                    "name": "/admin/dashboard",
+                    "name": "GET /games",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": "{{baseUrl}}/games?q=zelda&limit={{limit}}"
+                    }
+                },
+                {
+                    "name": "GET /games/search",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": "{{baseUrl}}/games/search?q=zelda&limit={{limit}}"
+                    }
+                },
+                {
+                    "name": "GET /search/games",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": "{{baseUrl}}/search/games?q=zelda&limit={{limit}}"
+                    }
+                },
+                {
+                    "name": "GET /games/trending",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": "{{baseUrl}}/games/trending?limit={{limit}}"
+                    }
+                },
+                {
+                    "name": "GET /games/:id",
                     "request": {
                         "method": "GET",
                         "header": [
@@ -594,15 +606,24 @@
                                 "value": "Bearer {{token}}"
                             }
                         ],
-                        "url": {
-                            "raw": "{{baseUrl}}/admin/dashboard",
-                            "host": ["{{baseUrl}}"],
-                            "path": ["admin", "dashboard"]
-                        }
+                        "url": "{{baseUrl}}/games/{{gameId}}"
                     }
                 },
                 {
-                    "name": "/admin/user/search",
+                    "name": "GET /games/:id/reviews",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": "{{baseUrl}}/games/{{gameId}}/reviews?limit={{limit}}"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Library",
+            "item": [
+                {
+                    "name": "GET /library/games",
                     "request": {
                         "method": "GET",
                         "header": [
@@ -611,27 +632,45 @@
                                 "value": "Bearer {{token}}"
                             }
                         ],
-                        "url": {
-                            "raw": "{{baseUrl}}/admin/user/search?q=&cursor=",
-                            "host": ["{{baseUrl}}"],
-                            "path": ["admin", "user", "search"],
-                            "query": [
-                                {
-                                    "key": "q",
-                                    "value": "john",
-                                    "description": "Search query"
-                                },
-                                {
-                                    "key": "cursor",
-                                    "value": "",
-                                    "description": "Pagination cursor"
-                                }
-                            ]
-                        }
+                        "url": "{{baseUrl}}/library/games?limit={{limit}}"
                     }
                 },
                 {
-                    "name": "/admin/user-all",
+                    "name": "PUT /library/games/:gameId",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"status\": \"playing\",\n    \"isFavorite\": true,\n    \"progress\": 10\n}"
+                        },
+                        "url": "{{baseUrl}}/library/games/{{gameId}}"
+                    }
+                },
+                {
+                    "name": "DELETE /library/games/:gameId",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": "{{baseUrl}}/library/games/{{gameId}}"
+                    }
+                },
+                {
+                    "name": "GET /library/favorites",
                     "request": {
                         "method": "GET",
                         "header": [
@@ -640,27 +679,11 @@
                                 "value": "Bearer {{token}}"
                             }
                         ],
-                        "url": {
-                            "raw": "{{baseUrl}}/admin/user-all?cursor=&limit=",
-                            "host": ["{{baseUrl}}"],
-                            "path": ["admin", "user-all"],
-                            "query": [
-                                {
-                                    "key": "cursor",
-                                    "value": "",
-                                    "description": "Pagination cursor"
-                                },
-                                {
-                                    "key": "limit",
-                                    "value": "20",
-                                    "description": "Results per page"
-                                }
-                            ]
-                        }
+                        "url": "{{baseUrl}}/library/favorites?limit={{limit}}"
                     }
                 },
                 {
-                    "name": "/admin/user/admin",
+                    "name": "GET /library/lists",
                     "request": {
                         "method": "GET",
                         "header": [
@@ -669,55 +692,25 @@
                                 "value": "Bearer {{token}}"
                             }
                         ],
-                        "url": {
-                            "raw": "{{baseUrl}}/admin/user/admin",
-                            "host": ["{{baseUrl}}"],
-                            "path": ["admin", "user", "admin"]
-                        }
+                        "url": "{{baseUrl}}/library/lists"
                     }
                 },
                 {
-                    "name": "/admin/user/stats",
-                    "request": {
-                        "method": "GET",
-                        "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{token}}"
+                    "name": "POST /library/lists",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "if (pm.response.code === 201) {",
+                                    "    const json = pm.response.json();",
+                                    "    if (json.list?.id) pm.collectionVariables.set('listId', json.list.id);",
+                                    "}"
+                                ]
                             }
-                        ],
-                        "url": {
-                            "raw": "{{baseUrl}}/admin/user/stats",
-                            "host": ["{{baseUrl}}"],
-                            "path": ["admin", "user", "stats"]
                         }
-                    }
-                },
-                {
-                    "name": "/admin/users/:id",
-                    "request": {
-                        "method": "GET",
-                        "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{token}}"
-                            }
-                        ],
-                        "url": {
-                            "raw": "{{baseUrl}}/admin/users/:id",
-                            "host": ["{{baseUrl}}"],
-                            "path": ["admin", "users", ":id"],
-                            "variable": [
-                                {
-                                    "key": "id",
-                                    "value": "1"
-                                }
-                            ]
-                        }
-                    }
-                },
-                {
-                    "name": "/admin/users/:id/block (POST)",
+                    ],
                     "request": {
                         "method": "POST",
                         "header": [
@@ -732,152 +725,402 @@
                         ],
                         "body": {
                             "mode": "raw",
+                            "raw": "{\n    \"name\": \"Postman {{$timestamp}}\",\n    \"isPublic\": true\n}"
+                        },
+                        "url": "{{baseUrl}}/library/lists"
+                    }
+                },
+                {
+                    "name": "PATCH /library/lists/:id",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"isPublic\": false\n}"
+                        },
+                        "url": "{{baseUrl}}/library/lists/{{listId}}"
+                    }
+                },
+                {
+                    "name": "DELETE /library/lists/:id",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": "{{baseUrl}}/library/lists/{{listId}}"
+                    }
+                },
+                {
+                    "name": "PUT /library/lists/:id/games/:gameId",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": "{{baseUrl}}/library/lists/{{listId}}/games/{{gameId}}"
+                    }
+                },
+                {
+                    "name": "DELETE /library/lists/:id/games/:gameId",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": "{{baseUrl}}/library/lists/{{listId}}/games/{{gameId}}"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Reviews",
+            "item": [
+                {
+                    "name": "POST /reviews/game/:gameId",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "if (pm.response.code === 201) {",
+                                    "    const json = pm.response.json();",
+                                    "    if (json.id) pm.collectionVariables.set('reviewId', json.id);",
+                                    "}"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"rating\": 5,\n    \"text\": \"Excellent game from the Postman collection.\"\n}"
+                        },
+                        "url": "{{baseUrl}}/reviews/game/{{gameId}}"
+                    }
+                },
+                {
+                    "name": "PATCH /reviews/:id",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"rating\": 4,\n    \"text\": \"Updated from the Postman collection.\"\n}"
+                        },
+                        "url": "{{baseUrl}}/reviews/{{reviewId}}"
+                    }
+                },
+                {
+                    "name": "DELETE /reviews/:id",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": "{{baseUrl}}/reviews/{{reviewId}}"
+                    }
+                },
+                {
+                    "name": "POST /reviews/:id/reports",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "if (pm.response.code === 201) {",
+                                    "    const json = pm.response.json();",
+                                    "    if (json.id) pm.collectionVariables.set('reportId', json.id);",
+                                    "}"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"reason\": \"This report is only a Postman workflow example.\"\n}"
+                        },
+                        "url": "{{baseUrl}}/reviews/{{reviewId}}/reports"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Admin",
+            "item": [
+                {
+                    "name": "GET /admin/dashboard",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{adminToken}}"
+                            }
+                        ],
+                        "url": "{{baseUrl}}/admin/dashboard"
+                    }
+                },
+                {
+                    "name": "GET /admin/user/search",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{adminToken}}"
+                            }
+                        ],
+                        "url": "{{baseUrl}}/admin/user/search?q={{username}}"
+                    }
+                },
+                {
+                    "name": "GET /admin/user-all",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{adminToken}}"
+                            }
+                        ],
+                        "url": "{{baseUrl}}/admin/user-all?limit={{limit}}"
+                    }
+                },
+                {
+                    "name": "GET /admin/user/admin",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{adminToken}}"
+                            }
+                        ],
+                        "url": "{{baseUrl}}/admin/user/admin?limit={{limit}}"
+                    }
+                },
+                {
+                    "name": "GET /admin/user/stats",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{adminToken}}"
+                            }
+                        ],
+                        "url": "{{baseUrl}}/admin/user/stats"
+                    }
+                },
+                {
+                    "name": "GET /admin/users/:id",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{adminToken}}"
+                            }
+                        ],
+                        "url": "{{baseUrl}}/admin/users/{{userId}}"
+                    }
+                },
+                {
+                    "name": "POST /admin/users/:id/block",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{adminToken}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
                             "raw": "{\n    \"reason\": \"Violation of community guidelines\"\n}"
                         },
-                        "url": {
-                            "raw": "{{baseUrl}}/admin/users/:id/block",
-                            "host": ["{{baseUrl}}"],
-                            "path": ["admin", "users", ":id", "block"],
-                            "variable": [
-                                {
-                                    "key": "id",
-                                    "value": "1"
-                                }
-                            ]
-                        }
+                        "url": "{{baseUrl}}/admin/users/{{userId}}/block"
                     }
                 },
                 {
-                    "name": "/admin/users/:id/block",
+                    "name": "DELETE /admin/users/:id/block",
                     "request": {
                         "method": "DELETE",
                         "header": [
                             {
                                 "key": "Authorization",
-                                "value": "Bearer {{token}}"
+                                "value": "Bearer {{adminToken}}"
                             }
                         ],
-                        "url": {
-                            "raw": "{{baseUrl}}/admin/users/:id/block",
-                            "host": ["{{baseUrl}}"],
-                            "path": ["admin", "users", ":id", "block"],
-                            "variable": [
-                                {
-                                    "key": "id",
-                                    "value": "1"
-                                }
-                            ]
-                        }
+                        "url": "{{baseUrl}}/admin/users/{{userId}}/block"
                     }
                 },
                 {
-                    "name": "/admin/users/:id",
+                    "name": "DELETE /admin/users/:id (destructive)",
                     "request": {
                         "method": "DELETE",
                         "header": [
                             {
                                 "key": "Authorization",
-                                "value": "Bearer {{token}}"
+                                "value": "Bearer {{adminToken}}"
                             }
                         ],
-                        "url": {
-                            "raw": "{{baseUrl}}/admin/users/:id",
-                            "host": ["{{baseUrl}}"],
-                            "path": ["admin", "users", ":id"],
-                            "variable": [
-                                {
-                                    "key": "id",
-                                    "value": "1"
-                                }
-                            ]
-                        }
+                        "url": "{{baseUrl}}/admin/users/{{userId}}"
                     }
                 },
                 {
-                    "name": "/admin/reviews",
+                    "name": "GET /admin/reviews",
                     "request": {
                         "method": "GET",
                         "header": [
                             {
                                 "key": "Authorization",
-                                "value": "Bearer {{token}}"
+                                "value": "Bearer {{adminToken}}"
                             }
                         ],
-                        "url": {
-                            "raw": "{{baseUrl}}/admin/reviews?status=",
-                            "host": ["{{baseUrl}}"],
-                            "path": ["admin", "reviews"],
-                            "query": [
-                                {
-                                    "key": "status",
-                                    "value": "pending",
-                                    "description": "Review status filter"
-                                }
-                            ]
-                        }
+                        "url": "{{baseUrl}}/admin/reviews?status=pending&limit={{limit}}"
                     }
                 },
                 {
-                    "name": "/admin/reviews/:id",
+                    "name": "DELETE /admin/reviews/:id (destructive)",
                     "request": {
                         "method": "DELETE",
                         "header": [
                             {
                                 "key": "Authorization",
-                                "value": "Bearer {{token}}"
+                                "value": "Bearer {{adminToken}}"
                             }
                         ],
-                        "url": {
-                            "raw": "{{baseUrl}}/admin/reviews/:id",
-                            "host": ["{{baseUrl}}"],
-                            "path": ["admin", "reviews", ":id"],
-                            "variable": [
-                                {
-                                    "key": "id",
-                                    "value": "1"
-                                }
-                            ]
-                        }
+                        "url": "{{baseUrl}}/admin/reviews/{{reviewId}}"
                     }
                 },
                 {
-                    "name": "/admin/reports",
+                    "name": "PATCH /admin/reviews/:id/moderation",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{adminToken}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"action\": \"reject\",\n    \"reason\": \"Rejected from the moderation workflow example.\"\n}"
+                        },
+                        "url": "{{baseUrl}}/admin/reviews/{{reviewId}}/moderation"
+                    }
+                },
+                {
+                    "name": "GET /admin/reports",
                     "request": {
                         "method": "GET",
                         "header": [
                             {
                                 "key": "Authorization",
-                                "value": "Bearer {{token}}"
+                                "value": "Bearer {{adminToken}}"
                             }
                         ],
-                        "url": {
-                            "raw": "{{baseUrl}}/admin/reports",
-                            "host": ["{{baseUrl}}"],
-                            "path": ["admin", "reports"]
-                        }
+                        "url": "{{baseUrl}}/admin/reports?status=pending&limit={{limit}}"
                     }
                 },
                 {
-                    "name": "/admin/reports/:id/resolve",
+                    "name": "PATCH /admin/reports/:id",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{adminToken}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"status\": \"rejected\",\n    \"reason\": \"Rejected from the report workflow example.\"\n}"
+                        },
+                        "url": "{{baseUrl}}/admin/reports/{{reportId}}"
+                    }
+                },
+                {
+                    "name": "PATCH /admin/reports/:id/resolve (compatibility alias)",
                     "request": {
                         "method": "PATCH",
                         "header": [
                             {
                                 "key": "Authorization",
-                                "value": "Bearer {{token}}"
+                                "value": "Bearer {{adminToken}}"
                             }
                         ],
-                        "url": {
-                            "raw": "{{baseUrl}}/admin/reports/:id/resolve",
-                            "host": ["{{baseUrl}}"],
-                            "path": ["admin", "reports", ":id", "resolve"],
-                            "variable": [
-                                {
-                                    "key": "id",
-                                    "value": "1"
-                                }
-                            ]
-                        }
+                        "url": "{{baseUrl}}/admin/reports/{{reportId}}/resolve"
                     }
                 }
             ]
@@ -886,101 +1129,42 @@
             "name": "Master",
             "item": [
                 {
-                    "name": "/master/user/:id/promote",
+                    "name": "PATCH /master/user/:id/promote",
                     "request": {
                         "method": "PATCH",
                         "header": [
                             {
                                 "key": "Authorization",
-                                "value": "Bearer {{token}}"
+                                "value": "Bearer {{masterToken}}"
                             }
                         ],
-                        "url": {
-                            "raw": "{{baseUrl}}/master/user/:id/promote",
-                            "host": ["{{baseUrl}}"],
-                            "path": ["master", "user", ":id", "promote"],
-                            "variable": [
-                                {
-                                    "key": "id",
-                                    "value": "1"
-                                }
-                            ]
-                        }
+                        "url": "{{baseUrl}}/master/user/{{userId}}/promote"
                     }
                 },
                 {
-                    "name": "/master/user/:id/demote",
+                    "name": "PATCH /master/user/:id/demote",
                     "request": {
                         "method": "PATCH",
                         "header": [
                             {
                                 "key": "Authorization",
-                                "value": "Bearer {{token}}"
+                                "value": "Bearer {{masterToken}}"
                             }
                         ],
-                        "url": {
-                            "raw": "{{baseUrl}}/master/user/:id/demote",
-                            "host": ["{{baseUrl}}"],
-                            "path": ["master", "user", ":id", "demote"],
-                            "variable": [
-                                {
-                                    "key": "id",
-                                    "value": "1"
-                                }
-                            ]
-                        }
+                        "url": "{{baseUrl}}/master/user/{{userId}}/demote"
                     }
                 },
                 {
-                    "name": "/master/user/:id/ban",
+                    "name": "PATCH /master/user/:id/ban (destructive)",
                     "request": {
                         "method": "PATCH",
                         "header": [
                             {
                                 "key": "Authorization",
-                                "value": "Bearer {{token}}"
+                                "value": "Bearer {{masterToken}}"
                             }
                         ],
-                        "url": {
-                            "raw": "{{baseUrl}}/master/user/:id/ban",
-                            "host": ["{{baseUrl}}"],
-                            "path": ["master", "user", ":id", "ban"],
-                            "variable": [
-                                {
-                                    "key": "id",
-                                    "value": "1"
-                                }
-                            ]
-                        }
-                    }
-                }
-            ]
-        },
-        {
-            "name": "Health",
-            "item": [
-                {
-                    "name": "/verify/health",
-                    "request": {
-                        "method": "GET",
-                        "header": [],
-                        "url": {
-                            "raw": "{{baseUrl}}/verify/health",
-                            "host": ["{{baseUrl}}"],
-                            "path": ["verify", "health"]
-                        }
-                    }
-                },
-                {
-                    "name": "/verify/ping",
-                    "request": {
-                        "method": "GET",
-                        "header": [],
-                        "url": {
-                            "raw": "{{baseUrl}}/verify/ping",
-                            "host": ["{{baseUrl}}"],
-                            "path": ["verify", "ping"]
-                        }
+                        "url": "{{baseUrl}}/master/user/{{userId}}/ban"
                     }
                 }
             ]
@@ -989,7 +1173,7 @@
             "name": "Notification",
             "item": [
                 {
-                    "name": "/notification",
+                    "name": "GET /notification",
                     "request": {
                         "method": "GET",
                         "header": [
@@ -998,22 +1182,11 @@
                                 "value": "Bearer {{token}}"
                             }
                         ],
-                        "url": {
-                            "raw": "{{baseUrl}}/notification?cursor=",
-                            "host": ["{{baseUrl}}"],
-                            "path": ["notification"],
-                            "query": [
-                                {
-                                    "key": "cursor",
-                                    "value": "",
-                                    "description": "Pagination cursor"
-                                }
-                            ]
-                        }
+                        "url": "{{baseUrl}}/notification?cursor={{cursor}}"
                     }
                 },
                 {
-                    "name": "/notification/read-all",
+                    "name": "PATCH /notification/read-all",
                     "request": {
                         "method": "PATCH",
                         "header": [
@@ -1022,15 +1195,24 @@
                                 "value": "Bearer {{token}}"
                             }
                         ],
-                        "url": {
-                            "raw": "{{baseUrl}}/notification/read-all",
-                            "host": ["{{baseUrl}}"],
-                            "path": ["notification", "read-all"]
-                        }
+                        "url": "{{baseUrl}}/notification/read-all"
                     }
                 },
                 {
-                    "name": "/notification/delete/:id",
+                    "name": "PATCH /notification/:id/read",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": "{{baseUrl}}/notification/{{notificationId}}/read"
+                    }
+                },
+                {
+                    "name": "DELETE /notification/delete/:id",
                     "request": {
                         "method": "DELETE",
                         "header": [
@@ -1039,21 +1221,11 @@
                                 "value": "Bearer {{token}}"
                             }
                         ],
-                        "url": {
-                            "raw": "{{baseUrl}}/notification/delete/:id",
-                            "host": ["{{baseUrl}}"],
-                            "path": ["notification", "delete", ":id"],
-                            "variable": [
-                                {
-                                    "key": "id",
-                                    "value": "1"
-                                }
-                            ]
-                        }
+                        "url": "{{baseUrl}}/notification/delete/{{notificationId}}"
                     }
                 },
                 {
-                    "name": "/notification/delete-all",
+                    "name": "DELETE /notification/delete-all",
                     "request": {
                         "method": "DELETE",
                         "header": [
@@ -1062,11 +1234,7 @@
                                 "value": "Bearer {{token}}"
                             }
                         ],
-                        "url": {
-                            "raw": "{{baseUrl}}/notification/delete-all",
-                            "host": ["{{baseUrl}}"],
-                            "path": ["notification", "delete-all"]
-                        }
+                        "url": "{{baseUrl}}/notification/delete-all"
                     }
                 }
             ]
