@@ -20,6 +20,7 @@
         "sync:games": "tsx src/scripts/sync-games.ts",
         "sync:games:prod": "node dist/src/scripts/sync-games.js",
         "start:prod": "npm start",
+        "deploy": "./scripts/deploy.sh",
         "test": "NODE_ENV=test vitest run --reporter=verbose",
         "test:ci": "npm run migrate:deploy && npm run sync:seeds && npm test",
         "test:watch": "vitest",

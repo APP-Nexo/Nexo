@@ -36,7 +36,19 @@ API REST da plataforma social de jogos Nexo. O backend cobre autenticação, cat
 
 ## Configuração
 
-Use `.env.example` como referência. Variáveis principais:
+Crie `backend/.env` localmente e nunca versione esse arquivo. Para uma execução Docker local, o mínimo é:
+
+```env
+POSTGRES_USER=nexo
+POSTGRES_PASSWORD=uma-senha-local-forte
+POSTGRES_DB=nexo
+DATABASE_URL=postgresql://nexo:uma-senha-local-forte@db:5432/nexo?schema=public
+SECRET=um-segredo-com-pelo-menos-32-caracteres
+```
+
+`MIGRATION_DATABASE_URL`, `APP_DATABASE_URL` e `BACKUP_DATABASE_URL` podem ficar vazias em desenvolvimento; nesse caso o Compose usa a conexão padrão do serviço PostgreSQL. Em produção, prefira URLs separadas e roles com privilégios mínimos.
+
+Variáveis principais:
 
 | Variável | Obrigatória | Descrição |
 |---|---:|---|
@@ -56,7 +68,9 @@ Use `.env.example` como referência. Variáveis principais:
 
 Não existem segredos padrão versionados. A aplicação recusa `SECRET` com menos de 32 caracteres.
 
-## Execução Local
+## Execução Local Sem Docker
+
+Use esta opção somente quando já existir um PostgreSQL acessível pelo host. Configure `DATABASE_URL` para essa conexão antes de executar os comandos. Para usar o PostgreSQL do Compose, prefira a seção de inicialização Docker, porque a porta do banco não é publicada no host por padrão.
 
 ```bash
 npm install
@@ -72,17 +86,62 @@ O processo Node usa HTTP por padrão. Em produção, encerre TLS no ingress ou r
 
 ## Docker
 
-O Compose exige `SECRET` e `POSTGRES_PASSWORD` fornecidos pelo ambiente ou por um arquivo `.env` local não versionado.
+O caminho recomendado para desenvolvimento e homologação não exige instalar PostgreSQL no host. O Compose exige `SECRET` e `POSTGRES_PASSWORD` fornecidos pelo ambiente ou por um arquivo `.env` local não versionado. Ele inicia o banco, aplica o baseline, executa migrations/seeds e só então inicia a API.
 
 ```bash
+cd backend
 docker compose up --build -d
 docker compose ps
+curl http://127.0.0.1:3000/api/verify/health
+curl http://127.0.0.1:3000/api/verify/ready
 docker compose logs -f api
 ```
 
 O banco e os uploads usam volumes nomeados. A porta do PostgreSQL não é publicada no host e a API é vinculada a `127.0.0.1` por padrão; defina `API_BIND_ADDRESS=0.0.0.0` somente quando a exposição direta for intencional. Um job `migrate` executa `prisma migrate deploy` e seeds idempotentes; a API inicia somente após esse job concluir e executa apenas o JavaScript compilado.
 
 Em produção, configure `MIGRATION_DATABASE_URL` com o proprietário do schema e `APP_DATABASE_URL` com uma role limitada a DML. O fallback compartilhado existe apenas para facilitar ambientes locais. Ao usar reverse proxy, informe somente seus endereços ou CIDRs em `TRUST_PROXY`.
+
+Para parar os containers preservando banco e uploads:
+
+```bash
+docker compose down
+```
+
+Para começar novamente com banco vazio, apagando os volumes do projeto:
+
+```bash
+docker compose down -v --remove-orphans
+docker compose up --build -d
+```
+
+Esse reset é destrutivo. O baseline atual é destinado a banco novo e não fornece upgrade automático para instalações existentes.
+
+## Deploy E Atualização
+
+O script `scripts/deploy.sh` executa o fluxo completo sem apagar volumes:
+
+```bash
+./scripts/deploy.sh
+```
+
+Por padrão ele valida o Compose, recompila as imagens, cria backup, inicia PostgreSQL/migrations/seeds/API e aguarda `/api/verify/ready`. Para atualizar o checkout Git antes do deploy, use somente com a árvore de trabalho limpa:
+
+```bash
+./scripts/deploy.sh --pull
+```
+
+Para omitir o backup em um ambiente descartável:
+
+```bash
+./scripts/deploy.sh --no-backup
+```
+
+O script nunca executa `docker compose down -v`. Se o deploy falhar, consulte:
+
+```bash
+docker compose ps
+docker compose logs --tail=150 migrate api
+```
 
 ## Banco E Migrations
 
@@ -219,6 +278,12 @@ npm run build
 ```
 
 O CI também cria um PostgreSQL vazio, executa `prisma migrate deploy`, roda seeds, verifica drift e constrói a imagem Docker.
+
+## Postman
+
+Importe `postman/nexo-api.postman_collection.json` no Postman. A collection já usa `http://127.0.0.1:3000/api`, captura tokens automaticamente após register/login/refresh e cobre as rotas atuais de autenticação, jogos, biblioteca, reviews, social, notificações, admin e master.
+
+Execute primeiro `POST /auth/register` ou `POST /auth/login`. Preencha manualmente `adminToken`, `masterToken`, `gameId`, `listId`, `reviewId` e `notificationId` quando for testar recursos que dependem desses registros. Os campos de arquivo do request multipart ficam desabilitados até um arquivo ser selecionado.
 
 ## Backup E Restore
 
