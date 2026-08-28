@@ -12,7 +12,6 @@ const GAME_FIELDS = [
     'name',
     'summary',
     'first_release_date',
-    'popularity',
     'rating',
     'rating_count',
     'cover.image_id',
@@ -160,9 +159,8 @@ function rating(record: JsonObject): number | null {
 }
 
 function popularity(record: JsonObject): number {
-    const value = optionalNumber(record, 'popularity') ?? 0;
-    if (value < 0) throw malformed('popularity');
-    return value;
+    // IGDB removed its former popularity field; rating count is the current engagement proxy.
+    return ratingCount(record);
 }
 
 function normalizeGame(value: unknown, index: number): IgdbGame {
@@ -266,7 +264,7 @@ export class IgdbClient implements IgdbCatalog {
         const body = [
             `fields ${GAME_FIELDS}`,
             'where version_parent = null & cover != null',
-            'sort popularity desc',
+            'sort rating_count desc',
             `limit ${normalizeLimit(limit)}`,
         ].join('; ');
         return this.requestGames(`${body};`);

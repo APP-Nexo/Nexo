@@ -151,7 +151,6 @@ describe('IgdbClient', () => {
                                 name: 'Halo Infinite',
                                 summary: 'A sci-fi shooter.',
                                 first_release_date: 1_638_921_600,
-                                popularity: 90,
                                 rating: 82.5,
                                 rating_count: 500,
                                 cover: { image_id: 'co1' },
@@ -195,12 +194,17 @@ describe('IgdbClient', () => {
             Authorization: 'Bearer oauth-token',
             'Client-ID': 'client-id',
         });
+        const trendingBody = String(fetchMock.mock.calls[2]![1]?.body);
+        expect(trendingBody).not.toContain('popularity');
+        expect(trendingBody).toContain('sort rating_count desc');
         expect(first[0]).toMatchObject({
             externalId: '1942',
             cover: 'https://images.igdb.com/igdb/image/upload/t_cover_big/co1.jpg',
             artwork: 'https://images.igdb.com/igdb/image/upload/t_1080p/ar1.jpg',
             developer: '343 Industries',
             publisher: 'Xbox Game Studios',
+            popularity: 500,
+            igdbRatingCount: 500,
         });
         expect(second).toHaveLength(1);
     });
@@ -374,7 +378,8 @@ describe('GamesService', () => {
 
 describe('gamesRoutes', () => {
     it('declares /search before /:id and serializes every catalog field', async () => {
-        prismaMock.game.findMany.mockResolvedValueOnce([game()]);
+        const cachedAt = new Date(Date.now() + 60_000);
+        prismaMock.game.findMany.mockResolvedValueOnce([game({ cachedAt })]);
         const app = fastify();
         await app.register(gamesRoutes, { prefix: '/api/games' });
 
@@ -405,7 +410,7 @@ describe('gamesRoutes', () => {
             ratingSum: 45,
             ratingCount: 5,
             averageRating: 9,
-            cachedAt: '2026-08-21T12:00:00.000Z',
+            cachedAt: cachedAt.toISOString(),
         });
     });
 
