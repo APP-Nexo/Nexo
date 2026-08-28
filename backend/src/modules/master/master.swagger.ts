@@ -1,4 +1,4 @@
-const PRISMA_INT_MAX = 2_147_483_647;
+import { PRISMA_INT_MAX } from '../../shared/infrastructure/validation/prisma-values.js';
 
 const idParamsSchema = {
     type: 'object',

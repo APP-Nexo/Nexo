@@ -1,9 +1,9 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
-type UploadDirectory = 'avatars' | 'banners';
+export type UploadDirectory = 'avatars' | 'banners';
 
-function localUploadPath(url: string | null | undefined, directory: UploadDirectory) {
+export function localUploadPath(url: string | null | undefined, directory: UploadDirectory) {
     if (!url) return null;
 
     const prefix = `/uploads/${directory}/`;
@@ -14,6 +14,10 @@ function localUploadPath(url: string | null | undefined, directory: UploadDirect
     const baseDirectory = path.resolve(process.cwd(), 'public', directory);
     const filepath = path.resolve(baseDirectory, filename);
     return path.dirname(filepath) === baseDirectory ? filepath : null;
+}
+
+export async function removeLocalUploadPaths(paths: readonly string[]) {
+    await Promise.allSettled(paths.map((filepath) => fs.unlink(filepath)));
 }
 
 export async function removeLocalUploadUrls(

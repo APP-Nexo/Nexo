@@ -1,5 +1,7 @@
 import type { UserStatsDTO } from '../../shared/dto/user-stats.dto.js';
 import { AppError } from '../../shared/errors/app-error.js';
+import { normalizePrismaCursor } from '../../shared/infrastructure/validation/prisma-values.js';
+import { normalizeUsername } from '../../shared/utils/auth/auth_values.js';
 import { cursorPaginate } from '../../shared/utils/pagination/cursor-paginate.js';
 import prisma from '../../shared/utils/prisma/prisma_conn.js';
 import type { UserPublicProfile } from './users.interfaces.js';
@@ -9,23 +11,11 @@ type UserAvailability = {
     deletedAt: Date | null;
     blockedUser: { id: number } | null;
 };
-const PRISMA_INT_MAX = 2_147_483_647;
-
 function requireActiveUser<T extends UserAvailability>(user: T | null): T {
     if (!user?.activate || user.deletedAt || user.blockedUser) {
         AppError.throw('Usuário não encontrado.', 404);
     }
     return user;
-}
-
-function normalizeCursor(cursor: string | number | undefined): string | undefined {
-    if (cursor === undefined) return undefined;
-
-    const parsed = Number(cursor);
-    if (!Number.isSafeInteger(parsed) || parsed <= 0 || parsed > PRISMA_INT_MAX) {
-        AppError.throw('Cursor inválido.', 400);
-    }
-    return String(parsed);
 }
 
 async function isFollowedByViewer(userId: number, currentUserId?: number): Promise<boolean> {
@@ -45,9 +35,10 @@ export class UsersService {
         username: string,
         currentUserId?: number,
     ): Promise<UserPublicProfile> {
+        const normalizedUsername = normalizeUsername(username);
         const user = requireActiveUser(
             await prisma.user.findUnique({
-                where: { username },
+                where: { username: normalizedUsername },
                 select: {
                     id: true,
                     username: true,
@@ -122,9 +113,10 @@ export class UsersService {
     }
 
     static async getUserReviews(username: string, cursor?: string | number) {
+        const normalizedUsername = normalizeUsername(username);
         const user = requireActiveUser(
             await prisma.user.findUnique({
-                where: { username },
+                where: { username: normalizedUsername },
                 select: {
                     id: true,
                     activate: true,
@@ -153,16 +145,17 @@ export class UsersService {
                     orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
                 }),
             take: 10,
-            cursor: normalizeCursor(cursor),
+            cursor: normalizePrismaCursor(cursor),
         });
 
         return { reviews: data, nextCursor };
     }
 
     static async getUserStats(username: string): Promise<UserStatsDTO> {
+        const normalizedUsername = normalizeUsername(username);
         const user = requireActiveUser(
             await prisma.user.findUnique({
-                where: { username },
+                where: { username: normalizedUsername },
                 select: {
                     id: true,
                     createdAt: true,
@@ -194,9 +187,10 @@ export class UsersService {
     }
 
     static async getUserLists(username: string) {
+        const normalizedUsername = normalizeUsername(username);
         const user = requireActiveUser(
             await prisma.user.findUnique({
-                where: { username },
+                where: { username: normalizedUsername },
                 select: {
                     id: true,
                     activate: true,

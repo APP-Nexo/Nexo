@@ -1,3 +1,5 @@
+import { PRISMA_INT_MAX } from '../../shared/infrastructure/validation/prisma-values.js';
+
 const errorSchema = {
     type: 'object',
     additionalProperties: false,
@@ -20,7 +22,7 @@ const idParamsSchema = {
     type: 'object',
     additionalProperties: false,
     required: ['id'],
-    properties: { id: { type: 'integer', minimum: 1, maximum: 2_147_483_647 } },
+    properties: { id: { type: 'integer', minimum: 1, maximum: PRISMA_INT_MAX } },
 };
 
 const notificationUserSchema = {
@@ -77,7 +79,7 @@ export const getNotificationsSchemaSwagger = {
             type: 'object',
             additionalProperties: false,
             properties: {
-                cursor: { type: 'integer', minimum: 1, maximum: 2_147_483_647 },
+                cursor: { type: 'integer', minimum: 1, maximum: PRISMA_INT_MAX },
             },
         },
         response: {

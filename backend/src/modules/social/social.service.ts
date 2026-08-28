@@ -1,5 +1,6 @@
-import type { Prisma } from '../../generated/client.js';
 import { AppError } from '../../shared/errors/app-error.js';
+import { runSerializableTransaction } from '../../shared/infrastructure/database/transactions.js';
+import { normalizePrismaCursor } from '../../shared/infrastructure/validation/prisma-values.js';
 import { cursorPaginate } from '../../shared/utils/pagination/cursor-paginate.js';
 import prisma from '../../shared/utils/prisma/prisma_conn.js';
 
@@ -10,36 +11,6 @@ const ACTIVE_USER_FILTER = {
 } as const;
 
 type Cursor = string | number | undefined;
-const PRISMA_INT_MAX = 2_147_483_647;
-
-function hasPrismaCode(error: unknown, code: string): boolean {
-    return typeof error === 'object' && error !== null && 'code' in error && error.code === code;
-}
-
-async function runSerializableTransaction<T>(
-    operation: (tx: Prisma.TransactionClient) => Promise<T>,
-): Promise<T> {
-    for (let attempt = 0; attempt < 3; attempt += 1) {
-        try {
-            return await prisma.$transaction(operation, { isolationLevel: 'Serializable' });
-        } catch (error) {
-            if (!hasPrismaCode(error, 'P2034') || attempt === 2) throw error;
-        }
-    }
-
-    throw new Error('Transaction retry limit reached.');
-}
-
-function normalizeCursor(cursor: Cursor): string | undefined {
-    if (cursor === undefined) return undefined;
-
-    const parsed = Number(cursor);
-    if (!Number.isSafeInteger(parsed) || parsed <= 0 || parsed > PRISMA_INT_MAX) {
-        AppError.throw('Cursor inválido.', 400);
-    }
-    return String(parsed);
-}
-
 async function findActiveUser(username: string) {
     const user = await prisma.user.findUnique({
         where: { username },
@@ -65,7 +36,7 @@ export class SocialService {
             AppError.throw('Você não pode seguir a si mesmo.', 400);
         }
 
-        await runSerializableTransaction(async (tx) => {
+        await runSerializableTransaction(prisma, async (tx) => {
             const activeUsers = await tx.user.count({
                 where: { id: { in: [followerId, target.id] }, ...ACTIVE_USER_FILTER },
             });
@@ -113,7 +84,7 @@ export class SocialService {
             AppError.throw('Você não pode deixar de seguir a si mesmo.', 400);
         }
 
-        await prisma.$transaction(async (tx) => {
+        await runSerializableTransaction(prisma, async (tx) => {
             const removed = await tx.userFollow.deleteMany({
                 where: { followerId, followingId: target.id },
             });
@@ -167,7 +138,7 @@ export class SocialService {
                     orderBy: [{ timestamp: 'desc' }, { id: 'desc' }],
                 }),
             take: 10,
-            cursor: normalizeCursor(cursor),
+            cursor: normalizePrismaCursor(cursor),
         });
 
         const followerIds = follows.map((follow) => follow.followerId);
@@ -216,7 +187,7 @@ export class SocialService {
                     orderBy: [{ timestamp: 'desc' }, { id: 'desc' }],
                 }),
             take: 10,
-            cursor: normalizeCursor(cursor),
+            cursor: normalizePrismaCursor(cursor),
         });
 
         const followingIds = follows.map((follow) => follow.followingId);
@@ -274,7 +245,7 @@ export class SocialService {
                     orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
                 }),
             take: 10,
-            cursor: normalizeCursor(cursor),
+            cursor: normalizePrismaCursor(cursor),
         });
 
         const feed = data.map((review) => ({

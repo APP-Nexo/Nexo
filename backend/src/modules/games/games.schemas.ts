@@ -1,3 +1,5 @@
+import { PRISMA_INT_MAX } from '../../shared/infrastructure/validation/prisma-values.js';
+
 const nullableStringSchema = {
     anyOf: [{ type: 'string' }, { type: 'null' }],
 };
@@ -101,7 +103,7 @@ const gameParamsSchema = {
     additionalProperties: false,
     required: ['id'],
     properties: {
-        id: { type: 'integer', minimum: 1, maximum: 2_147_483_647 },
+        id: { type: 'integer', minimum: 1, maximum: PRISMA_INT_MAX },
     },
 };
 

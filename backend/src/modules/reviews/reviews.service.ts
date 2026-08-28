@@ -1,6 +1,10 @@
 import type { Prisma } from '../../generated/client.js';
 import { AppError } from '../../shared/errors/app-error.js';
+import { hasPrismaCode } from '../../shared/infrastructure/database/prisma-errors.js';
+import { runSerializableTransaction } from '../../shared/infrastructure/database/transactions.js';
+import { normalizePrismaId } from '../../shared/infrastructure/validation/prisma-values.js';
 import prisma from '../../shared/utils/prisma/prisma_conn.js';
+import { applyRatingDelta } from '../games/application/rating-aggregate.service.js';
 import type {
     CreateReportPayload,
     CreateReviewPayload,
@@ -48,31 +52,6 @@ const reportSelect = {
 } satisfies Prisma.ReportSelect;
 
 type ReviewWithRelations = Prisma.ReviewGetPayload<{ select: typeof reviewSelect }>;
-const PRISMA_INT_MAX = 2_147_483_647;
-
-function hasPrismaCode(error: unknown, code: string): boolean {
-    return typeof error === 'object' && error !== null && 'code' in error && error.code === code;
-}
-
-function normalizeId(id: number, entity: string) {
-    if (!Number.isSafeInteger(id) || id < 1 || id > PRISMA_INT_MAX) {
-        AppError.throw(`${entity} inválido.`, 400);
-    }
-}
-
-async function runSerializableTransaction<T>(
-    operation: (tx: Prisma.TransactionClient) => Promise<T>,
-): Promise<T> {
-    for (let attempt = 0; attempt < 3; attempt += 1) {
-        try {
-            return await prisma.$transaction(operation, { isolationLevel: 'Serializable' });
-        } catch (error) {
-            if (!hasPrismaCode(error, 'P2034') || attempt === 2) throw error;
-        }
-    }
-
-    throw new Error('Transaction retry limit reached.');
-}
 
 async function ensureActiveUser(tx: Prisma.TransactionClient, userId: number) {
     const user = await tx.user.findUnique({
@@ -86,34 +65,6 @@ async function ensureActiveUser(tx: Prisma.TransactionClient, userId: number) {
     if (!user?.activate || user.deletedAt || user.blockedUser) {
         AppError.throw('Conta inativa ou bloqueada.', 403);
     }
-}
-
-async function applyRatingDelta(
-    tx: Prisma.TransactionClient,
-    gameId: number,
-    ratingDelta: number,
-    countDelta: number,
-) {
-    if (ratingDelta === 0 && countDelta === 0) return;
-
-    const data: Prisma.GameUpdateInput = {};
-    if (ratingDelta > 0) data.ratingSum = { increment: ratingDelta };
-    if (ratingDelta < 0) data.ratingSum = { decrement: Math.abs(ratingDelta) };
-    if (countDelta > 0) data.ratingCount = { increment: countDelta };
-    if (countDelta < 0) data.ratingCount = { decrement: Math.abs(countDelta) };
-
-    const totals = await tx.game.update({
-        where: { id: gameId },
-        data,
-        select: { ratingSum: true, ratingCount: true },
-    });
-
-    await tx.game.update({
-        where: { id: gameId },
-        data: {
-            averageRating: totals.ratingCount > 0 ? totals.ratingSum / totals.ratingCount : 0,
-        },
-    });
 }
 
 function normalizeRating(rating: number): number {
@@ -166,12 +117,12 @@ function toReviewResponse(review: ReviewWithRelations) {
 
 export class ReviewsService {
     static async create(userId: number, gameId: number, payload: CreateReviewPayload) {
-        normalizeId(gameId, 'Jogo');
+        normalizePrismaId(gameId, 'Jogo');
         const rating = normalizeRating(payload.rating);
         const text = normalizeText(payload.text) ?? null;
 
         try {
-            return await runSerializableTransaction(async (tx) => {
+            return await runSerializableTransaction(prisma, async (tx) => {
                 const [game] = await Promise.all([
                     tx.game.findUnique({
                         where: { id: gameId },
@@ -227,7 +178,7 @@ export class ReviewsService {
     }
 
     static async update(userId: number, reviewId: number, payload: UpdateReviewPayload) {
-        normalizeId(reviewId, 'Review');
+        normalizePrismaId(reviewId, 'Review');
         if (payload.rating === undefined && payload.text === undefined) {
             AppError.throw('Informe ao menos um campo para atualizar.', 400);
         }
@@ -237,7 +188,7 @@ export class ReviewsService {
         if (payload.text !== undefined) data.text = normalizeText(payload.text) ?? null;
 
         try {
-            return await runSerializableTransaction(async (tx) => {
+            return await runSerializableTransaction(prisma, async (tx) => {
                 await ensureActiveUser(tx, userId);
                 const current = await tx.review.findUnique({
                     where: { id: reviewId },
@@ -274,9 +225,9 @@ export class ReviewsService {
     }
 
     static async delete(userId: number, reviewId: number): Promise<void> {
-        normalizeId(reviewId, 'Review');
+        normalizePrismaId(reviewId, 'Review');
         try {
-            await runSerializableTransaction(async (tx) => {
+            await runSerializableTransaction(prisma, async (tx) => {
                 await ensureActiveUser(tx, userId);
                 const review = await tx.review.findUnique({
                     where: { id: reviewId },
@@ -309,10 +260,10 @@ export class ReviewsService {
     }
 
     static async report(userId: number, reviewId: number, payload: CreateReportPayload) {
-        normalizeId(reviewId, 'Review');
+        normalizePrismaId(reviewId, 'Review');
         const reason = normalizeReason(payload.reason);
         try {
-            return await runSerializableTransaction(async (tx) => {
+            return await runSerializableTransaction(prisma, async (tx) => {
                 await ensureActiveUser(tx, userId);
                 const review = await tx.review.findUnique({
                     where: { id: reviewId },

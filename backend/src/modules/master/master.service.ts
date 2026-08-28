@@ -1,11 +1,9 @@
-import { randomUUID } from 'node:crypto';
 import type { Prisma } from '../../generated/client.js';
+import { runSerializableTransaction } from '../../shared/infrastructure/database/transactions.js';
+import { removeLocalUploadUrls } from '../../shared/infrastructure/storage/local-upload.storage.js';
+import { normalizePrismaId } from '../../shared/infrastructure/validation/prisma-values.js';
 import prisma from '../../shared/utils/prisma/prisma_conn.js';
-import { removeLocalUploadUrls } from '../../shared/utils/uploads/local_uploads.js';
-import {
-    detachUserSocialGraph,
-    recalculateUserReviewGames,
-} from '../../shared/utils/users/account_state.js';
+import { deactivateAccount } from '../users/application/account-lifecycle.service.js';
 import { MasterErrors } from './master.errors.js';
 import type { BanResponse, RoleActionResponse } from './master.interfaces.js';
 
@@ -18,26 +16,6 @@ const targetUserSelect = {
     profile: { select: { photo: true, banner: true } },
     role: { select: { role: true } },
 } satisfies Prisma.UserSelect;
-
-const PRISMA_INT_MAX = 2_147_483_647;
-
-function hasPrismaCode(error: unknown, code: string): boolean {
-    return typeof error === 'object' && error !== null && 'code' in error && error.code === code;
-}
-
-async function runMasterTransaction<T>(
-    operation: (tx: Prisma.TransactionClient) => Promise<T>,
-): Promise<T> {
-    for (let attempt = 0; attempt < 3; attempt += 1) {
-        try {
-            return await prisma.$transaction(operation, { isolationLevel: 'Serializable' });
-        } catch (error) {
-            if (!hasPrismaCode(error, 'P2034') || attempt === 2) throw error;
-        }
-    }
-
-    throw new Error('Transaction retry limit reached.');
-}
 
 async function ensureMasterActor(tx: Prisma.TransactionClient, actorId: number) {
     const actor = await tx.user.findUnique({ where: { id: actorId }, select: targetUserSelect });
@@ -54,16 +32,14 @@ async function ensureMasterActor(tx: Prisma.TransactionClient, actorId: number) 
 }
 
 function ensureTargetId(id: number) {
-    if (!Number.isSafeInteger(id) || id < 1 || id > PRISMA_INT_MAX) {
-        MasterErrors.throw('ID de usuário inválido.', 400);
-    }
+    normalizePrismaId(id, 'ID de usuário', MasterErrors.throw);
 }
 
 export class MasterService {
     static async promoteUser(id: number, actorId: number): Promise<RoleActionResponse> {
         ensureTargetId(id);
 
-        return runMasterTransaction(async (tx) => {
+        return runSerializableTransaction(prisma, async (tx) => {
             await ensureMasterActor(tx, actorId);
             const user = await tx.user.findUnique({ where: { id }, select: targetUserSelect });
             if (!user) MasterErrors.throw('Usuário não existe.', 404);
@@ -104,7 +80,7 @@ export class MasterService {
         ensureTargetId(id);
         if (id === actorId) MasterErrors.throw('Você não pode rebaixar a própria conta.', 403);
 
-        return runMasterTransaction(async (tx) => {
+        return runSerializableTransaction(prisma, async (tx) => {
             await ensureMasterActor(tx, actorId);
             const user = await tx.user.findUnique({ where: { id }, select: targetUserSelect });
             if (!user) MasterErrors.throw('Usuário não existe.', 404);
@@ -150,7 +126,7 @@ export class MasterService {
         ensureTargetId(id);
         if (id === actorId) MasterErrors.throw('Você não pode banir a própria conta.', 403);
 
-        const result = await runMasterTransaction(async (tx) => {
+        const result = await runSerializableTransaction(prisma, async (tx) => {
             await ensureMasterActor(tx, actorId);
             const user = await tx.user.findUnique({ where: { id }, select: targetUserSelect });
             if (!user) MasterErrors.throw('Usuário não existe.', 404);
@@ -161,27 +137,7 @@ export class MasterService {
                 MasterErrors.throw('Usuário já está banido.', 409);
 
             const bannedAt = new Date();
-            const anonymousId = randomUUID();
-            await tx.user.update({
-                where: { id },
-                data: {
-                    activate: false,
-                    username: `banned_${id}_${anonymousId}`,
-                    email: `banned-${id}-${anonymousId}@deleted.invalid`,
-                    deletedAt: bannedAt,
-                    credentialVersion: { increment: 1 },
-                },
-            });
-            await tx.userProfile.updateMany({
-                where: { userId: id },
-                data: { photo: null, banner: null, bio: null },
-            });
-            await recalculateUserReviewGames(tx, id);
-            await detachUserSocialGraph(tx, id);
-            const revokedSessions = await tx.authSession.updateMany({
-                where: { userId: id, revokedAt: null },
-                data: { revokedAt: bannedAt },
-            });
+            const lifecycle = await deactivateAccount(tx, user, 'banned', bannedAt);
             await tx.adminAuditLog.create({
                 data: {
                     actorId,
@@ -192,7 +148,7 @@ export class MasterService {
                     metadata: {
                         previousRole: user.role.role,
                         previousEmail: user.email,
-                        revokedSessions: revokedSessions.count,
+                        revokedSessions: lifecycle.revokedSessions,
                     },
                 },
             });
@@ -201,10 +157,7 @@ export class MasterService {
                 message: 'Usuário banido.',
                 email: user.email,
                 bannedAt: bannedAt.toISOString(),
-                uploads: [
-                    { directory: 'avatars' as const, url: user.profile?.photo },
-                    { directory: 'banners' as const, url: user.profile?.banner },
-                ],
+                uploads: [...lifecycle.uploads],
             };
         });
         await removeLocalUploadUrls(result.uploads);

@@ -1,9 +1,11 @@
+import { PRISMA_INT_MAX } from '../../shared/infrastructure/validation/prisma-values.js';
+
 const idParamsSchema = {
     type: 'object',
     additionalProperties: false,
     required: ['id'],
     properties: {
-        id: { type: 'integer', minimum: 1, maximum: 2_147_483_647 },
+        id: { type: 'integer', minimum: 1, maximum: PRISMA_INT_MAX },
     },
 };
 
@@ -12,7 +14,7 @@ const gameIdParamsSchema = {
     additionalProperties: false,
     required: ['gameId'],
     properties: {
-        gameId: { type: 'integer', minimum: 1, maximum: 2_147_483_647 },
+        gameId: { type: 'integer', minimum: 1, maximum: PRISMA_INT_MAX },
     },
 };
 

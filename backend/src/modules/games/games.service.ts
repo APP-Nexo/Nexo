@@ -1,6 +1,7 @@
 import type { Game, Prisma } from '../../generated/client.js';
 import { env } from '../../shared/config/env.js';
 import { AppError } from '../../shared/errors/app-error.js';
+import { PRISMA_INT_MAX } from '../../shared/infrastructure/validation/prisma-values.js';
 import {
     type IgdbCatalog,
     type IgdbGame,
@@ -20,8 +21,6 @@ import type {
 
 const DEFAULT_LIMIT = 20;
 const MAX_LIMIT = 50;
-const PRISMA_INT_MAX = 2_147_483_647;
-
 export type GamesDatabase = Pick<typeof prisma, 'game' | 'review' | 'userGame' | '$transaction'>;
 
 export type GamesLogger = {

@@ -9,7 +9,7 @@ export const USER_GAME_STATUSES = [
 export const LIST_NAME_MAX_LENGTH = 100;
 export const LIBRARY_DEFAULT_LIMIT = 20;
 export const LIBRARY_MAX_LIMIT = 50;
-export const PRISMA_INT_MAX = 2_147_483_647;
+export { PRISMA_INT_MAX } from '../../shared/infrastructure/validation/prisma-values.js';
 
 export type UserGameStatus = (typeof USER_GAME_STATUSES)[number];
 

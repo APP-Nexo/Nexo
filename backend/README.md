@@ -27,6 +27,24 @@ API REST da plataforma social de jogos Nexo. O backend cobre autenticação, cat
 - Administração com hierarquia de papéis e log de auditoria.
 - Upload seguro de avatar e banner em volume persistente local.
 
+## Arquitetura
+
+O código é organizado por feature em `src/modules`. Cada feature mantém seus
+contratos, rotas, controllers e regras próximas; casos de uso maiores ficam em
+`application` e integrações técnicas específicas ficam em `infrastructure`.
+
+- `admin`: dashboard, gestão de usuários e moderação.
+- `games`: agregação de ratings do catálogo.
+- `me`: perfil, segurança, ciclo de vida da conta e uploads.
+- `social`: operações do grafo social.
+- `users`: regras compartilhadas do ciclo de vida de contas.
+- `shared/infrastructure`: Prisma, transações, validações técnicas e storage local.
+
+`AdminService` e `MeService` permanecem como fachadas na fronteira HTTP para
+preservar os consumidores existentes. Os serviços ainda não divididos ficam na
+raiz de suas respectivas features até haver uma separação que reduza, em vez
+de aumentar, a complexidade.
+
 ## Requisitos
 
 - Node.js 22 ou superior

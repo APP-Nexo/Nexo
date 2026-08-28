@@ -1,3 +1,7 @@
+import {
+    normalizePrismaCursor,
+    normalizePrismaId,
+} from '../../shared/infrastructure/validation/prisma-values.js';
 import { cursorPaginate } from '../../shared/utils/pagination/cursor-paginate.js';
 import prisma from '../../shared/utils/prisma/prisma_conn.js';
 import { NotificationErrors } from './notification.errors.js';
@@ -6,22 +10,11 @@ import type {
     NotificationsResponse,
 } from './notification.interfaces.js';
 
-const PRISMA_INT_MAX = 2_147_483_647;
-
-function normalizeId(id: number) {
-    if (!Number.isSafeInteger(id) || id < 1 || id > PRISMA_INT_MAX) {
-        NotificationErrors.throw('ID de notificação inválido.', 400);
-    }
-}
-
-function normalizeCursor(cursor: string | number | undefined): string | undefined {
-    if (cursor === undefined) return undefined;
-
-    const parsed = Number(cursor);
-    if (!Number.isSafeInteger(parsed) || parsed <= 0 || parsed > PRISMA_INT_MAX) {
-        NotificationErrors.throw('Cursor inválido.', 400);
-    }
-    return String(parsed);
+async function ensureNotificationExists(notificationId: number, userId: number) {
+    const exists = await prisma.notification.findFirst({
+        where: { id: notificationId, toUserId: userId },
+    });
+    if (!exists) NotificationErrors.throw('Notificação não existe.', 404);
 }
 
 export class NotificationService {
@@ -56,7 +49,7 @@ export class NotificationService {
                     orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
                 }),
             take: 10,
-            cursor: normalizeCursor(cursor),
+            cursor: normalizePrismaCursor(cursor, NotificationErrors.throw),
         });
 
         const [total, unreadCount] = await Promise.all([
@@ -103,12 +96,8 @@ export class NotificationService {
         notificationId: number,
         userId: number,
     ): Promise<NotificationMessageResponse> {
-        normalizeId(notificationId);
-        await NotificationErrors.ensureNotificationExists(
-            prisma.notification,
-            notificationId,
-            userId,
-        );
+        normalizePrismaId(notificationId, 'ID de notificação', NotificationErrors.throw);
+        await ensureNotificationExists(notificationId, userId);
 
         await prisma.notification.updateMany({
             where: { id: notificationId, toUserId: userId, read: false },
@@ -122,12 +111,8 @@ export class NotificationService {
         notificationId: number,
         userId: number,
     ): Promise<NotificationMessageResponse> {
-        normalizeId(notificationId);
-        await NotificationErrors.ensureNotificationExists(
-            prisma.notification,
-            notificationId,
-            userId,
-        );
+        normalizePrismaId(notificationId, 'ID de notificação', NotificationErrors.throw);
+        await ensureNotificationExists(notificationId, userId);
 
         await prisma.notification.deleteMany({
             where: { id: notificationId, toUserId: userId },

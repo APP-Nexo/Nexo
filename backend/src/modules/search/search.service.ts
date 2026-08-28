@@ -1,28 +1,17 @@
 import type { Prisma } from '../../generated/client.js';
 import { AppError } from '../../shared/errors/app-error.js';
+import { normalizePrismaCursor } from '../../shared/infrastructure/validation/prisma-values.js';
 import prisma from '../../shared/utils/prisma/prisma_conn.js';
 import type { SearchUser, SearchUsersResponse } from './search.interfaces.js';
 
 const DEFAULT_LIMIT = 20;
 const MAX_LIMIT = 50;
-const PRISMA_INT_MAX = 2_147_483_647;
-
 function normalizeLimit(limit: number | undefined): number {
     const value = limit ?? DEFAULT_LIMIT;
     if (!Number.isInteger(value) || value < 1) {
         AppError.throw('O limite deve ser um número inteiro positivo.', 400);
     }
     return Math.min(value, MAX_LIMIT);
-}
-
-function normalizeCursor(cursor: string | number | undefined): number | undefined {
-    if (cursor === undefined) return undefined;
-
-    const value = Number(cursor);
-    if (!Number.isSafeInteger(value) || value <= 0 || value > PRISMA_INT_MAX) {
-        AppError.throw('Cursor inválido.', 400);
-    }
-    return value;
 }
 
 export class SearchService {
@@ -41,7 +30,8 @@ export class SearchService {
         }
 
         const actualLimit = normalizeLimit(limit);
-        const cursorId = normalizeCursor(cursor);
+        const normalizedCursor = normalizePrismaCursor(cursor);
+        const cursorId = normalizedCursor === undefined ? undefined : Number(normalizedCursor);
         const where: Prisma.UserWhereInput = {
             activate: true,
             deletedAt: null,

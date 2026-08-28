@@ -1,3 +1,5 @@
+import { PRISMA_INT_MAX } from '../../shared/infrastructure/validation/prisma-values.js';
+
 const errorSchema = {
     type: 'object',
     additionalProperties: false,
@@ -32,7 +34,7 @@ export const searchUsersSchemaSwagger = {
             additionalProperties: false,
             properties: {
                 q: { type: 'string', maxLength: 100 },
-                cursor: { type: 'integer', minimum: 1, maximum: 2_147_483_647 },
+                cursor: { type: 'integer', minimum: 1, maximum: PRISMA_INT_MAX },
                 limit: { type: 'integer', minimum: 1, maximum: 50, default: 20 },
                 suggested: { type: 'boolean', default: false },
             },

@@ -1,5 +1,7 @@
 import { randomBytes, randomUUID } from 'node:crypto';
 import type { Prisma } from '../../generated/client.js';
+import { hasPrismaCode } from '../../shared/infrastructure/database/prisma-errors.js';
+import { runSerializableTransaction } from '../../shared/infrastructure/database/transactions.js';
 import { comparePassword } from '../../shared/utils/argon2/compare_password.js';
 import { encryptPassword } from '../../shared/utils/argon2/encrypt_password.js';
 import {
@@ -24,24 +26,6 @@ function ensureUserAvailable(user: AvailableUser) {
     if (!user.activate || user.deletedAt || user.blockedUser) {
         AuthErrors.throwAccountUnavailable();
     }
-}
-
-function hasPrismaCode(error: unknown, code: string): boolean {
-    return typeof error === 'object' && error !== null && 'code' in error && error.code === code;
-}
-
-async function runAuthTransaction<T>(
-    operation: (tx: Prisma.TransactionClient) => Promise<T>,
-): Promise<T> {
-    for (let attempt = 0; attempt < 3; attempt += 1) {
-        try {
-            return await prisma.$transaction(operation, { isolationLevel: 'Serializable' });
-        } catch (error) {
-            if (!hasPrismaCode(error, 'P2034') || attempt === 2) throw error;
-        }
-    }
-
-    throw new Error('Transaction retry limit reached.');
 }
 
 function sessionMetadata(metadata: SessionMetadata) {
@@ -130,7 +114,7 @@ export class AuthService {
 
         const password = await encryptPassword(payload.password);
         try {
-            return await prisma.$transaction(async (tx) => {
+            return await runSerializableTransaction(prisma, async (tx) => {
                 const createdUser = await tx.user.create({
                     data: {
                         username,
@@ -176,7 +160,7 @@ export class AuthService {
         AuthErrors.ensureMatchPassword(await comparePassword(password, user.password));
         ensureUserAvailable(user);
 
-        return runAuthTransaction(async (tx) => {
+        return runSerializableTransaction(prisma, async (tx) => {
             const locked = await tx.user.updateMany({
                 where: {
                     id: user.id,
@@ -344,7 +328,7 @@ export class AuthService {
         const hashedPassword = await encryptPassword(newPassword);
         const now = new Date();
 
-        const consumed = await runAuthTransaction(async (tx) => {
+        const consumed = await runSerializableTransaction(prisma, async (tx) => {
             const reset = await tx.passwordReset.findUnique({
                 where: { tokenHash },
                 include: {

@@ -1,4 +1,7 @@
 import type { Prisma } from '../../generated/client.js';
+import { hasAnyPrismaCode } from '../../shared/infrastructure/database/prisma-errors.js';
+import { runSerializableTransaction } from '../../shared/infrastructure/database/transactions.js';
+import { PRISMA_INT_MAX } from '../../shared/infrastructure/validation/prisma-values.js';
 import prisma from '../../shared/utils/prisma/prisma_conn.js';
 import { LibraryError } from './library.errors.js';
 import type {
@@ -22,7 +25,6 @@ import {
     LIBRARY_DEFAULT_LIMIT,
     LIBRARY_MAX_LIMIT,
     LIST_NAME_MAX_LENGTH,
-    PRISMA_INT_MAX,
     USER_GAME_STATUSES,
 } from './library.interfaces.js';
 
@@ -91,31 +93,6 @@ type ListRecord = {
     _count?: { items: number };
     items: ListItemRecord[];
 };
-
-function isPrismaError(error: unknown, ...codes: string[]) {
-    if (typeof error !== 'object' || error === null) return false;
-    const code = (error as { code?: unknown }).code;
-    return typeof code === 'string' && codes.includes(code);
-}
-
-async function runLibraryTransaction<T>(
-    operation: (tx: Prisma.TransactionClient) => Promise<T>,
-): Promise<T> {
-    for (let attempt = 0; attempt < 3; attempt += 1) {
-        try {
-            return await prisma.$transaction(operation, { isolationLevel: 'Serializable' });
-        } catch (error) {
-            if (!isPrismaError(error, 'P2034') || attempt === 2) {
-                if (isPrismaError(error, 'P2034')) {
-                    LibraryError.throw('A operação concorrente não pôde ser concluída.', 409);
-                }
-                throw error;
-            }
-        }
-    }
-
-    throw new Error('Transaction retry limit reached.');
-}
 
 function assertPositiveInteger(value: number, field: string) {
     if (!Number.isSafeInteger(value) || value <= 0 || value > PRISMA_INT_MAX) {
@@ -277,7 +254,7 @@ export class LibraryService {
         if (payload.progress !== undefined) assertProgress(payload.progress);
 
         try {
-            return await runLibraryTransaction(async (tx) => {
+            return await runSerializableTransaction(prisma, async (tx) => {
                 const [game, existing] = await Promise.all([
                     tx.game.findUnique({ where: { id: gameId }, select: { id: true } }),
                     tx.userGame.findUnique({
@@ -343,7 +320,10 @@ export class LibraryService {
                 return { game: toLibraryGame(entry) };
             });
         } catch (error) {
-            if (isPrismaError(error, 'P2003')) LibraryError.gameNotFound();
+            if (hasAnyPrismaCode(error, 'P2003')) LibraryError.gameNotFound();
+            if (hasAnyPrismaCode(error, 'P2034')) {
+                LibraryError.throw('A operação concorrente não pôde ser concluída.', 409);
+            }
             throw error;
         }
     }
@@ -352,7 +332,7 @@ export class LibraryService {
         assertPositiveInteger(userId, 'userId');
         assertPositiveInteger(gameId, 'gameId');
 
-        await runLibraryTransaction(async (tx) => {
+        await runSerializableTransaction(prisma, async (tx) => {
             const existing = await tx.userGame.findUnique({
                 where: { userId_gameId: { userId, gameId } },
                 select: { id: true },
@@ -394,7 +374,7 @@ export class LibraryService {
             });
             return { list: toList(list) };
         } catch (error) {
-            if (isPrismaError(error, 'P2002')) LibraryError.duplicateListName();
+            if (hasAnyPrismaCode(error, 'P2002')) LibraryError.duplicateListName();
             throw error;
         }
     }
@@ -426,8 +406,8 @@ export class LibraryService {
             });
             return { list: toList(list) };
         } catch (error) {
-            if (isPrismaError(error, 'P2002')) LibraryError.duplicateListName();
-            if (isPrismaError(error, 'P2025')) LibraryError.listNotFound();
+            if (hasAnyPrismaCode(error, 'P2002')) LibraryError.duplicateListName();
+            if (hasAnyPrismaCode(error, 'P2025')) LibraryError.listNotFound();
             throw error;
         }
     }
@@ -450,7 +430,7 @@ export class LibraryService {
         assertPositiveInteger(gameId, 'gameId');
 
         try {
-            return await runLibraryTransaction(async (tx) => {
+            return await runSerializableTransaction(prisma, async (tx) => {
                 const [list, ownedGame] = await Promise.all([
                     tx.userGameList.findFirst({
                         where: { id: listId, userId },
@@ -477,15 +457,18 @@ export class LibraryService {
                 return { item: toListItem(item) };
             });
         } catch (error) {
-            if (isPrismaError(error, 'P2002')) {
+            if (hasAnyPrismaCode(error, 'P2002')) {
                 const item = await prisma.userGameListItem.findUnique({
                     where: { listId_gameId: { listId, gameId } },
                     include: { game: { select: GAME_SUMMARY_SELECT } },
                 });
                 if (item) return { item: toListItem(item) };
             }
-            if (isPrismaError(error, 'P2003', 'P2025')) {
+            if (hasAnyPrismaCode(error, 'P2003', 'P2025')) {
                 LibraryError.throw('Lista ou jogo não encontrado.', 404);
+            }
+            if (hasAnyPrismaCode(error, 'P2034')) {
+                LibraryError.throw('A operação concorrente não pôde ser concluída.', 409);
             }
             throw error;
         }
@@ -496,7 +479,7 @@ export class LibraryService {
         assertPositiveInteger(listId, 'id');
         assertPositiveInteger(gameId, 'gameId');
 
-        await runLibraryTransaction(async (tx) => {
+        await runSerializableTransaction(prisma, async (tx) => {
             const list = await tx.userGameList.findFirst({
                 where: { id: listId, userId },
                 select: { id: true },
