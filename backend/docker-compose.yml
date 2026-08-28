@@ -79,6 +79,8 @@ services:
   db:
     container_name: nexo-db
     image: postgres:16-alpine
+    ports:
+      - "127.0.0.1:5433:5432"
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-nexo}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
