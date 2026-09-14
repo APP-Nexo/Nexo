@@ -1,4 +1,4 @@
-import { COLORS, SPACING, FONT } from '../constants';
+import { COLORS, FONT } from '../constants';
 
 import {
   Pressable,
@@ -12,6 +12,7 @@ import {
 interface PrimaryButtonProps {
   title: string;
   onPress: () => void;
+  disabled?: boolean;
   width?: DimensionValue;
   height?: DimensionValue;
   style?: StyleProp<ViewStyle>;
@@ -20,6 +21,7 @@ interface PrimaryButtonProps {
 const PrimaryButton = ({
   title,
   onPress,
+  disabled = false,
   width = '100%',
   height = 54,
   style,
@@ -27,13 +29,17 @@ const PrimaryButton = ({
   return (
     <Pressable
       onPress={onPress}
+      disabled={disabled}
+      accessibilityRole="button"
+      accessibilityState={{ disabled }}
       style={[
         styles.button,
         { width, height },
         style,
+        disabled && styles.buttonDisabled,
       ]}
     >
-      <Text style={styles.text}>{title}</Text>
+      <Text style={[styles.text, disabled && styles.textDisabled]}>{title}</Text>
     </Pressable>
   );
 };
@@ -50,10 +56,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  buttonDisabled: {
+    borderColor: COLORS.border,
+    backgroundColor: COLORS.disabled,
+  },
   text: {
     fontFamily: FONT.family.display,
     color: COLORS.nexoBlue,
     fontSize: FONT.text,
     letterSpacing: 1,
+  },
+  textDisabled: {
+    color: COLORS.textMuted,
   },
 });

@@ -5,6 +5,7 @@ import { FONT } from '../constants';
 
 type LogoProps = {
   size?: number;
+  width?: number;
   subtitle?: boolean;
   containerStyle?: ViewStyle;
   textStyle?: TextStyle;
@@ -12,6 +13,7 @@ type LogoProps = {
 
 export default function logo({
   size = 42,
+  width = 220,
   subtitle = true,
   containerStyle,
   textStyle,
@@ -29,11 +31,11 @@ export default function logo({
           colors={['#20E3FF', '#7DEBFF', '#FFD0E5', '#FF2D7A']}
           start={{ x: 0, y: 0.5 }}
           end={{ x: 0.8, y: 0.5 }}
-          style={[styles.gradient, { height: size * 1.25 }]}
+          style={[styles.gradient, { width, height: size * 1.25 }]}
         />
       </MaskedView>
 
-      <Text style={styles.subtitle}>rate games • own your taste</Text>
+      {subtitle && <Text style={styles.subtitle}>rate games • own your taste</Text>}
     </View>
   );
 }
@@ -48,7 +50,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   gradient: {
-    width: 220,
   },
   logoText: {
     fontFamily: FONT.family.display,

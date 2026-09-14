@@ -52,6 +52,12 @@ function CustomTabBar({ state, navigation }: any) {
         'view-grid-outline'
       )}
       {renderTab(
+        'social',
+        'SOCIAL',
+        MaterialCommunityIcons,
+        'account-circle-outline'
+      )}
+      {renderTab(
         'profile',
         'PERFIL',
         MaterialCommunityIcons,
@@ -71,6 +77,7 @@ export default function TabLayout() {
     >
       <Tabs.Screen name="home" />
       <Tabs.Screen name="nexo-avaliar-jogo" />
+      <Tabs.Screen name="social" />
       <Tabs.Screen name="profile" />
     </Tabs>
   );

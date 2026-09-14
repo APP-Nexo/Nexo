@@ -47,10 +47,15 @@ const ACCOUNT_ITEMS: AccountItem[] = [
   },
 ];
 
-function AccountCard({ icon, title, subtitle }: AccountItem) {
+function AccountCard({
+  icon,
+  title,
+  subtitle,
+  onPress,
+}: AccountItem & { onPress: () => void }) {
   return (
     <Pressable
-      onPress={() => Alert.alert(title, 'Disponível em breve.')}
+      onPress={onPress}
       style={({ pressed }) => [styles.accountCard, pressed && styles.pressed]}
       accessibilityRole="button"
       accessibilityLabel={`${title}. ${subtitle}`}
@@ -172,7 +177,15 @@ export default function EditProfileScreen() {
           <Text style={styles.sectionTitle}>CONTA</Text>
           <View style={styles.accountList}>
             {ACCOUNT_ITEMS.map((item) => (
-              <AccountCard key={item.title} {...item} />
+              <AccountCard
+                key={item.title}
+                {...item}
+                onPress={() =>
+                  item.title === 'MUDAR SENHA'
+                    ? router.push('/profile/change-password')
+                    : Alert.alert(item.title, 'Disponível em breve.')
+                }
+              />
             ))}
           </View>
         </View>

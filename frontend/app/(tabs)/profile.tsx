@@ -146,9 +146,21 @@ export default function ProfileScreen() {
           <View style={styles.statDivider} />
           <StatBox value={MOCK_USER.stats.reviews} label="REVIEWS" />
           <View style={styles.statDivider} />
-          <StatBox value={MOCK_USER.stats.following} label="SEGUINDO" />
+          <StatBox
+            value={MOCK_USER.stats.following}
+            label="SEGUINDO"
+            onPress={() =>
+              router.push({ pathname: '/(tabs)/social', params: { tab: 'following' } })
+            }
+          />
           <View style={styles.statDivider} />
-          <StatBox value={MOCK_USER.stats.followers} label="SEGUIDORES" />
+          <StatBox
+            value={MOCK_USER.stats.followers}
+            label="SEGUIDORES"
+            onPress={() =>
+              router.push({ pathname: '/(tabs)/social', params: { tab: 'followers' } })
+            }
+          />
         </View>
 
         <View style={styles.section}>
@@ -242,12 +254,26 @@ export default function ProfileScreen() {
   );
 }
 
-function StatBox({ value, label }: { value: number; label: string }) {
+function StatBox({
+  value,
+  label,
+  onPress,
+}: {
+  value: number;
+  label: string;
+  onPress?: () => void;
+}) {
   return (
-    <View style={styles.statBox}>
+    <Pressable
+      style={styles.statBox}
+      onPress={onPress}
+      disabled={!onPress}
+      accessibilityRole={onPress ? 'button' : undefined}
+      accessibilityLabel={onPress ? `Abrir ${label.toLowerCase()}` : undefined}
+    >
       <Text style={styles.statValue}>{value}</Text>
       <Text style={styles.statLabel}>{label}</Text>
-    </View>
+    </Pressable>
   );
 }
 
