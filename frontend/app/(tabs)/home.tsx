@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import MaskedView from '@react-native-masked-view/masked-view';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Carousel from '@/components/Carrousel';
 import ActivityCard from '@/components/ActivityCard';
 import { COLORS, SPACING, FONT } from '@/constants';
@@ -78,11 +79,11 @@ const activities = reviewGames
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState('');
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { paddingTop: insets.top + SPACING.xs }]}>
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.content}
       >
         <View style={styles.header}>
           <View style={styles.headerContent}>
@@ -159,9 +160,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.bodyBackground,
-  },
-  content: {
-    paddingTop: 20,
   },
   header: {
     paddingVertical: SPACING.md,

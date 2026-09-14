@@ -91,19 +91,20 @@ const styles = StyleSheet.create({
     borderTopColor: COLORS.border,
     alignItems: 'center',
     justifyContent: 'space-around',
-    paddingTop: 10,
+    paddingTop: SPACING.xs,
   },
   tabItem: {
     alignItems: 'center',
     justifyContent: 'center',
     flex: 1,
-    paddingVertical: SPACING.sm,
+    paddingTop: SPACING.xs,
+    paddingBottom: SPACING.xxs,
   },
   tabLabel: {
     fontFamily: FONT.family.display,
     fontSize: FONT.caption,
     fontWeight: '700',
-    marginTop: 5,
+    marginTop: SPACING.xxs,
     letterSpacing: 1,
   },
   activeDot: {
@@ -111,6 +112,6 @@ const styles = StyleSheet.create({
     height: 4,
     borderRadius: 2,
     backgroundColor: COLORS.nexoBlue,
-    marginTop: 6,
+    marginTop: SPACING.xxs,
   },
 });

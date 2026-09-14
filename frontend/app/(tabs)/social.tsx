@@ -302,7 +302,7 @@ export default function SocialScreen() {
   );
 
   return (
-    <View style={[styles.screen, { paddingTop: insets.top }]}>
+    <View style={[styles.screen, { paddingTop: insets.top + SPACING.xs }]}>
       <StatusBar barStyle="light-content" backgroundColor={COLORS.bodyBackground} />
       <FlatList
         data={filteredUsers}
