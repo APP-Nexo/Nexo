@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   View,
   Text,
@@ -9,12 +9,15 @@ import {
 } from 'react-native';
 import { Image } from 'expo-image';
 import { COLORS, SPACING, FONT } from '../../constants';
-import { games } from '../../data/games';
+import { filterGamesByTitle } from '../../data/games';
 
 const { width } = Dimensions.get('window');
 const CARD_WIDTH = (width - 48) / 2;
 
 export default function GamesScreen() {
+  const [searchQuery, setSearchQuery] = useState('');
+  const filteredGames = useMemo(() => filterGamesByTitle(searchQuery), [searchQuery]);
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Jogos</Text>
@@ -23,14 +26,25 @@ export default function GamesScreen() {
         placeholder="Buscar jogo..."
         placeholderTextColor="#6B7280"
         style={styles.input}
+        value={searchQuery}
+        onChangeText={setSearchQuery}
+        autoCapitalize="none"
+        autoCorrect={false}
+        returnKeyType="search"
+        clearButtonMode="while-editing"
       />
 
       <FlatList
-        data={games}
+        data={filteredGames}
         keyExtractor={(item) => item.id}
         numColumns={2}
         columnWrapperStyle={{ justifyContent: 'space-between' }}
         contentContainerStyle={{ paddingBottom: 40 }}
+        ListEmptyComponent={
+          <View style={styles.emptyState}>
+            <Text style={styles.emptyText}>NENHUM JOGO ENCONTRADO</Text>
+          </View>
+        }
         renderItem={({ item }) => (
           <View style={styles.card}>
             <View style={styles.imageContainer}>
@@ -92,6 +106,19 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     borderWidth: 1,
     borderColor: '#1F2A37',
+  },
+
+  emptyState: {
+    paddingVertical: SPACING.xxxl,
+    alignItems: 'center',
+  },
+
+  emptyText: {
+    color: COLORS.textSecondary,
+    fontFamily: FONT.family.display,
+    fontSize: FONT.small,
+    letterSpacing: 1,
+    textAlign: 'center',
   },
 
   card: {

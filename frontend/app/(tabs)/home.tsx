@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   View,
   ScrollView,
@@ -12,8 +12,9 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Carousel from '@/components/Carrousel';
 import ActivityCard from '@/components/ActivityCard';
-import { COLORS, SPACING, FONT } from '@/constants';
-import { games } from '@/data/games';
+import { COLORS, SPACING, RADIUS, FONT } from '@/constants';
+import { filterGamesByTitle, games } from '@/data/games';
+import type { Game } from '@/types/Game';
 import { useRouter } from 'expo-router';
 
 const reviewers = [
@@ -80,6 +81,10 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState('');
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const filteredGames = useMemo(() => filterGamesByTitle(searchQuery), [searchQuery]);
+  const isSearching = searchQuery.trim().length > 0;
+  const openGame = (game: Game) => router.push(`/games/${game.id}`);
+
   return (
     <View style={[styles.container, { paddingTop: insets.top + SPACING.xs }]}>
       <ScrollView
@@ -117,40 +122,60 @@ export default function Home() {
             onChangeText={setSearchQuery}
             autoCapitalize="none"
             autoCorrect={false}
+            returnKeyType="search"
+            clearButtonMode="while-editing"
           />
         </View>
 
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>EM ALTA</Text>
-          <Text style={styles.sectionLink}>VER TODOS</Text>
-        </View>
+        {isSearching ? (
+          <View style={styles.resultsSection}>
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionTitle}>RESULTADOS</Text>
+              <Text style={styles.sectionLink}>
+                {filteredGames.length} {filteredGames.length === 1 ? 'JOGO' : 'JOGOS'}
+              </Text>
+            </View>
 
-        <Carousel
-          data={games}
-          style={{ marginBottom: 30 }}
-          onPressItem={(game) => router.push(`/games/${game.id}`)}
-        />
+            {filteredGames.length > 0 ? (
+              <Carousel data={filteredGames} style={styles.resultsCarousel} onPressItem={openGame} />
+            ) : (
+              <View style={styles.emptyState}>
+                <Text style={styles.emptyTitle}>NENHUM JOGO ENCONTRADO</Text>
+                <Text style={styles.emptyText}>Tente buscar por outro nome.</Text>
+              </View>
+            )}
+          </View>
+        ) : (
+          <>
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionTitle}>EM ALTA</Text>
+              <Text style={styles.sectionLink}>VER TODOS</Text>
+            </View>
 
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>ATIVIDADES RECENTES</Text>
-          <Text style={styles.sectionLink}>VER TODAS</Text>
-        </View>
+            <Carousel data={games} style={{ marginBottom: 30 }} onPressItem={openGame} />
 
-        <View style={styles.activitiesList}>
-          {activities.map((activity) => (
-            <ActivityCard
-              key={activity.id}
-              userInitials={activity.userInitials}
-              username={activity.username}
-              time={activity.time}
-              action={activity.action}
-              gameTitle={activity.gameTitle}
-              rating={activity.rating}
-              comment={activity.comment}
-              gameImage={activity.gameImage}
-            />
-          ))}
-        </View>
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionTitle}>ATIVIDADES RECENTES</Text>
+              <Text style={styles.sectionLink}>VER TODAS</Text>
+            </View>
+
+            <View style={styles.activitiesList}>
+              {activities.map((activity) => (
+                <ActivityCard
+                  key={activity.id}
+                  userInitials={activity.userInitials}
+                  username={activity.username}
+                  time={activity.time}
+                  action={activity.action}
+                  gameTitle={activity.gameTitle}
+                  rating={activity.rating}
+                  comment={activity.comment}
+                  gameImage={activity.gameImage}
+                />
+              ))}
+            </View>
+          </>
+        )}
       </ScrollView>
     </View>
   );
@@ -230,6 +255,36 @@ const styles = StyleSheet.create({
   sectionLink: {
     color: '#5F6C7B',
     fontSize: 12,
+  },
+  resultsSection: {
+    paddingTop: SPACING.xs,
+  },
+  resultsCarousel: {
+    marginBottom: SPACING.xl,
+  },
+  emptyState: {
+    marginHorizontal: SPACING.lg,
+    paddingHorizontal: SPACING.lg,
+    paddingVertical: SPACING.xxxl,
+    alignItems: 'center',
+    backgroundColor: COLORS.surface,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    borderRadius: RADIUS.lg,
+  },
+  emptyTitle: {
+    fontFamily: FONT.family.display,
+    color: COLORS.textSecondary,
+    fontSize: FONT.small,
+    letterSpacing: 1,
+    textAlign: 'center',
+  },
+  emptyText: {
+    fontFamily: FONT.family.body,
+    color: COLORS.textMuted,
+    fontSize: FONT.small,
+    marginTop: SPACING.xs,
+    textAlign: 'center',
   },
   activitiesList: {
     paddingHorizontal: 16,

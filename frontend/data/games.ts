@@ -61,3 +61,8 @@ export const games: Game[] = [
 export function getGameById(id: string) {
   return games.find((game) => game.id === id);
 }
+
+export function filterGamesByTitle(query: string) {
+  const normalizedQuery = query.trim().replace(/\s+/g, ' ').toLocaleLowerCase('pt-BR');
+  return games.filter((game) => game.title.toLocaleLowerCase('pt-BR').includes(normalizedQuery));
+}
