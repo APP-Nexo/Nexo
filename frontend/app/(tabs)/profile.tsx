@@ -9,6 +9,7 @@ import {
   useWindowDimensions,
 } from 'react-native';
 import { Image } from 'expo-image';
+import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { COLORS, SPACING, RADIUS, FONT } from '../../constants';
 import { games } from '../../data/games';
@@ -92,6 +93,7 @@ function ratingBarColor(index: number): string {
 
 export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
+  const router = useRouter();
   const { width: screenWidth } = useWindowDimensions();
   const [activeTab, setActiveTab] = useState<ListTab>('todas');
 
@@ -126,7 +128,12 @@ export default function ProfileScreen() {
               </View>
             </View>
 
-            <Pressable style={styles.editButton}>
+            <Pressable
+              style={styles.editButton}
+              onPress={() => router.push('/profile/edit')}
+              accessibilityRole="button"
+              accessibilityLabel="Editar perfil"
+            >
               <Text style={styles.editButtonText}>EDITAR</Text>
             </Pressable>
           </View>
