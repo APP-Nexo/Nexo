@@ -36,6 +36,7 @@ await app.register(cors, {
         }
         callback(null, env.corsOrigins.includes(origin));
     },
+    methods: ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE'],
 });
 app.setErrorHandler(errorHandler);
 await app.register(fastifyJwt, { secret: env.secret });
