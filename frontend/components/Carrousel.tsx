@@ -201,7 +201,7 @@ const styles = StyleSheet.create({
         borderRadius: RADIUS.xxl,
     } as const,
     gradient: {
-        ...StyleSheet.absoluteFillObject,
+        ...StyleSheet.absoluteFill,
         borderRadius: RADIUS.xxl,
     } as const,
     content: {

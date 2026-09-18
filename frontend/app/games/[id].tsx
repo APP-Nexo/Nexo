@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -6,6 +6,7 @@ import {
   ScrollView,
   Pressable,
   StatusBar,
+  ActivityIndicator,
   ImageSourcePropType,
 } from 'react-native';
 import { Image } from 'expo-image';
@@ -15,80 +16,114 @@ import { COLORS, SPACING, RADIUS, FONT } from '@/constants';
 import FeaturedGame from '@/components/FeaturedGame';
 import ActivityCard from '@/components/ActivityCard';
 import PrimaryButton from '@/components/PrimaryButton';
-import { getGameById, games } from '@/data/games';
+import ErrorState from '@/components/ErrorState';
+import { useAuth } from '@/context/AuthContext';
+import { useToast } from '@/context/ToastContext';
+import { gamesApi, type GameDetailResponse, type GameReviewResponse, type GameResponse } from '@/services/games';
+import { libraryApi } from '@/services/library';
+import { ApiError } from '@/services/api';
 
-const MOCK_DESCRIPTION =
-  'Persona 5 Royal é a versão expandida e definitiva de Persona 5, o aclamado JRPG da Atlus. Você assume o papel de Joker, um estudante que após descobrir o poder de entrar no Palácio Metaverso — universo oculto abaixo da consciência humana — forma os Ladrões Fantasmas para mudar corações corrompidos. Com mecânicas de dungeon refinadas, novos personagens e um capítulo inédito, Royal é a experiência definitiva da série.';
+const FALLBACK_IMAGE = require('../../assets/images/Elden_Ring_capa.jpg');
 
-const MOCK_STATS = [
-  { value: '214K', label: 'AVALIAÇÕES' },
-  { value: '4.9', label: 'NOTA MÉDIA' },
-  { value: '8.7K', label: 'LIKES' },
-  { value: '3.2K', label: 'JOGANDO' },
-];
+function timeAgo(iso: string): string {
+  const diffMs = Date.now() - new Date(iso).getTime();
+  const minutes = Math.floor(diffMs / 60000);
+  if (minutes < 1) return 'agora';
+  if (minutes < 60) return `${minutes}m atrás`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h atrás`;
+  const days = Math.floor(hours / 24);
+  if (days < 30) return `${days}d atrás`;
+  const months = Math.floor(days / 30);
+  return `${months}mês atrás`;
+}
 
-const MOCK_REVIEWS = [
-  {
-    id: '1',
-    userInitials: 'KB',
-    username: 'keizo_br',
-    time: '2 dias atrás',
-    action: 'avaliou',
-    rating: 5,
-    comment:
-      'Melhor JRPG que já joguei. A história, a trilha sonora e as personagens são impecáveis. Persona 5 Royal elevou o padrão do gênero.',
-  },
-  {
-    id: '2',
-    userInitials: 'VX',
-    username: 'voiix_br',
-    time: '3 dias atrás',
-    action: 'avaliou',
-    rating: 5,
-    comment:
-      'A trilha sonora do Royal Meguro é outro nível. "Last Surprise" ficou na minha cabeça por semanas. Royal deixou o estilo ainda mais refinado.',
-  },
-  {
-    id: '3',
-    userInitials: 'NR',
-    username: 'neonrider',
-    time: '5 dias atrás',
-    action: 'avaliou',
-    rating: 4,
-    comment:
-      'Nunca fui fã do formato de dungeons mas esse jogo me fisgou. Entrei por uma hora e fui 3-4 horas direto sem perceber o tempo.',
-  },
-  {
-    id: '4',
-    userInitials: 'FH',
-    username: 'fromherski',
-    time: '1 semana atrás',
-    action: 'avaliou',
-    rating: 5,
-    comment:
-      'Comecei com ceticismo. Terminei Persona 5 Royal com a alma cheia d\'água. Acabou e eu ainda queria mais.',
-  },
-];
+function initialsOf(username: string): string {
+  return username.slice(0, 2).toUpperCase();
+}
 
 export default function GameDetails() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { token } = useAuth();
+  const { showError } = useToast();
 
   const [descExpanded, setDescExpanded] = useState(false);
-  const [isFavorited, setIsFavorited] = useState(false);
+  const [game, setGame] = useState<GameDetailResponse | null>(null);
+  const [reviews, setReviews] = useState<GameReviewResponse[]>([]);
+  const [similarGames, setSimilarGames] = useState<GameResponse[]>([]);
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [favoriteSaving, setFavoriteSaving] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
 
-  const game = getGameById(id as string);
-  const similarGames = games.filter((g) => g.id !== id).slice(0, 6);
+  const load = useCallback(async () => {
+    setLoading(true);
+    setLoadError(false);
+    try {
+      const detail = await gamesApi.detail(id, token);
+      setGame(detail);
+      setIsFavorite(detail.viewer?.library?.isFavorite ?? false);
 
-  if (!game) {
-    return <View style={styles.root} />;
+      const [reviewsPage, similarPage] = await Promise.all([
+        gamesApi.reviews(id).catch(() => ({ data: [], nextCursor: null })),
+        detail.genres[0]
+          ? gamesApi.list({ genre: detail.genres[0], limit: 8 }).catch(() => ({ data: [], nextCursor: null }))
+          : Promise.resolve({ data: [], nextCursor: null }),
+      ]);
+      setReviews(reviewsPage.data);
+      setSimilarGames(similarPage.data.filter((g) => g.id !== detail.id).slice(0, 6));
+    } catch {
+      setLoadError(true);
+    } finally {
+      setLoading(false);
+    }
+  }, [id, token]);
+
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  async function toggleFavorite() {
+    if (!token || !game || favoriteSaving) return;
+    const next = !isFavorite;
+    setIsFavorite(next);
+    setFavoriteSaving(true);
+    try {
+      await libraryApi.upsertGame(token, game.id, { isFavorite: next });
+    } catch (error) {
+      setIsFavorite(!next);
+      showError(error instanceof ApiError ? error.message : 'Não foi possível favoritar o jogo.');
+    } finally {
+      setFavoriteSaving(false);
+    }
   }
 
-  const gameImageSource: ImageSourcePropType =
-    typeof game.image === 'string'
-      ? { uri: game.image }
-      : (game.image as ImageSourcePropType);
+  if (loading) {
+    return (
+      <View style={[styles.root, styles.centered]}>
+        <ActivityIndicator color={COLORS.nexoBlue} />
+      </View>
+    );
+  }
+
+  if (loadError || !game) {
+    return (
+      <View style={[styles.root, styles.centered, { paddingTop: insets.top }]}>
+        <ErrorState message="Não foi possível carregar este jogo." onRetry={load} />
+        <Pressable onPress={() => router.back()} style={{ marginTop: SPACING.md }}>
+          <Text style={{ color: COLORS.nexoBlue, fontFamily: FONT.family.display }}>VOLTAR</Text>
+        </Pressable>
+      </View>
+    );
+  }
+
+  const gameImageSource: ImageSourcePropType = game.cover ? { uri: game.cover } : FALLBACK_IMAGE;
+  const stats = [
+    { value: String(game.ratingCount), label: 'AVALIAÇÕES' },
+    { value: game.averageRating > 0 ? game.averageRating.toFixed(1) : '—', label: 'NOTA MÉDIA' },
+  ];
 
   return (
     <View style={styles.root}>
@@ -101,31 +136,34 @@ export default function GameDetails() {
       >
         <FeaturedGame
           title={game.title}
-          image={game.image}
-          rating={game.rating}
+          image={game.cover ?? FALLBACK_IMAGE}
+          rating={game.averageRating}
           genres={game.genres}
           topInset={insets.top}
           onBackPress={() => router.back()}
-          onFavoritePress={() => setIsFavorited((v) => !v)}
-          isFavorited={isFavorited}
+          onFavoritePress={toggleFavorite}
+          isFavorited={isFavorite}
         />
 
         <View style={styles.content}>
           <PrimaryButton
             title="+ AVALIAR ESTE JOGO"
-            onPress={() => router.push('/(tabs)/rate-game')}
+            onPress={() =>
+              router.push({
+                pathname: '/(tabs)/rate-game',
+                params: { id: String(game.id), title: game.title },
+              })
+            }
           />
 
           <View style={styles.statsRow}>
-            {MOCK_STATS.map((stat, index) => (
+            {stats.map((stat, index) => (
               <React.Fragment key={stat.label}>
                 <View style={styles.statItem}>
                   <Text style={styles.statValue}>{stat.value}</Text>
                   <Text style={styles.statLabel}>{stat.label}</Text>
                 </View>
-                {index < MOCK_STATS.length - 1 && (
-                  <View style={styles.statDivider} />
-                )}
+                {index < stats.length - 1 && <View style={styles.statDivider} />}
               </React.Fragment>
             ))}
           </View>
@@ -133,50 +171,45 @@ export default function GameDetails() {
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionTitle}>SOBRE O JOGO</Text>
-              <Pressable onPress={() => setDescExpanded((v) => !v)}>
-                <Text style={styles.sectionAction}>
-                  {descExpanded ? 'MENOS' : 'LER MAIS'}
-                </Text>
-              </Pressable>
+              {game.description && (
+                <Pressable onPress={() => setDescExpanded((v) => !v)}>
+                  <Text style={styles.sectionAction}>{descExpanded ? 'MENOS' : 'LER MAIS'}</Text>
+                </Pressable>
+              )}
             </View>
-            <Text
-              style={styles.description}
-              numberOfLines={descExpanded ? undefined : 3}
-            >
-              {MOCK_DESCRIPTION}
+            <Text style={styles.description} numberOfLines={descExpanded ? undefined : 3}>
+              {game.description ?? 'Ainda não temos uma descrição para este jogo.'}
             </Text>
           </View>
 
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionTitle}>REVIEWS RECENTES</Text>
-              <Pressable>
-                <Text style={styles.sectionAction}>VER TODAS {'>'}</Text>
-              </Pressable>
             </View>
 
-            {MOCK_REVIEWS.map((review) => (
-              <ActivityCard
-                key={review.id}
-                userInitials={review.userInitials}
-                username={review.username}
-                time={review.time}
-                action={review.action}
-                gameTitle={game.title}
-                rating={review.rating}
-                comment={review.comment}
-                gameImage={gameImageSource}
-              />
-            ))}
+            {reviews.length === 0 ? (
+              <Text style={styles.emptyText}>Ainda não há reviews para este jogo. Seja o primeiro!</Text>
+            ) : (
+              reviews.map((review) => (
+                <ActivityCard
+                  key={review.id}
+                  userInitials={initialsOf(review.user.username)}
+                  username={review.user.username}
+                  time={timeAgo(review.createdAt)}
+                  action="avaliou"
+                  gameTitle={game.title}
+                  rating={review.rating}
+                  comment={review.text ?? undefined}
+                  gameImage={gameImageSource}
+                />
+              ))
+            )}
           </View>
 
           {similarGames.length > 0 && (
             <View style={styles.section}>
               <View style={styles.sectionHeader}>
                 <Text style={styles.sectionTitle}>JOGOS SIMILARES</Text>
-                <Pressable>
-                  <Text style={styles.sectionAction}>VER MAIS {'>'}</Text>
-                </Pressable>
               </View>
 
               <ScrollView
@@ -191,11 +224,7 @@ export default function GameDetails() {
                     onPress={() => router.push(`/games/${g.id}`)}
                   >
                     <Image
-                      source={
-                        typeof g.image === 'string'
-                          ? { uri: g.image }
-                          : g.image
-                      }
+                      source={g.cover ? { uri: g.cover } : FALLBACK_IMAGE}
                       style={styles.similarImage}
                       contentFit="cover"
                     />
@@ -217,6 +246,11 @@ const styles = StyleSheet.create({
   root: {
     flex: 1,
     backgroundColor: COLORS.bodyBackground,
+  },
+  centered: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: SPACING.lg,
   },
   scroll: {
     flex: 1,
@@ -281,6 +315,11 @@ const styles = StyleSheet.create({
     fontSize: FONT.text,
     color: COLORS.textSecondary,
     lineHeight: 22,
+  },
+  emptyText: {
+    fontFamily: FONT.family.body,
+    fontSize: FONT.small,
+    color: COLORS.textMuted,
   },
   similarCard: {
     width: 92,

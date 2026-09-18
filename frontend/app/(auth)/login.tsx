@@ -16,24 +16,39 @@ import {
 import { Link, useRouter } from 'expo-router';
 import { COLORS, SPACING, FONT } from '../../constants';
 import PrimaryButton from '@/components/PrimaryButton';
+import { useAuth } from '../../context/AuthContext';
+import { ApiError } from '../../services/api';
 
 export default function LoginScreen() {
   const router = useRouter();
+  const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   function togglePasswordVisibility() {
     setShowPassword((prev) => !prev);
   }
 
-  function handleLogin() {
+  async function handleLogin() {
+    if (isSubmitting) return;
     if (!email.trim() || !password.trim()) {
       Alert.alert('Campos obrigatórios', 'Preencha e-mail e senha.');
       return;
     }
 
-    router.replace('/(tabs)/home');
+    setIsSubmitting(true);
+    try {
+      await login(email.trim(), password);
+      router.replace('/(tabs)/home');
+    } catch (error) {
+      const message =
+        error instanceof ApiError ? error.message : 'Não foi possível entrar. Tente novamente.';
+      Alert.alert('Erro ao entrar', message);
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   function handleCreateAccount() {
@@ -100,9 +115,9 @@ export default function LoginScreen() {
                     </Pressable>
 
                     <PrimaryButton
-                      title="ENTRAR"
+                      title={isSubmitting ? 'ENTRANDO...' : 'ENTRAR'}
                       onPress={handleLogin}
-                      style={{ }}
+                      style={{ opacity: isSubmitting ? 0.6 : 1 }}
                     />
 
                     <View style={styles.dividerRow}>

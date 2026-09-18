@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -7,16 +7,36 @@ import {
   Pressable,
   TextInput,
   StatusBar,
+  ActivityIndicator,
 } from 'react-native';
 import { Image } from 'expo-image';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
 import { COLORS, SPACING, RADIUS, FONT, GLOW } from '../../constants';
 import PrimaryButton from '../../components/PrimaryButton';
 import eldenRingBanner from '../../assets/images/Elden_Ring_capa.jpg';
+import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../context/ToastContext';
+import { gamesApi } from '../../services/games';
+import { reviewsApi } from '../../services/reviews';
+import { libraryApi, type UserGameStatus } from '../../services/library';
+import { ApiError } from '../../services/api';
 
 type ProgressId = 'zerado' | 'ate-onde-parei' | 'so-experimentei';
+
+const PROGRESS_TO_STATUS: Record<ProgressId, UserGameStatus> = {
+  zerado: 'completed',
+  'ate-onde-parei': 'playing',
+  'so-experimentei': 'tried',
+};
+
+const STATUS_TO_PROGRESS: Partial<Record<UserGameStatus, ProgressId>> = {
+  completed: 'zerado',
+  playing: 'ate-onde-parei',
+  abandoned: 'ate-onde-parei',
+  tried: 'so-experimentei',
+};
 
 const RATING_LABELS: Record<number, string> = {
   1: 'TERRÍVEL',
@@ -201,13 +221,70 @@ const progressStyles = StyleSheet.create({
 export default function RateGameScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
+  const { id, title: titleParam } = useLocalSearchParams<{ id?: string; title?: string }>();
+  const { token } = useAuth();
+  const { showError, showSuccess } = useToast();
 
   const [rating, setRating] = useState(4);
   const [progress, setProgress] = useState<ProgressId>('zerado');
   const [review, setReview] = useState('');
+  const [title, setTitle] = useState(titleParam ?? '');
+  const [bannerImage, setBannerImage] = useState<{ uri: string } | typeof eldenRingBanner>(
+    eldenRingBanner,
+  );
+  const [existingReviewId, setExistingReviewId] = useState<number | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
 
-  function handleSubmit() {
-    console.log({ rating, progress, review });
+  useEffect(() => {
+    if (!id) {
+      setLoading(false);
+      return;
+    }
+    let cancelled = false;
+    (async () => {
+      try {
+        const detail = await gamesApi.detail(id, token);
+        if (cancelled) return;
+        setTitle(detail.title);
+        if (detail.cover) setBannerImage({ uri: detail.cover });
+        if (detail.viewer?.review) {
+          setRating(detail.viewer.review.rating);
+          setReview(detail.viewer.review.text ?? '');
+          setExistingReviewId(detail.viewer.review.id);
+        }
+        if (detail.viewer?.library?.status) {
+          const mapped = STATUS_TO_PROGRESS[detail.viewer.library.status];
+          if (mapped) setProgress(mapped);
+        }
+      } catch {
+        showError('Não foi possível carregar os dados deste jogo.');
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [id, token]);
+
+  async function handleSubmit() {
+    if (!id || !token || submitting) return;
+    setSubmitting(true);
+    try {
+      if (existingReviewId) {
+        await reviewsApi.update(token, existingReviewId, { rating, text: review || null });
+      } else {
+        await reviewsApi.create(token, id, { rating, text: review || null });
+      }
+      await libraryApi.upsertGame(token, id, { status: PROGRESS_TO_STATUS[progress] });
+      showSuccess('Avaliação publicada!');
+      router.replace(`/games/${id}`);
+    } catch (error) {
+      showError(error instanceof ApiError ? error.message : 'Não foi possível publicar sua avaliação.');
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (
@@ -217,16 +294,25 @@ export default function RateGameScreen() {
       <StatusBar barStyle="light-content" backgroundColor={COLORS.bodyBackground} />
 
       <View style={styles.header}>
-        <Pressable onPress={() => router.back()} style={styles.backButton} hitSlop={8}>
+        <Pressable
+          onPress={() => (id ? router.replace(`/games/${id}`) : router.back())}
+          style={styles.backButton}
+          hitSlop={8}
+        >
           <Ionicons name="chevron-back" size={22} color={COLORS.text} />
         </Pressable>
 
         <View style={styles.headerText}>
           <Text style={styles.headerTitle}>AVALIAR</Text>
-          <Text style={styles.headerSubtitle}>ELDEN RING</Text>
+          <Text style={styles.headerSubtitle}>{title || '...'}</Text>
         </View>
       </View>
 
+      {loading ? (
+        <View style={styles.loadingBox}>
+          <ActivityIndicator color={COLORS.nexoBlue} />
+        </View>
+      ) : (
       <ScrollView
         contentContainerStyle={[
           styles.scrollContent,
@@ -237,14 +323,13 @@ export default function RateGameScreen() {
       >
         <View style={styles.bannerContainer}>
           <Image
-            source={eldenRingBanner}
+            source={bannerImage}
             style={styles.bannerImage}
             contentFit="cover"
             transition={300}
           />
           <View style={styles.bannerOverlay}>
-            <Text style={styles.bannerTitle}>ELDEN RING</Text>
-            <Text style={styles.bannerMeta}>FromSoftware • RPG • Open World</Text>
+            <Text style={styles.bannerTitle}>{title}</Text>
           </View>
         </View>
 
@@ -285,8 +370,13 @@ export default function RateGameScreen() {
           </View>
         </View>
 
-        <PrimaryButton title="PUBLICAR AVALIAÇÃO" onPress={handleSubmit} />
+        <PrimaryButton
+          title={submitting ? 'PUBLICANDO...' : 'PUBLICAR AVALIAÇÃO'}
+          onPress={handleSubmit}
+          style={{ opacity: submitting ? 0.6 : 1 }}
+        />
       </ScrollView>
+      )}
     </View>
   );
 }
@@ -295,6 +385,11 @@ const styles = StyleSheet.create({
   root: {
     flex: 1,
     backgroundColor: COLORS.bodyBackground,
+  },
+  loadingBox: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   header: {
     flexDirection: 'row',
@@ -344,7 +439,7 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   bannerOverlay: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     backgroundColor: 'rgba(0,0,0,0.55)',
     justifyContent: 'flex-end',
     padding: SPACING.md,

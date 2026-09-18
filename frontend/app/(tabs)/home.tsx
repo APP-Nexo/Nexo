@@ -1,58 +1,89 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   View,
   ScrollView,
   StyleSheet,
   Text,
   TextInput,
+  ActivityIndicator,
 } from 'react-native';
 import MaskedView from '@react-native-masked-view/masked-view';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useRouter } from 'expo-router';
 import Carousel from '@/components/Carrousel';
 import ActivityCard from '@/components/ActivityCard';
+import ErrorState from '@/components/ErrorState';
 import { COLORS, SPACING, FONT } from '@/constants';
-import { games } from '@/data/games';
-import eldenring from '../../assets/images/Elden_Ring_capa.jpg';
-import { useRouter } from 'expo-router';
+import { useAuth } from '@/context/AuthContext';
+import { gamesApi, type GameResponse } from '@/services/games';
+import { socialApi, type FeedItem } from '@/services/social';
+import { meApi } from '@/services/me';
+import type { Game } from '@/types/Game';
 
-const activities = [
-  {
-    id: 'a1',
-    userInitials: 'LK',
-    username: 'Lucas K.',
-    time: '5m atrás',
-    action: 'avaliou',
-    gameTitle: 'ELDEN RING II',
-    rating: 5,
-    comment: 'Melhor sequência de todos os tempos!',
-    gameImage: eldenring,
-  },
-  {
-    id: 'a2',
-    userInitials: 'RA',
-    username: 'Raquel A.',
-    time: '20m atrás',
-    action: 'completou',
-    gameTitle: 'ELDEN RING II',
-    rating: 4,
-    comment: 'História e jogabilidade incríveis.',
-    gameImage: eldenring,
-  },
-  {
-    id: 'a3',
-    userInitials: 'MM',
-    username: 'Mauro M.',
-    time: '1h atrás',
-    action: 'favoritou',
-    gameTitle: 'ELDEN RING II',
-    rating: 2,
-    gameImage: eldenring,
-  },
-];
+const FALLBACK_IMAGE = require('../../assets/images/Elden_Ring_capa.jpg');
+
+function toCarouselGame(g: GameResponse): Game {
+  return {
+    id: String(g.id),
+    title: g.title,
+    category: g.genres[0] ?? 'JOGO',
+    image: g.cover ?? FALLBACK_IMAGE,
+    rating: g.averageRating,
+    genres: g.genres,
+  };
+}
+
+function timeAgo(iso: string): string {
+  const diffMs = Date.now() - new Date(iso).getTime();
+  const minutes = Math.floor(diffMs / 60000);
+  if (minutes < 1) return 'agora';
+  if (minutes < 60) return `${minutes}m atrás`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h atrás`;
+  const days = Math.floor(hours / 24);
+  return `${days}d atrás`;
+}
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState('');
   const router = useRouter();
+  const { token } = useAuth();
+
+  const [trending, setTrending] = useState<Game[]>([]);
+  const [feed, setFeed] = useState<FeedItem[]>([]);
+  const [initials, setInitials] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    setError(false);
+    try {
+      const [trendingPage, feedPage, me] = await Promise.all([
+        gamesApi.trending(10),
+        token ? socialApi.feed(token) : Promise.resolve({ feed: [], nextCursor: null }),
+        token ? meApi.get(token).catch(() => null) : Promise.resolve(null),
+      ]);
+      setTrending(trendingPage.data.map(toCarouselGame));
+      setFeed(feedPage.feed);
+      if (me) setInitials(me.username.slice(0, 2).toUpperCase());
+    } catch {
+      setError(true);
+    } finally {
+      setLoading(false);
+    }
+  }, [token]);
+
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  function goToSearch() {
+    if (searchQuery.trim()) {
+      router.push({ pathname: '/(tabs)/nexo-avaliar-jogo', params: { q: searchQuery.trim() } });
+    }
+  }
+
   return (
     <View style={styles.container}>
       <ScrollView
@@ -61,7 +92,6 @@ export default function Home() {
       >
         <View style={styles.header}>
           <View style={styles.headerContent}>
-            {/* Logo NEXO com gradiente */}
             <MaskedView
               maskElement={
                 <View style={styles.maskContainer}>
@@ -76,10 +106,9 @@ export default function Home() {
                 style={[styles.gradient, { height: 30 * 1.25 }]}
               />
             </MaskedView>
-            {/* Fim do logo NEXO */}
             <View style={{ flex: 1 }} />
             <View style={styles.profileIcon}>
-              <Text style={styles.profileText}>KZ</Text>
+              <Text style={styles.profileText}>{initials || '••'}</Text>
             </View>
           </View>
         </View>
@@ -91,42 +120,67 @@ export default function Home() {
             placeholderTextColor={COLORS.textSecondary}
             value={searchQuery}
             onChangeText={setSearchQuery}
+            onSubmitEditing={goToSearch}
+            onKeyPress={(e) => {
+              if (e.nativeEvent.key === 'Enter') goToSearch();
+            }}
             autoCapitalize="none"
             autoCorrect={false}
           />
         </View>
 
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>EM ALTA</Text>
-          <Text style={styles.sectionLink}>VER TODOS</Text>
-        </View>
+        {loading ? (
+          <ActivityIndicator color={COLORS.nexoBlue} style={{ marginTop: SPACING.xl }} />
+        ) : error ? (
+          <View style={{ paddingHorizontal: 16 }}>
+            <ErrorState message="Não foi possível carregar a home." onRetry={load} />
+          </View>
+        ) : (
+          <>
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionTitle}>EM ALTA</Text>
+              <Text style={styles.sectionLink} onPress={() => router.push('/(tabs)/nexo-avaliar-jogo')}>
+                VER TODOS
+              </Text>
+            </View>
 
-        <Carousel
-          data={games}
-          style={{ marginBottom: 30 }}
-          onPressItem={(game) => router.push(`/games/${game.id}`)}
-        />
+            {trending.length === 0 ? (
+              <Text style={styles.emptyText}>Nenhum jogo em alta no momento.</Text>
+            ) : (
+              <Carousel
+                data={trending}
+                style={{ marginBottom: 30 }}
+                onPressItem={(game) => router.push(`/games/${game.id}`)}
+              />
+            )}
 
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>ATIVIDADES RECENTES</Text>
-          <Text style={styles.sectionLink}>VER TODAS</Text>
-        </View>
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionTitle}>ATIVIDADES RECENTES</Text>
+            </View>
 
-        <View style={styles.activitiesList}>
-          {activities.map((activity) => (
-            <ActivityCard
-              key={activity.id}
-              userInitials={activity.userInitials}
-              username={activity.username}
-              time={activity.time}
-              action={activity.action}
-              gameTitle={activity.gameTitle}
-              rating={activity.rating}
-              comment={activity.comment}
-              gameImage={activity.gameImage}
-            />
-          ))}
-        </View>
+            <View style={styles.activitiesList}>
+              {feed.length === 0 ? (
+                <Text style={styles.emptyText}>
+                  Nenhuma atividade ainda. Siga outros usuários ou avalie um jogo para ver algo aqui.
+                </Text>
+              ) : (
+                feed.map((item) => (
+                  <ActivityCard
+                    key={item.id}
+                    userInitials={item.userUsername.slice(0, 2).toUpperCase()}
+                    username={item.userUsername}
+                    time={timeAgo(item.createdAt)}
+                    action="avaliou"
+                    gameTitle={item.review.gameTitle}
+                    rating={item.review.rating}
+                    comment={item.review.text ?? undefined}
+                    gameImage={item.review.gameCover ? { uri: item.review.gameCover } : FALLBACK_IMAGE}
+                  />
+                ))
+              )}
+            </View>
+          </>
+        )}
       </ScrollView>
     </View>
   );
@@ -213,5 +267,12 @@ const styles = StyleSheet.create({
   activitiesList: {
     paddingHorizontal: 16,
     paddingBottom: 30,
+  },
+  emptyText: {
+    color: COLORS.textMuted,
+    fontFamily: FONT.family.body,
+    fontSize: FONT.small,
+    paddingHorizontal: 16,
+    marginBottom: SPACING.lg,
   },
 });

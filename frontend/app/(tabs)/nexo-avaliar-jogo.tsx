@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -6,28 +6,50 @@ import {
   TextInput,
   FlatList,
   Dimensions,
+  ActivityIndicator,
+  Pressable,
 } from 'react-native';
 import { Image } from 'expo-image';
-import eldenring from '../../assets/images/Elden_Ring_capa.jpg';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { COLORS, SPACING, FONT } from '../../constants';
+import ErrorState from '../../components/ErrorState';
+import { gamesApi, type GameResponse } from '../../services/games';
 
 const { width } = Dimensions.get('window');
 const CARD_WIDTH = (width - 48) / 2;
-
-const DATA = [
-  {
-    id: '1',
-    title: 'RESIDENT EVIL\nREQUIEM',
-    image: eldenring,
-  },
-  {
-    id: '2',
-    title: 'THE LAST OF US II',
-    image: eldenring,
-  },
-];
+const FALLBACK_IMAGE = require('../../assets/images/Elden_Ring_capa.jpg');
+const SEARCH_DEBOUNCE_MS = 400;
 
 export default function GamesScreen() {
+  const router = useRouter();
+  const { q: initialQuery } = useLocalSearchParams<{ q?: string }>();
+  const [query, setQuery] = useState(initialQuery ?? '');
+  const [games, setGames] = useState<GameResponse[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    if (initialQuery !== undefined) setQuery(initialQuery);
+  }, [initialQuery]);
+
+  const load = useCallback(async (q: string) => {
+    setLoading(true);
+    setError(false);
+    try {
+      const page = await gamesApi.list({ q: q.trim() || undefined, limit: 30 });
+      setGames(page.data);
+    } catch {
+      setError(true);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    const timer = setTimeout(() => load(query), SEARCH_DEBOUNCE_MS);
+    return () => clearTimeout(timer);
+  }, [query, load]);
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Jogos</Text>
@@ -36,43 +58,52 @@ export default function GamesScreen() {
         placeholder="Buscar jogo..."
         placeholderTextColor="#6B7280"
         style={styles.input}
+        value={query}
+        onChangeText={setQuery}
+        autoCapitalize="none"
+        autoCorrect={false}
       />
 
-      <FlatList
-        data={DATA}
-        keyExtractor={(item) => item.id}
-        numColumns={2}
-        columnWrapperStyle={{ justifyContent: 'space-between' }}
-        contentContainerStyle={{ paddingBottom: 40 }}
-        renderItem={({ item }) => (
-          <View style={styles.card}>
-            <View style={styles.imageContainer}>
-              <Image
-                source={item.image}
-                style={styles.image}
-                contentFit="cover"
-                transition={200}
-              />
-
-              <View style={styles.badge}>
-                <Text style={styles.badgeText}>A1</Text>
+      {loading && games.length === 0 ? (
+        <ActivityIndicator color={COLORS.nexoBlue} style={{ marginTop: SPACING.xl }} />
+      ) : error ? (
+        <ErrorState message="Não foi possível carregar os jogos." onRetry={() => load(query)} />
+      ) : games.length === 0 ? (
+        <Text style={styles.emptyText}>Nenhum jogo encontrado para "{query}".</Text>
+      ) : (
+        <FlatList
+          data={games}
+          keyExtractor={(item) => String(item.id)}
+          numColumns={2}
+          columnWrapperStyle={{ justifyContent: 'space-between' }}
+          contentContainerStyle={{ paddingBottom: 40 }}
+          renderItem={({ item }) => (
+            <Pressable style={styles.card} onPress={() => router.push(`/games/${item.id}`)}>
+              <View style={styles.imageContainer}>
+                <Image
+                  source={item.cover ? { uri: item.cover } : FALLBACK_IMAGE}
+                  style={styles.image}
+                  contentFit="cover"
+                  transition={200}
+                />
               </View>
-            </View>
 
-            <View style={styles.infoContainer}>
-              <Text
-                style={styles.cardTitle}
-                numberOfLines={2}
-              >
-                {item.title}
-              </Text>
-              <Text style={styles.genre}>AÇÃO • RPG</Text>
+              <View style={styles.infoContainer}>
+                <Text style={styles.cardTitle} numberOfLines={2}>
+                  {item.title.toUpperCase()}
+                </Text>
+                <Text style={styles.genre} numberOfLines={1}>
+                  {item.genres.slice(0, 2).join(' • ').toUpperCase() || 'SEM GÊNERO'}
+                </Text>
 
-              <Text style={styles.stars}>★★★★★</Text>
-            </View>
-          </View>
-        )}
-      />
+                <Text style={styles.stars}>
+                  {item.averageRating > 0 ? `★ ${item.averageRating.toFixed(1)}` : 'SEM NOTAS'}
+                </Text>
+              </View>
+            </Pressable>
+          )}
+        />
+      )}
     </View>
   );
 }
@@ -80,7 +111,7 @@ export default function GamesScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.bodyBackground,     
+    backgroundColor: COLORS.bodyBackground,
     paddingHorizontal: 16,
     paddingTop: 60,
   },
@@ -103,6 +134,14 @@ const styles = StyleSheet.create({
     borderColor: '#1F2A37',
   },
 
+  emptyText: {
+    color: COLORS.textMuted,
+    fontFamily: FONT.family.body,
+    fontSize: FONT.small,
+    marginTop: SPACING.xl,
+    textAlign: 'center',
+  },
+
   card: {
     width: CARD_WIDTH,
     marginBottom: 20,
@@ -122,23 +161,7 @@ const styles = StyleSheet.create({
   },
 
   imageContainer: {
-  position: 'relative',
-  },
-
-  badge: {
-    position: 'absolute',
-    top: 8,
-    left: 8,
-    backgroundColor: '#00E0FF',
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 6,
-  },
-
-  badgeText: {
-    color: '#000',
-    fontSize: 10,
-    fontWeight: '700',
+    position: 'relative',
   },
 
   infoContainer: {

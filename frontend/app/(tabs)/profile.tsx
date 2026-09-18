@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   ScrollView,
   StyleSheet,
@@ -6,51 +6,110 @@ import {
   View,
   Pressable,
   StatusBar,
+  ActivityIndicator,
   useWindowDimensions,
 } from 'react-native';
 import { Image } from 'expo-image';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { COLORS, SPACING, RADIUS, FONT } from '../../constants';
-import {
-  MOCK_USER,
-  MOCK_FAVORITES,
-  MOCK_RATINGS,
-  MOCK_ACTIVITIES,
-  MOCK_LOG,
-  MOCK_LISTS,
-  type FavoriteGame,
-  type RatingEntry,
-  type ActivityEntry,
-  type LogEntry,
-  type GameList,
-} from '../../data/profileMocks';
+import ErrorState from '../../components/ErrorState';
+import { useAuth } from '../../context/AuthContext';
+import { meApi, type MeResponse } from '../../services/me';
+import { usersApi, type PublicUserReview, type UserStatsDTO } from '../../services/users';
+import { libraryApi, type LibraryGameDTO, type LibraryListDTO } from '../../services/library';
 
 type ListTab = 'todas' | 'listas';
 
 const MAX_RATING = 5;
 const LOG_COLUMNS = 3;
+const FALLBACK_IMAGE = require('../../assets/images/Elden_Ring_capa.jpg');
 
 function renderStars(rating: number): string {
   const filled = Math.round(rating);
   return '★'.repeat(filled) + '☆'.repeat(MAX_RATING - filled);
 }
 
-function activityAccentColor(actionType: ActivityEntry['actionType']): string {
-  return actionType === 'favorite' ? COLORS.nexoPink : COLORS.nexoBlue;
-}
-
 function ratingBarColor(index: number): string {
   return index % 2 === 0 ? COLORS.nexoBlue : COLORS.nexoPink;
+}
+
+function timeAgo(iso: string): string {
+  const diffMs = Date.now() - new Date(iso).getTime();
+  const days = Math.floor(diffMs / 86_400_000);
+  if (days < 1) return 'hoje';
+  if (days === 1) return '1 dia atrás';
+  if (days < 30) return `${days} dias atrás`;
+  const months = Math.floor(days / 30);
+  return `${months} ${months === 1 ? 'mês' : 'meses'} atrás`;
 }
 
 export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
   const { width: screenWidth } = useWindowDimensions();
+  const { token, logout } = useAuth();
   const [activeTab, setActiveTab] = useState<ListTab>('todas');
 
+  const [me, setMe] = useState<MeResponse | null>(null);
+  const [stats, setStats] = useState<UserStatsDTO | null>(null);
+  const [favorites, setFavorites] = useState<LibraryGameDTO[]>([]);
+  const [reviews, setReviews] = useState<PublicUserReview[]>([]);
+  const [lists, setLists] = useState<LibraryListDTO[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+
   const logItemWidth =
-    (screenWidth - SPACING.lg * 2 - SPACING.xs * (LOG_COLUMNS - 1)) /
-    LOG_COLUMNS;
+    (screenWidth - SPACING.lg * 2 - SPACING.xs * (LOG_COLUMNS - 1)) / LOG_COLUMNS;
+
+  const load = useCallback(async () => {
+    if (!token) return;
+    setLoading(true);
+    setError(false);
+    try {
+      const meResponse = await meApi.get(token);
+      setMe(meResponse);
+
+      const [statsResponse, favoritesResponse, reviewsResponse, listsResponse] = await Promise.all([
+        usersApi.stats(meResponse.username),
+        libraryApi.favorites(token, { limit: 20 }),
+        usersApi.reviews(token, meResponse.username),
+        libraryApi.lists(token),
+      ]);
+      setStats(statsResponse);
+      setFavorites(favoritesResponse.games);
+      setReviews(reviewsResponse.reviews);
+      setLists(listsResponse.lists);
+    } catch {
+      setError(true);
+    } finally {
+      setLoading(false);
+    }
+  }, [token]);
+
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  if (loading) {
+    return (
+      <View style={[styles.screen, styles.centered, { paddingTop: insets.top }]}>
+        <ActivityIndicator color={COLORS.nexoBlue} />
+      </View>
+    );
+  }
+
+  if (error || !me) {
+    return (
+      <View style={[styles.screen, styles.centered, { paddingTop: insets.top, paddingHorizontal: SPACING.lg }]}>
+        <ErrorState message="Não foi possível carregar seu perfil." onRetry={load} />
+        <Pressable onPress={logout} style={{ marginTop: SPACING.lg }}>
+          <Text style={{ color: COLORS.textSecondary, fontFamily: FONT.family.display }}>SAIR DA CONTA</Text>
+        </Pressable>
+      </View>
+    );
+  }
+
+  const initials = me.username.slice(0, 2).toUpperCase();
+  const ratingsSorted = [...reviews].sort((a, b) => b.rating - a.rating).slice(0, 8);
 
   return (
     <View style={[styles.screen, { paddingTop: insets.top }]}>
@@ -63,20 +122,15 @@ export default function ProfileScreen() {
         <View style={styles.section}>
           <View style={styles.headerMain}>
             <View style={styles.avatar}>
-              <Text style={styles.avatarText}>{MOCK_USER.initials}</Text>
+              {me.profile?.photo ? (
+                <Image source={{ uri: me.profile.photo }} style={styles.avatarImage} contentFit="cover" />
+              ) : (
+                <Text style={styles.avatarText}>{initials}</Text>
+              )}
             </View>
 
             <View style={styles.userInfo}>
-              <View style={styles.usernameRow}>
-                <Text style={styles.username}>{MOCK_USER.username}</Text>
-                <View style={styles.levelBadge}>
-                  <Text style={styles.levelText}>{MOCK_USER.level}</Text>
-                </View>
-              </View>
-              <View style={styles.statusRow}>
-                <View style={styles.statusDot} />
-                <Text style={styles.statusText}>{MOCK_USER.status}</Text>
-              </View>
+              <Text style={styles.username}>{me.username}</Text>
             </View>
 
             <Pressable style={styles.editButton}>
@@ -84,60 +138,76 @@ export default function ProfileScreen() {
             </Pressable>
           </View>
 
-          <Text style={styles.bio}>{MOCK_USER.bio}</Text>
+          {me.profile?.bio ? <Text style={styles.bio}>{me.profile.bio}</Text> : null}
         </View>
 
         <View style={styles.statsRow}>
-          <StatBox value={MOCK_USER.stats.games} label="JOGOS" />
+          <StatBox value={stats?.totalGames ?? 0} label="JOGOS" />
           <View style={styles.statDivider} />
-          <StatBox value={MOCK_USER.stats.reviews} label="REVIEWS" />
+          <StatBox value={stats?.totalReviews ?? 0} label="REVIEWS" />
           <View style={styles.statDivider} />
-          <StatBox value={MOCK_USER.stats.following} label="SEGUINDO" />
+          <StatBox value={stats?.followingCount ?? 0} label="SEGUINDO" />
           <View style={styles.statDivider} />
-          <StatBox value={MOCK_USER.stats.followers} label="SEGUIDORES" />
+          <StatBox value={stats?.followersCount ?? 0} label="SEGUIDORES" />
         </View>
 
         <View style={styles.section}>
-          <SectionHeader title="JOGOS FAVORITOS" action="VER TODOS" />
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.horizontalList}
-          >
-            {MOCK_FAVORITES.map((game) => (
-              <FavoriteCard key={game.id} game={game} />
-            ))}
-          </ScrollView>
+          <SectionHeader title="JOGOS FAVORITOS" />
+          {favorites.length === 0 ? (
+            <Text style={styles.emptyText}>Você ainda não favoritou nenhum jogo.</Text>
+          ) : (
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.horizontalList}
+            >
+              {favorites.map((entry) => (
+                <FavoriteCard key={entry.id} entry={entry} />
+              ))}
+            </ScrollView>
+          )}
         </View>
 
         <View style={styles.section}>
-          <SectionHeader title="SUAS NOTAS" action="VER MAIS" />
-          <View style={styles.ratingChart}>
-            {MOCK_RATINGS.map((entry, index) => (
-              <RatingRow
-                key={entry.id}
-                entry={entry}
-                barColor={ratingBarColor(index)}
-                isLast={index === MOCK_RATINGS.length - 1}
-              />
-            ))}
-          </View>
+          <SectionHeader title="SUAS NOTAS" />
+          {ratingsSorted.length === 0 ? (
+            <Text style={styles.emptyText}>Você ainda não avaliou nenhum jogo.</Text>
+          ) : (
+            <View style={styles.ratingChart}>
+              {ratingsSorted.map((entry, index) => (
+                <RatingRow
+                  key={entry.id}
+                  entry={entry}
+                  barColor={ratingBarColor(index)}
+                  isLast={index === ratingsSorted.length - 1}
+                />
+              ))}
+            </View>
+          )}
         </View>
 
         <View style={styles.section}>
-          <SectionHeader title="ATIVIDADE RECENTE" action="VER TUDO" />
-          {MOCK_ACTIVITIES.map((item) => (
-            <ActivityItem key={item.id} item={item} />
-          ))}
+          <SectionHeader title="ATIVIDADE RECENTE" />
+          {reviews.length === 0 ? (
+            <Text style={styles.emptyText}>Nenhuma atividade recente.</Text>
+          ) : (
+            reviews.slice(0, 6).map((entry) => (
+              <ActivityItem key={entry.id} entry={entry} username={me.username} />
+            ))
+          )}
         </View>
 
         <View style={styles.section}>
-          <SectionHeader title="LOG DE JOGOS" action="VER TODOS" />
-          <View style={styles.logGrid}>
-            {MOCK_LOG.map((game) => (
-              <LogCard key={game.id} game={game} itemWidth={logItemWidth} />
-            ))}
-          </View>
+          <SectionHeader title="LOG DE JOGOS" />
+          {reviews.length === 0 ? (
+            <Text style={styles.emptyText}>Nenhum jogo no seu log ainda.</Text>
+          ) : (
+            <View style={styles.logGrid}>
+              {reviews.map((entry) => (
+                <LogCard key={entry.id} entry={entry} itemWidth={logItemWidth} />
+              ))}
+            </View>
+          )}
         </View>
 
         <View style={styles.section}>
@@ -173,15 +243,19 @@ export default function ProfileScreen() {
             </View>
           </View>
 
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.horizontalList}
-          >
-            {MOCK_LISTS.map((list) => (
-              <ListCard key={list.id} list={list} />
-            ))}
-          </ScrollView>
+          {lists.length === 0 ? (
+            <Text style={styles.emptyText}>Você ainda não criou nenhuma lista.</Text>
+          ) : (
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.horizontalList}
+            >
+              {lists.map((list) => (
+                <ListCard key={list.id} list={list} />
+              ))}
+            </ScrollView>
+          )}
         </View>
       </ScrollView>
     </View>
@@ -197,23 +271,26 @@ function StatBox({ value, label }: { value: number; label: string }) {
   );
 }
 
-function SectionHeader({ title, action }: { title: string; action?: string }) {
+function SectionHeader({ title }: { title: string }) {
   return (
     <View style={styles.sectionHeader}>
       <Text style={styles.sectionTitle}>{title}</Text>
-      {action && <Text style={styles.sectionAction}>{action} &gt;</Text>}
     </View>
   );
 }
 
-function FavoriteCard({ game }: { game: FavoriteGame }) {
+function FavoriteCard({ entry }: { entry: LibraryGameDTO }) {
   return (
     <View style={styles.favoriteCard}>
-      <Image source={game.image} style={styles.favoritePoster} contentFit="cover" />
+      <Image
+        source={entry.game.cover ? { uri: entry.game.cover } : FALLBACK_IMAGE}
+        style={styles.favoritePoster}
+        contentFit="cover"
+      />
       <Text style={styles.favoriteTitle} numberOfLines={2}>
-        {game.title}
+        {entry.game.title}
       </Text>
-      <Text style={styles.favoriteStars}>{renderStars(game.rating)}</Text>
+      <Text style={styles.favoriteStars}>{renderStars(entry.game.averageRating)}</Text>
     </View>
   );
 }
@@ -223,7 +300,7 @@ function RatingRow({
   barColor,
   isLast,
 }: {
-  entry: RatingEntry;
+  entry: PublicUserReview;
   barColor: string;
   isLast: boolean;
 }) {
@@ -234,7 +311,7 @@ function RatingRow({
       <View style={styles.ratingMeta}>
         <Text style={styles.ratingStars}>{renderStars(entry.rating)}</Text>
         <Text style={styles.ratingName} numberOfLines={1}>
-          {entry.title}
+          {entry.game.title}
         </Text>
       </View>
       <View style={styles.ratingBarTrack}>
@@ -242,57 +319,57 @@ function RatingRow({
           style={[styles.ratingBarFill, { width: fillPercent, backgroundColor: barColor }]}
         />
       </View>
-      <Text style={[styles.ratingValue, { color: barColor }]}>
-        {entry.rating.toFixed(1)}
-      </Text>
+      <Text style={[styles.ratingValue, { color: barColor }]}>{entry.rating.toFixed(1)}</Text>
     </View>
   );
 }
 
-function ActivityItem({ item }: { item: ActivityEntry }) {
-  const accentColor = activityAccentColor(item.actionType);
-
+function ActivityItem({ entry, username }: { entry: PublicUserReview; username: string }) {
   return (
     <View style={styles.activityCard}>
-      <View style={[styles.activityAccent, { backgroundColor: accentColor }]} />
-      <Image source={item.image} style={styles.activityThumb} contentFit="cover" />
+      <View style={[styles.activityAccent, { backgroundColor: COLORS.nexoBlue }]} />
+      <Image
+        source={entry.game.cover ? { uri: entry.game.cover } : FALLBACK_IMAGE}
+        style={styles.activityThumb}
+        contentFit="cover"
+      />
       <View style={styles.activityContent}>
-        <Text style={styles.activityTitle}>{item.gameTitle}</Text>
-        <Text style={[styles.activityStars, { color: accentColor }]}>
-          {renderStars(item.rating)}
+        <Text style={styles.activityTitle}>{entry.game.title}</Text>
+        <Text style={[styles.activityStars, { color: COLORS.nexoBlue }]}>
+          {renderStars(entry.rating)}
         </Text>
-        <Text style={styles.activityAction}>{item.actionLabel}</Text>
+        <Text style={styles.activityAction}>review publicada</Text>
         <Text style={styles.activityMeta}>
-          {MOCK_USER.username} • {item.date}
+          {username} • {timeAgo(entry.createdAt)}
         </Text>
       </View>
     </View>
   );
 }
 
-function LogCard({ game, itemWidth }: { game: LogEntry; itemWidth: number }) {
+function LogCard({ entry, itemWidth }: { entry: PublicUserReview; itemWidth: number }) {
   return (
     <View style={{ width: itemWidth }}>
       <Image
-        source={game.image}
+        source={entry.game.cover ? { uri: entry.game.cover } : FALLBACK_IMAGE}
         style={[styles.logPoster, { width: itemWidth }]}
         contentFit="cover"
       />
       <Text style={styles.logTitle} numberOfLines={2}>
-        {game.title}
+        {entry.game.title}
       </Text>
-      <Text style={styles.logStars}>{renderStars(game.rating)}</Text>
+      <Text style={styles.logStars}>{renderStars(entry.rating)}</Text>
     </View>
   );
 }
 
-function ListCard({ list }: { list: GameList }) {
+function ListCard({ list }: { list: LibraryListDTO }) {
   return (
     <View style={styles.listCard}>
       <Text style={styles.listCardTitle} numberOfLines={2}>
-        {list.title}
+        {list.name}
       </Text>
-      <Text style={styles.listCardCount}>{list.count} jogos</Text>
+      <Text style={styles.listCardCount}>{list.itemCount} jogos</Text>
     </View>
   );
 }
@@ -301,6 +378,10 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
     backgroundColor: COLORS.bodyBackground,
+  },
+  centered: {
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   content: {
     padding: SPACING.lg,
@@ -326,6 +407,11 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.surface2,
     justifyContent: 'center',
     alignItems: 'center',
+    overflow: 'hidden',
+  },
+  avatarImage: {
+    width: '100%',
+    height: '100%',
   },
   avatarText: {
     fontFamily: FONT.family.display,
@@ -337,46 +423,10 @@ const styles = StyleSheet.create({
     flex: 1,
     gap: SPACING.xxs,
   },
-  usernameRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: SPACING.xs,
-    flexWrap: 'wrap',
-  },
   username: {
     fontFamily: FONT.family.display,
     color: COLORS.text,
     fontSize: FONT.subtitle,
-    letterSpacing: 1,
-  },
-  levelBadge: {
-    borderWidth: 1,
-    borderColor: COLORS.nexoBlue,
-    borderRadius: RADIUS.round,
-    paddingHorizontal: SPACING.xs,
-    paddingVertical: 2,
-  },
-  levelText: {
-    fontFamily: FONT.family.body,
-    color: COLORS.nexoBlue,
-    fontSize: FONT.micro,
-    letterSpacing: 1,
-  },
-  statusRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: SPACING.xxs,
-  },
-  statusDot: {
-    width: 7,
-    height: 7,
-    borderRadius: 4,
-    backgroundColor: COLORS.statusGreen,
-  },
-  statusText: {
-    fontFamily: FONT.family.body,
-    color: COLORS.statusGreen,
-    fontSize: FONT.caption,
     letterSpacing: 1,
   },
   editButton: {
@@ -441,11 +491,10 @@ const styles = StyleSheet.create({
     fontSize: FONT.caption,
     letterSpacing: 2,
   },
-  sectionAction: {
+  emptyText: {
     fontFamily: FONT.family.body,
-    color: COLORS.textSecondary,
+    color: COLORS.textMuted,
     fontSize: FONT.small,
-    letterSpacing: 0.5,
   },
 
   horizontalList: {

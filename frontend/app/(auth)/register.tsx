@@ -12,20 +12,28 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { Link } from 'expo-router';
+import { Link, useRouter } from 'expo-router';
 import { COLORS, SPACING, FONT } from '../../constants';
 import Logo from '../../components/logo';
 import PrimaryButton from '@/components/PrimaryButton';
+import { useAuth } from '../../context/AuthContext';
+import { ApiError } from '../../services/api';
 
 export default function RegisterScreen() {
+  const router = useRouter();
+  const { register } = useAuth();
+  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  function handleRegister() {
-    if (!email.trim() || !password.trim() || !confirmPassword.trim()) {
+  async function handleRegister() {
+    if (isSubmitting) return;
+
+    if (!username.trim() || !email.trim() || !password.trim() || !confirmPassword.trim()) {
       Alert.alert('Campos obrigatórios', 'Preencha todos os campos.');
       return;
     }
@@ -35,7 +43,19 @@ export default function RegisterScreen() {
       return;
     }
 
-    Alert.alert('Cadastro', 'Depois vocês conectam com o backend.');
+    setIsSubmitting(true);
+    try {
+      await register(username.trim(), email.trim(), password, confirmPassword);
+      router.replace('/(tabs)/home');
+    } catch (error) {
+      const message =
+        error instanceof ApiError
+          ? error.message
+          : 'Não foi possível criar sua conta. Tente novamente.';
+      Alert.alert('Erro ao cadastrar', message);
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   function handleGoogleRegister() {
@@ -75,7 +95,20 @@ export default function RegisterScreen() {
 
               <View style={styles.form}>
                 <View style={styles.inputGroup}>
-                  <Text style={styles.label}>USUÁRIO OU E-MAIL</Text>
+                  <Text style={styles.label}>USUÁRIO</Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="seu_usuario"
+                    placeholderTextColor={COLORS.textSecondary}
+                    value={username}
+                    onChangeText={setUsername}
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                  />
+                </View>
+
+                <View style={styles.inputGroup}>
+                  <Text style={styles.label}>E-MAIL</Text>
                   <TextInput
                     style={styles.input}
                     placeholder="seu@email.com"
@@ -131,9 +164,9 @@ export default function RegisterScreen() {
                 </View>
 
                     <PrimaryButton
-                      title="CADASTRAR"
+                      title={isSubmitting ? 'CADASTRANDO...' : 'CADASTRAR'}
                       onPress={handleRegister}
-                      style={{ }}
+                      style={{ opacity: isSubmitting ? 0.6 : 1 }}
                     />
 
                 <View style={styles.dividerRow}>

@@ -3,6 +3,8 @@ import { Stack } from 'expo-router';
 import { Text, TextInput } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import LoadingScreen from '../components/LoadingScreen';
+import { AuthProvider, useAuth } from '../context/AuthContext';
+import { ToastProvider } from '../context/ToastContext';
 
 import {
   useFonts,
@@ -16,13 +18,22 @@ import {
 
 const MINIMUM_LOADING_MS = 5000;
 
-export default function Layout() {
+export default function RootLayout() {
+  return (
+    <AuthProvider>
+      <Layout />
+    </AuthProvider>
+  );
+}
+
+function Layout() {
   const [fontsLoaded] = useFonts({
     Orbitron_900Black,
     Rajdhani_500Medium,
     Rajdhani_600SemiBold,
   });
 
+  const { isLoading: isAuthLoading } = useAuth();
   const [isMinimumTimeDone, setIsMinimumTimeDone] = useState(false);
 
   useEffect(() => {
@@ -30,7 +41,7 @@ export default function Layout() {
     return () => clearTimeout(timer);
   }, []);
 
-  if (!fontsLoaded || !isMinimumTimeDone) {
+  if (!fontsLoaded || !isMinimumTimeDone || isAuthLoading) {
     return <LoadingScreen />;
   }
 
@@ -55,12 +66,14 @@ export default function Layout() {
 
   return (
     <SafeAreaProvider>
-      <Stack screenOptions={{ headerShown: false, animation: 'none' }}>
-        <Stack.Screen name="index" />
-        <Stack.Screen name="(auth)" />
-        <Stack.Screen name="(tabs)" />
-        <Stack.Screen name="games/[id]" />
-      </Stack>
+      <ToastProvider>
+        <Stack screenOptions={{ headerShown: false, animation: 'none' }}>
+          <Stack.Screen name="index" />
+          <Stack.Screen name="(auth)" />
+          <Stack.Screen name="(tabs)" />
+          <Stack.Screen name="games/[id]" />
+        </Stack>
+      </ToastProvider>
     </SafeAreaProvider>
   );
 }
