@@ -69,9 +69,12 @@ function Layout() {
       <ToastProvider>
         <Stack screenOptions={{ headerShown: false, animation: 'none' }}>
           <Stack.Screen name="index" />
-          <Stack.Screen name="(auth)" />
+          <Stack.Screen name="(auth)/login" />
+          <Stack.Screen name="(auth)/register" />
           <Stack.Screen name="(tabs)" />
           <Stack.Screen name="games/[id]" />
+          <Stack.Screen name="user/[username]" />
+          <Stack.Screen name="list/[id]" />
         </Stack>
       </ToastProvider>
     </SafeAreaProvider>

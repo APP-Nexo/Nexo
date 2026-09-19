@@ -27,13 +27,16 @@ type Props = {
 
 const CARD_SPACING = SPACING.md;
 const AUTO_SCROLL_INTERVAL = 7000;
+// The list is rendered as many looped copies of `data` so both manual swipes
+// and autoplay can keep moving in one direction without ever hitting a real
+// edge; FlatList virtualization keeps this cheap regardless of the multiplier.
+const LOOP_COUNT = 50;
 
 function Carousel({ data, style, onPressItem }: Props) {
     const { width } = useWindowDimensions();
 
     const scrollX = useRef(new Animated.Value(0)).current;
     const flatListRef = useRef<Animated.FlatList<Game>>(null);
-    const currentIndex = useRef(0);
 
     const CARD_WIDTH = useMemo(() => width * 0.68, [width]);
     const CARD_HEIGHT = useMemo(() => CARD_WIDTH * 1.3, [CARD_WIDTH]);
@@ -41,6 +44,23 @@ function Carousel({ data, style, onPressItem }: Props) {
         () => CARD_WIDTH + CARD_SPACING,
         [CARD_WIDTH]
     );
+
+    const loopedData = useMemo(
+        () =>
+            data.length
+                ? Array.from({ length: data.length * LOOP_COUNT }, (_, i) => data[i % data.length])
+                : [],
+        [data]
+    );
+    const startIndex = useMemo(
+        () => (data.length ? Math.floor(LOOP_COUNT / 2) * data.length : 0),
+        [data.length]
+    );
+    const currentIndex = useRef(startIndex);
+
+    useEffect(() => {
+        currentIndex.current = startIndex;
+    }, [startIndex]);
 
     // animação de scroll
     const handleScroll = useMemo(
@@ -52,14 +72,14 @@ function Carousel({ data, style, onPressItem }: Props) {
         [scrollX]
     );
 
-    // auto scroll
+    // auto scroll (sempre avança; o loop de dados faz parecer infinito)
     useEffect(() => {
-        if (!data?.length) return;
+        if (!loopedData.length) return;
 
         const interval = setInterval(() => {
             currentIndex.current =
-                currentIndex.current + 1 >= data.length
-                    ? 0
+                currentIndex.current + 1 >= loopedData.length
+                    ? startIndex
                     : currentIndex.current + 1;
 
             flatListRef.current?.scrollToOffset({
@@ -69,11 +89,10 @@ function Carousel({ data, style, onPressItem }: Props) {
         }, AUTO_SCROLL_INTERVAL);
 
         return () => clearInterval(interval);
-    }, [data?.length, ITEM_SIZE]);
+    }, [loopedData.length, ITEM_SIZE, startIndex]);
 
     const keyExtractor = useCallback(
-        (item: Game, index: number) =>
-            item.id ? item.id.toString() : index.toString(),
+        (item: Game, index: number) => `${item.id ?? index}-${index}`,
         []
     );
 
@@ -162,7 +181,7 @@ function Carousel({ data, style, onPressItem }: Props) {
         <View style={style}>
             <Animated.FlatList
                 ref={flatListRef}
-                data={data}
+                data={loopedData}
                 horizontal
                 keyExtractor={keyExtractor}
                 renderItem={renderItem}
@@ -177,6 +196,7 @@ function Carousel({ data, style, onPressItem }: Props) {
                 onScroll={handleScroll}
                 scrollEventThrottle={16}
                 getItemLayout={getItemLayout}
+                initialScrollIndex={startIndex}
                 initialNumToRender={3}
                 maxToRenderPerBatch={5}
                 windowSize={5}

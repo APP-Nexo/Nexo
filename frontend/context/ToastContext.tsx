@@ -1,7 +1,7 @@
 import { createContext, useCallback, useContext, useRef, useState, type ReactNode } from 'react';
 import { Animated, Pressable, StyleSheet, Text } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { COLORS, FONT, RADIUS, SPACING } from '../constants';
+import { COLORS, FONT, NATIVE_DRIVER, RADIUS, SPACING } from '../constants';
 
 type ToastType = 'error' | 'success';
 
@@ -34,8 +34,8 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       hideTimer.current = null;
     }
     Animated.parallel([
-      Animated.timing(opacity, { toValue: 0, duration: 180, useNativeDriver: true }),
-      Animated.timing(translateY, { toValue: -16, duration: 180, useNativeDriver: true }),
+      Animated.timing(opacity, { toValue: 0, duration: 180, useNativeDriver: NATIVE_DRIVER }),
+      Animated.timing(translateY, { toValue: -16, duration: 180, useNativeDriver: NATIVE_DRIVER }),
     ]).start(() => setToast(null));
   }, [opacity, translateY]);
 
@@ -46,8 +46,8 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       opacity.setValue(0);
       translateY.setValue(-16);
       Animated.parallel([
-        Animated.timing(opacity, { toValue: 1, duration: 220, useNativeDriver: true }),
-        Animated.timing(translateY, { toValue: 0, duration: 220, useNativeDriver: true }),
+        Animated.timing(opacity, { toValue: 1, duration: 220, useNativeDriver: NATIVE_DRIVER }),
+        Animated.timing(translateY, { toValue: 0, duration: 220, useNativeDriver: NATIVE_DRIVER }),
       ]).start();
 
       if (hideTimer.current) clearTimeout(hideTimer.current);
@@ -64,8 +64,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       {children}
       {toast && (
         <Animated.View
-          pointerEvents="box-none"
-          style={[styles.host, { paddingTop: insets.top + SPACING.xs }]}
+          style={[styles.host, { paddingTop: insets.top + SPACING.xs, pointerEvents: 'box-none' }]}
         >
           <Animated.View style={{ opacity, transform: [{ translateY }] }}>
             <Pressable

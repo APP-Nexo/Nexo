@@ -6,6 +6,7 @@ import {
   Text,
   TextInput,
   ActivityIndicator,
+  Pressable,
 } from 'react-native';
 import MaskedView from '@react-native-masked-view/masked-view';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -107,9 +108,9 @@ export default function Home() {
               />
             </MaskedView>
             <View style={{ flex: 1 }} />
-            <View style={styles.profileIcon}>
+            <Pressable onPress={() => router.push('/(tabs)/profile')} style={styles.profileIcon}>
               <Text style={styles.profileText}>{initials || '••'}</Text>
-            </View>
+            </Pressable>
           </View>
         </View>
 
@@ -175,6 +176,7 @@ export default function Home() {
                     rating={item.review.rating}
                     comment={item.review.text ?? undefined}
                     gameImage={item.review.gameCover ? { uri: item.review.gameCover } : FALLBACK_IMAGE}
+                    onPressUser={() => router.push(`/user/${item.userUsername}`)}
                   />
                 ))
               )}

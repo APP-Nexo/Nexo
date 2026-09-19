@@ -3,6 +3,7 @@ import {
   View,
   Text,
   Image,
+  Pressable,
   StyleSheet,
   ImageSourcePropType,
 } from 'react-native';
@@ -17,6 +18,7 @@ interface ActivityCardProps {
   rating: number;
   comment?: string;
   gameImage: ImageSourcePropType;
+  onPressUser?: () => void;
 }
 
 export default function ActivityCard({
@@ -28,6 +30,7 @@ export default function ActivityCard({
   rating,
   comment,
   gameImage,
+  onPressUser,
 }: ActivityCardProps) {
   const renderStars = () => {
     const normalizedRating = Math.max(0, Math.min(5, rating));
@@ -42,7 +45,12 @@ export default function ActivityCard({
 
   return (
     <View style={styles.card}>
-      <View style={styles.header}>
+      <Pressable
+        style={styles.header}
+        onPress={onPressUser}
+        disabled={!onPressUser}
+        hitSlop={4}
+      >
         <View style={styles.avatar}>
           <Text style={styles.avatarText}>{userInitials}</Text>
         </View>
@@ -53,7 +61,7 @@ export default function ActivityCard({
             {action} • {time}
           </Text>
         </View>
-      </View>
+      </Pressable>
 
       <View style={styles.body}>
         <Image source={gameImage} style={styles.gameImage} resizeMode="cover" />

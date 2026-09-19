@@ -1,6 +1,6 @@
 import { useRef, useEffect } from 'react';
 import { View, StyleSheet, Animated, Easing } from 'react-native';
-import { COLORS } from '../constants';
+import { COLORS, NATIVE_DRIVER } from '../constants';
 import Logo from './logo';
 
 const PULSE_DURATION = 1100;
@@ -17,13 +17,13 @@ export default function LoadingScreen() {
             toValue: 1.06,
             duration: PULSE_DURATION,
             easing: Easing.inOut(Easing.ease),
-            useNativeDriver: true,
+            useNativeDriver: NATIVE_DRIVER,
           }),
           Animated.timing(opacity, {
             toValue: 0.6,
             duration: PULSE_DURATION,
             easing: Easing.inOut(Easing.ease),
-            useNativeDriver: true,
+            useNativeDriver: NATIVE_DRIVER,
           }),
         ]),
         Animated.parallel([
@@ -31,13 +31,13 @@ export default function LoadingScreen() {
             toValue: 1,
             duration: PULSE_DURATION,
             easing: Easing.inOut(Easing.ease),
-            useNativeDriver: true,
+            useNativeDriver: NATIVE_DRIVER,
           }),
           Animated.timing(opacity, {
             toValue: 1,
             duration: PULSE_DURATION,
             easing: Easing.inOut(Easing.ease),
-            useNativeDriver: true,
+            useNativeDriver: NATIVE_DRIVER,
           }),
         ]),
       ])

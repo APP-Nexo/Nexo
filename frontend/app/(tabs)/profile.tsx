@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import {
   ScrollView,
   StyleSheet,
@@ -10,15 +10,16 @@ import {
   useWindowDimensions,
 } from 'react-native';
 import { Image } from 'expo-image';
+import { Ionicons } from '@expo/vector-icons';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { COLORS, SPACING, RADIUS, FONT } from '../../constants';
 import ErrorState from '../../components/ErrorState';
+import CreateListModal from '../../components/CreateListModal';
 import { useAuth } from '../../context/AuthContext';
 import { meApi, type MeResponse } from '../../services/me';
 import { usersApi, type PublicUserReview, type UserStatsDTO } from '../../services/users';
 import { libraryApi, type LibraryGameDTO, type LibraryListDTO } from '../../services/library';
-
-type ListTab = 'todas' | 'listas';
 
 const MAX_RATING = 5;
 const LOG_COLUMNS = 3;
@@ -45,9 +46,15 @@ function timeAgo(iso: string): string {
 
 export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
+  const router = useRouter();
   const { width: screenWidth } = useWindowDimensions();
   const { token, logout } = useAuth();
-  const [activeTab, setActiveTab] = useState<ListTab>('todas');
+  const [createListOpen, setCreateListOpen] = useState(false);
+
+  async function handleLogout() {
+    await logout();
+    router.replace('/(auth)/login');
+  }
 
   const [me, setMe] = useState<MeResponse | null>(null);
   const [stats, setStats] = useState<UserStatsDTO | null>(null);
@@ -56,13 +63,17 @@ export default function ProfileScreen() {
   const [lists, setLists] = useState<LibraryListDTO[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const hasLoadedOnce = useRef(false);
 
   const logItemWidth =
     (screenWidth - SPACING.lg * 2 - SPACING.xs * (LOG_COLUMNS - 1)) / LOG_COLUMNS;
 
   const load = useCallback(async () => {
     if (!token) return;
-    setLoading(true);
+    // Only show the full-screen spinner on the very first load; a refocus
+    // (e.g. coming back from adding a game to a list) refreshes quietly so
+    // the screen doesn't flash back to a loading state the user already saw.
+    if (!hasLoadedOnce.current) setLoading(true);
     setError(false);
     try {
       const meResponse = await meApi.get(token);
@@ -82,12 +93,15 @@ export default function ProfileScreen() {
       setError(true);
     } finally {
       setLoading(false);
+      hasLoadedOnce.current = true;
     }
   }, [token]);
 
-  useEffect(() => {
-    load();
-  }, [load]);
+  useFocusEffect(
+    useCallback(() => {
+      load();
+    }, [load]),
+  );
 
   if (loading) {
     return (
@@ -101,7 +115,7 @@ export default function ProfileScreen() {
     return (
       <View style={[styles.screen, styles.centered, { paddingTop: insets.top, paddingHorizontal: SPACING.lg }]}>
         <ErrorState message="Não foi possível carregar seu perfil." onRetry={load} />
-        <Pressable onPress={logout} style={{ marginTop: SPACING.lg }}>
+        <Pressable onPress={handleLogout} style={{ marginTop: SPACING.lg }}>
           <Text style={{ color: COLORS.textSecondary, fontFamily: FONT.family.display }}>SAIR DA CONTA</Text>
         </Pressable>
       </View>
@@ -130,11 +144,20 @@ export default function ProfileScreen() {
             </View>
 
             <View style={styles.userInfo}>
-              <Text style={styles.username}>{me.username}</Text>
+              <Text style={styles.username} numberOfLines={1} ellipsizeMode="tail">
+                {me.username}
+              </Text>
             </View>
+          </View>
 
+          <View style={styles.headerActions}>
             <Pressable style={styles.editButton}>
               <Text style={styles.editButtonText}>EDITAR</Text>
+            </Pressable>
+
+            <Pressable style={styles.logoutButton} onPress={handleLogout} hitSlop={8}>
+              <Ionicons name="log-out-outline" size={16} color={COLORS.nexoPink} />
+              <Text style={styles.logoutButtonText}>SAIR</Text>
             </Pressable>
           </View>
 
@@ -213,34 +236,10 @@ export default function ProfileScreen() {
         <View style={styles.section}>
           <View style={styles.listsHeaderRow}>
             <Text style={styles.sectionTitle}>LISTAS</Text>
-            <View style={styles.listsTabs}>
-              <Pressable
-                style={[styles.listTab, activeTab === 'todas' && styles.listTabActive]}
-                onPress={() => setActiveTab('todas')}
-              >
-                <Text
-                  style={[
-                    styles.listTabText,
-                    activeTab === 'todas' && styles.listTabTextActive,
-                  ]}
-                >
-                  TODAS
-                </Text>
-              </Pressable>
-              <Pressable
-                style={[styles.listTab, activeTab === 'listas' && styles.listTabActive]}
-                onPress={() => setActiveTab('listas')}
-              >
-                <Text
-                  style={[
-                    styles.listTabText,
-                    activeTab === 'listas' && styles.listTabTextActive,
-                  ]}
-                >
-                  LISTAS
-                </Text>
-              </Pressable>
-            </View>
+            <Pressable style={styles.newListButton} onPress={() => setCreateListOpen(true)}>
+              <Ionicons name="add" size={14} color={COLORS.nexoBlue} />
+              <Text style={styles.newListButtonText}>NOVA</Text>
+            </Pressable>
           </View>
 
           {lists.length === 0 ? (
@@ -258,6 +257,12 @@ export default function ProfileScreen() {
           )}
         </View>
       </ScrollView>
+
+      <CreateListModal
+        visible={createListOpen}
+        onClose={() => setCreateListOpen(false)}
+        onCreated={(list) => setLists((prev) => [list, ...prev])}
+      />
     </View>
   );
 }
@@ -364,13 +369,14 @@ function LogCard({ entry, itemWidth }: { entry: PublicUserReview; itemWidth: num
 }
 
 function ListCard({ list }: { list: LibraryListDTO }) {
+  const router = useRouter();
   return (
-    <View style={styles.listCard}>
+    <Pressable style={styles.listCard} onPress={() => router.push(`/list/${list.id}`)}>
       <Text style={styles.listCardTitle} numberOfLines={2}>
         {list.name}
       </Text>
       <Text style={styles.listCardCount}>{list.itemCount} jogos</Text>
-    </View>
+    </Pressable>
   );
 }
 
@@ -422,23 +428,47 @@ const styles = StyleSheet.create({
   userInfo: {
     flex: 1,
     gap: SPACING.xxs,
+    minWidth: 0,
   },
   username: {
     fontFamily: FONT.family.display,
     color: COLORS.text,
-    fontSize: FONT.subtitle,
+    fontSize: FONT.text,
     letterSpacing: 1,
   },
+  headerActions: {
+    flexDirection: 'row',
+    gap: SPACING.xs,
+  },
   editButton: {
+    flex: 1,
+    alignItems: 'center',
     borderWidth: 1,
     borderColor: COLORS.borderLight,
     borderRadius: RADIUS.md,
     paddingHorizontal: SPACING.sm,
-    paddingVertical: SPACING.xxs,
+    paddingVertical: SPACING.xs,
+  },
+  logoutButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: SPACING.xxs,
+    borderRadius: RADIUS.md,
+    borderWidth: 1,
+    borderColor: COLORS.borderLight,
+    paddingHorizontal: SPACING.sm,
+    paddingVertical: SPACING.xs,
   },
   editButtonText: {
     fontFamily: FONT.family.display,
     color: COLORS.textSecondary,
+    fontSize: FONT.caption,
+    letterSpacing: 1,
+  },
+  logoutButtonText: {
+    fontFamily: FONT.family.display,
+    color: COLORS.nexoPink,
     fontSize: FONT.caption,
     letterSpacing: 1,
   },
@@ -641,29 +671,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  listsTabs: {
+  newListButton: {
     flexDirection: 'row',
-    gap: SPACING.xxs,
-  },
-  listTab: {
+    alignItems: 'center',
+    gap: 2,
     paddingHorizontal: SPACING.sm,
-    paddingVertical: 3,
+    paddingVertical: 4,
     borderRadius: RADIUS.md,
     borderWidth: 1,
-    borderColor: COLORS.border,
-  },
-  listTabActive: {
     borderColor: COLORS.nexoBlue,
-    backgroundColor: COLORS.surface2,
   },
-  listTabText: {
+  newListButtonText: {
     fontFamily: FONT.family.display,
-    color: COLORS.textMuted,
+    color: COLORS.nexoBlue,
     fontSize: FONT.micro,
     letterSpacing: 1,
-  },
-  listTabTextActive: {
-    color: COLORS.nexoBlue,
   },
   listCard: {
     width: 140,

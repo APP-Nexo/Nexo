@@ -17,11 +17,13 @@ import FeaturedGame from '@/components/FeaturedGame';
 import ActivityCard from '@/components/ActivityCard';
 import PrimaryButton from '@/components/PrimaryButton';
 import ErrorState from '@/components/ErrorState';
+import AddToListModal from '@/components/AddToListModal';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
 import { gamesApi, type GameDetailResponse, type GameReviewResponse, type GameResponse } from '@/services/games';
 import { libraryApi } from '@/services/library';
 import { ApiError } from '@/services/api';
+import { useSafeBack } from '@/hooks/useSafeBack';
 
 const FALLBACK_IMAGE = require('../../assets/images/Elden_Ring_capa.jpg');
 
@@ -45,6 +47,7 @@ function initialsOf(username: string): string {
 export default function GameDetails() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
+  const goBack = useSafeBack();
   const insets = useSafeAreaInsets();
   const { token } = useAuth();
   const { showError } = useToast();
@@ -57,6 +60,7 @@ export default function GameDetails() {
   const [favoriteSaving, setFavoriteSaving] = useState(false);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
+  const [listModalOpen, setListModalOpen] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -112,7 +116,7 @@ export default function GameDetails() {
     return (
       <View style={[styles.root, styles.centered, { paddingTop: insets.top }]}>
         <ErrorState message="Não foi possível carregar este jogo." onRetry={load} />
-        <Pressable onPress={() => router.back()} style={{ marginTop: SPACING.md }}>
+        <Pressable onPress={goBack} style={{ marginTop: SPACING.md }}>
           <Text style={{ color: COLORS.nexoBlue, fontFamily: FONT.family.display }}>VOLTAR</Text>
         </Pressable>
       </View>
@@ -140,7 +144,7 @@ export default function GameDetails() {
           rating={game.averageRating}
           genres={game.genres}
           topInset={insets.top}
-          onBackPress={() => router.back()}
+          onBackPress={goBack}
           onFavoritePress={toggleFavorite}
           isFavorited={isFavorite}
         />
@@ -155,6 +159,10 @@ export default function GameDetails() {
               })
             }
           />
+
+          <Pressable style={styles.addToListButton} onPress={() => setListModalOpen(true)}>
+            <Text style={styles.addToListText}>+ ADICIONAR À LISTA</Text>
+          </Pressable>
 
           <View style={styles.statsRow}>
             {stats.map((stat, index) => (
@@ -201,6 +209,7 @@ export default function GameDetails() {
                   rating={review.rating}
                   comment={review.text ?? undefined}
                   gameImage={gameImageSource}
+                  onPressUser={() => router.push(`/user/${review.user.username}`)}
                 />
               ))
             )}
@@ -238,6 +247,12 @@ export default function GameDetails() {
           )}
         </View>
       </ScrollView>
+
+      <AddToListModal
+        visible={listModalOpen}
+        onClose={() => setListModalOpen(false)}
+        gameId={game.id}
+      />
     </View>
   );
 }
@@ -259,6 +274,20 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACING.gutter,
     paddingTop: SPACING.lg,
     gap: SPACING.xl,
+  },
+  addToListButton: {
+    height: 48,
+    borderRadius: RADIUS.lg,
+    borderWidth: 1,
+    borderColor: COLORS.borderLight,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  addToListText: {
+    fontFamily: FONT.family.display,
+    color: COLORS.textSecondary,
+    fontSize: FONT.caption,
+    letterSpacing: 1,
   },
   statsRow: {
     flexDirection: 'row',

@@ -148,7 +148,7 @@ export default function FeaturedGame({
       <ImageBackground
         source={imageSource}
         style={styles.background}
-        imageStyle={styles.image}
+        resizeMode="cover"
       >
         <LinearGradient colors={GRADIENT_COLORS} style={styles.overlay} />
 
@@ -175,9 +175,6 @@ const styles = StyleSheet.create({
   background: {
     flex: 1,
     justifyContent: 'space-between',
-  },
-  image: {
-    resizeMode: 'cover',
   },
   overlay: {
     ...StyleSheet.absoluteFill,
