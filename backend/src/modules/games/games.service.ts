@@ -8,6 +8,7 @@ import {
     type IgdbSyncOptions,
     igdbClient,
 } from '../../shared/integrations/igdb/index.js';
+import { translateToPortuguese } from '../../shared/integrations/translate/translate.client.js';
 import prisma from '../../shared/utils/prisma/prisma_conn.js';
 import type {
     GameDetailResponse,
@@ -105,6 +106,17 @@ function toGameResponse(game: Game): GameResponse {
         averageRating: game.averageRating,
         cachedAt: iso(game.cachedAt),
     };
+}
+
+async function translateDescriptions(games: IgdbGame[]): Promise<IgdbGame[]> {
+    const translated: IgdbGame[] = [];
+    for (const game of games) {
+        translated.push({
+            ...game,
+            description: game.description ? await translateToPortuguese(game.description) : game.description,
+        });
+    }
+    return translated;
 }
 
 function remoteGameData(game: IgdbGame, cachedAt: Date) {
@@ -356,7 +368,8 @@ export class GamesService {
         const fetched = query
             ? await this.igdb.searchGames(query, limit)
             : await this.igdb.getTrendingGames(limit);
-        const games = [...new Map(fetched.map((game) => [game.externalId, game])).values()];
+        const deduped = [...new Map(fetched.map((game) => [game.externalId, game])).values()];
+        const games = await translateDescriptions(deduped);
 
         if (games.length > 0) {
             const cachedAt = this.now();
