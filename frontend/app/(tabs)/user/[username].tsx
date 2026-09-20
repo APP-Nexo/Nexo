@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import {
   ScrollView,
   StyleSheet,
@@ -10,24 +10,39 @@ import {
 } from 'react-native';
 import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
+import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import { COLORS, SPACING, RADIUS, FONT } from '../../constants';
-import ErrorState from '../../components/ErrorState';
-import { useAuth } from '../../context/AuthContext';
-import { useToast } from '../../context/ToastContext';
-import { meApi } from '../../services/me';
-import { usersApi, type UserPublicProfile, type UserStatsDTO, type PublicUserReview, type PublicUserList } from '../../services/users';
-import { socialApi } from '../../services/social';
-import { ApiError } from '../../services/api';
-import { useSafeBack } from '../../hooks/useSafeBack';
+import { COLORS, SPACING, RADIUS, FONT } from '@/constants';
+import ErrorState from '@/components/ErrorState';
+import GameCover from '@/components/GameCover';
+import { useAuth } from '@/context/AuthContext';
+import { useToast } from '@/context/ToastContext';
+import { meApi } from '@/services/me';
+import { usersApi, type UserPublicProfile, type UserStatsDTO, type PublicUserReview, type PublicUserList } from '@/services/users';
+import { socialApi } from '@/services/social';
+import { ApiError } from '@/services/api';
+import { useSafeBack } from '@/hooks/useSafeBack';
 
 const MAX_RATING = 5;
-const FALLBACK_IMAGE = require('../../assets/images/Elden_Ring_capa.jpg');
+const PREVIEW_COUNT = 5;
 
 function renderStars(rating: number): string {
   const filled = Math.round(rating);
   return '★'.repeat(filled) + '☆'.repeat(MAX_RATING - filled);
+}
+
+function ratingBarColor(index: number): string {
+  return index % 2 === 0 ? COLORS.nexoBlue : COLORS.nexoPink;
+}
+
+function timeAgo(iso: string): string {
+  const diffMs = Date.now() - new Date(iso).getTime();
+  const days = Math.floor(diffMs / 86_400_000);
+  if (days < 1) return 'hoje';
+  if (days === 1) return '1 dia atrás';
+  if (days < 30) return `${days} dias atrás`;
+  const months = Math.floor(days / 30);
+  return `${months} ${months === 1 ? 'mês' : 'meses'} atrás`;
 }
 
 export default function PublicProfileScreen() {
@@ -41,15 +56,23 @@ export default function PublicProfileScreen() {
   const [profile, setProfile] = useState<UserPublicProfile | null>(null);
   const [stats, setStats] = useState<UserStatsDTO | null>(null);
   const [reviews, setReviews] = useState<PublicUserReview[]>([]);
+  const [reviewsCursor, setReviewsCursor] = useState<number | null>(null);
+  const [reviewsLoadingMore, setReviewsLoadingMore] = useState(false);
   const [lists, setLists] = useState<PublicUserList[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [followSaving, setFollowSaving] = useState(false);
   const [redirecting, setRedirecting] = useState(false);
+  const [notasExpanded, setNotasExpanded] = useState(false);
+  const [atividadeExpanded, setAtividadeExpanded] = useState(false);
+  const hasLoadedOnce = useRef(false);
 
   const load = useCallback(async () => {
     if (!token || !username) return;
-    setLoading(true);
+    // Only show the full-screen spinner on the very first load; a refocus
+    // refreshes quietly so the screen doesn't flash back to a loading state
+    // the user already saw.
+    if (!hasLoadedOnce.current) setLoading(true);
     setError(false);
     try {
       const me = await meApi.get(token);
@@ -68,17 +91,41 @@ export default function PublicProfileScreen() {
       setProfile(profileRes);
       setStats(statsRes);
       setReviews(reviewsRes.reviews);
+      setReviewsCursor(reviewsRes.nextCursor);
       setLists(listsRes.lists);
     } catch {
       setError(true);
     } finally {
       setLoading(false);
+      hasLoadedOnce.current = true;
     }
   }, [token, username, router]);
 
-  useEffect(() => {
-    load();
-  }, [load]);
+  useFocusEffect(
+    useCallback(() => {
+      load();
+    }, [load]),
+  );
+
+  async function loadMoreReviews() {
+    if (!token || !username || reviewsCursor === null || reviewsLoadingMore) return;
+    setReviewsLoadingMore(true);
+    try {
+      const page = await usersApi.reviews(token, username, reviewsCursor);
+      setReviews((prev) => [...prev, ...page.reviews]);
+      setReviewsCursor(page.nextCursor);
+    } catch {
+      // best-effort; the button just stays put so the user can retry
+    } finally {
+      setReviewsLoadingMore(false);
+    }
+  }
+
+  function toggleAtividadeExpanded() {
+    const next = !atividadeExpanded;
+    setAtividadeExpanded(next);
+    if (next) loadMoreReviews();
+  }
 
   async function toggleFollow() {
     if (!token || !profile || followSaving) return;
@@ -121,6 +168,9 @@ export default function PublicProfileScreen() {
   }
 
   const initials = profile.username.slice(0, 2).toUpperCase();
+  const ratingsSorted = [...reviews].sort((a, b) => b.rating - a.rating);
+  const ratingsVisible = notasExpanded ? ratingsSorted : ratingsSorted.slice(0, PREVIEW_COUNT);
+  const activityVisible = atividadeExpanded ? reviews : reviews.slice(0, PREVIEW_COUNT);
 
   return (
     <View style={[styles.screen, { paddingTop: insets.top }]}>
@@ -170,36 +220,68 @@ export default function PublicProfileScreen() {
           <View style={styles.statDivider} />
           <StatBox value={stats?.totalReviews ?? 0} label="REVIEWS" />
           <View style={styles.statDivider} />
-          <StatBox value={profile.followingCount} label="SEGUINDO" />
+          <StatBox
+            value={profile.followingCount}
+            label="SEGUINDO"
+            onPress={() => router.push({ pathname: '/social/[username]', params: { username: profile.username, type: 'following' } })}
+          />
           <View style={styles.statDivider} />
-          <StatBox value={profile.followersCount} label="SEGUIDORES" />
+          <StatBox
+            value={profile.followersCount}
+            label="SEGUIDORES"
+            onPress={() => router.push({ pathname: '/social/[username]', params: { username: profile.username, type: 'followers' } })}
+          />
         </View>
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>NOTAS</Text>
-          {reviews.length === 0 ? (
+          {ratingsSorted.length === 0 ? (
             <Text style={styles.emptyText}>Ainda não avaliou nenhum jogo.</Text>
           ) : (
-            <View style={styles.ratingChart}>
-              {reviews.slice(0, 8).map((entry, index) => (
-                <View
-                  key={entry.id}
-                  style={[styles.ratingRow, index === reviews.length - 1 && styles.ratingRowLast]}
-                >
-                  <Image
-                    source={entry.game.cover ? { uri: entry.game.cover } : FALLBACK_IMAGE}
-                    style={styles.ratingThumb}
-                    contentFit="cover"
+            <>
+              <View style={styles.ratingChart}>
+                {ratingsVisible.map((entry, index) => (
+                  <RatingRow
+                    key={entry.id}
+                    entry={entry}
+                    barColor={ratingBarColor(index)}
+                    isLast={index === ratingsVisible.length - 1}
                   />
-                  <View style={styles.ratingMeta}>
-                    <Text style={styles.ratingName} numberOfLines={1}>
-                      {entry.game.title}
-                    </Text>
-                    <Text style={styles.ratingStars}>{renderStars(entry.rating)}</Text>
-                  </View>
-                </View>
+                ))}
+              </View>
+              {ratingsSorted.length > PREVIEW_COUNT && (
+                <ToggleMoreButton
+                  expanded={notasExpanded}
+                  hiddenCount={ratingsSorted.length - PREVIEW_COUNT}
+                  onPress={() => setNotasExpanded((v) => !v)}
+                />
+              )}
+            </>
+          )}
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>ATIVIDADE RECENTE</Text>
+          {reviews.length === 0 ? (
+            <Text style={styles.emptyText}>Nenhuma atividade recente.</Text>
+          ) : (
+            <>
+              {activityVisible.map((entry) => (
+                <ActivityItem key={entry.id} entry={entry} username={profile.username} />
               ))}
-            </View>
+              {reviewsLoadingMore ? (
+                <ActivityIndicator color={COLORS.nexoBlue} style={{ marginTop: SPACING.xs }} />
+              ) : (
+                (reviews.length > PREVIEW_COUNT || reviewsCursor !== null) && (
+                  <ToggleMoreButton
+                    expanded={atividadeExpanded}
+                    hiddenCount={Math.max(reviews.length - PREVIEW_COUNT, 0)}
+                    hasMoreOnServer={reviewsCursor !== null}
+                    onPress={toggleAtividadeExpanded}
+                  />
+                )
+              )}
+            </>
           )}
         </View>
 
@@ -210,12 +292,18 @@ export default function PublicProfileScreen() {
           ) : (
             <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.horizontalList}>
               {lists.map((list) => (
-                <View key={list.id} style={styles.listCard}>
+                <Pressable
+                  key={list.id}
+                  style={styles.listCard}
+                  onPress={() =>
+                    router.push({ pathname: '/list/[id]', params: { id: String(list.id), username } })
+                  }
+                >
                   <Text style={styles.listCardTitle} numberOfLines={2}>
                     {list.name}
                   </Text>
                   <Text style={styles.listCardCount}>{list.itemCount} jogos</Text>
-                </View>
+                </Pressable>
               ))}
             </ScrollView>
           )}
@@ -225,12 +313,101 @@ export default function PublicProfileScreen() {
   );
 }
 
-function StatBox({ value, label }: { value: number; label: string }) {
-  return (
-    <View style={styles.statBox}>
+function StatBox({
+  value,
+  label,
+  onPress,
+}: {
+  value: number;
+  label: string;
+  onPress?: () => void;
+}) {
+  const content = (
+    <>
       <Text style={styles.statValue}>{value}</Text>
       <Text style={styles.statLabel}>{label}</Text>
-    </View>
+    </>
+  );
+  if (!onPress) {
+    return <View style={styles.statBox}>{content}</View>;
+  }
+  return (
+    <Pressable style={styles.statBox} onPress={onPress} hitSlop={4}>
+      {content}
+    </Pressable>
+  );
+}
+
+function ToggleMoreButton({
+  expanded,
+  hiddenCount,
+  hasMoreOnServer,
+  onPress,
+}: {
+  expanded: boolean;
+  hiddenCount: number;
+  hasMoreOnServer?: boolean;
+  onPress: () => void;
+}) {
+  return (
+    <Pressable style={styles.toggleMoreButton} onPress={onPress} hitSlop={8}>
+      <Text style={styles.toggleMoreText}>
+        {expanded ? 'ESCONDER' : `CARREGAR MAIS (${hiddenCount}${hasMoreOnServer ? '+' : ''})`}
+      </Text>
+    </Pressable>
+  );
+}
+
+function RatingRow({
+  entry,
+  barColor,
+  isLast,
+}: {
+  entry: PublicUserReview;
+  barColor: string;
+  isLast: boolean;
+}) {
+  const fillPercent = `${((entry.rating / MAX_RATING) * 100).toFixed(0)}%` as `${number}%`;
+  const router = useRouter();
+
+  return (
+    <Pressable
+      style={[styles.ratingRow, isLast && styles.ratingRowLast]}
+      onPress={() => router.push(`/games/${entry.game.id}`)}
+    >
+      <View style={styles.ratingMeta}>
+        <Text style={styles.ratingStars}>{renderStars(entry.rating)}</Text>
+        <Text style={styles.ratingName} numberOfLines={1} ellipsizeMode="tail">
+          {entry.game.title}
+        </Text>
+      </View>
+      <View style={styles.ratingBarTrack}>
+        <View style={[styles.ratingBarFill, { width: fillPercent, backgroundColor: barColor }]} />
+      </View>
+      <Text style={[styles.ratingValue, { color: barColor }]}>{entry.rating.toFixed(1)}</Text>
+    </Pressable>
+  );
+}
+
+function ActivityItem({ entry, username }: { entry: PublicUserReview; username: string }) {
+  const router = useRouter();
+  return (
+    <Pressable style={styles.activityCard} onPress={() => router.push(`/games/${entry.game.id}`)}>
+      <View style={[styles.activityAccent, { backgroundColor: COLORS.nexoBlue }]} />
+      <GameCover uri={entry.game.cover} style={styles.activityThumb} radius={0} />
+      <View style={styles.activityContent}>
+        <Text style={styles.activityTitle} numberOfLines={1} ellipsizeMode="tail">
+          {entry.game.title}
+        </Text>
+        <Text style={[styles.activityStars, { color: COLORS.nexoBlue }]}>
+          {renderStars(entry.rating)}
+        </Text>
+        <Text style={styles.activityAction}>review publicada</Text>
+        <Text style={styles.activityMeta}>
+          {username} • {timeAgo(entry.createdAt)}
+        </Text>
+      </View>
+    </Pressable>
   );
 }
 
@@ -371,12 +548,25 @@ const styles = StyleSheet.create({
     color: COLORS.textMuted,
     fontSize: FONT.small,
   },
+  toggleMoreButton: {
+    alignSelf: 'center',
+    paddingVertical: SPACING.xs,
+    paddingHorizontal: SPACING.md,
+  },
+  toggleMoreText: {
+    fontFamily: FONT.family.display,
+    color: COLORS.nexoBlue,
+    fontSize: FONT.caption,
+    letterSpacing: 1,
+  },
+
   ratingChart: {
     backgroundColor: COLORS.surface2,
     borderRadius: RADIUS.lg,
     borderWidth: 1,
     borderColor: COLORS.border,
     paddingHorizontal: SPACING.md,
+    paddingTop: SPACING.xxs,
   },
   ratingRow: {
     flexDirection: 'row',
@@ -389,24 +579,77 @@ const styles = StyleSheet.create({
   ratingRowLast: {
     borderBottomWidth: 0,
   },
-  ratingThumb: {
-    width: 32,
-    height: 44,
-    borderRadius: RADIUS.sm,
-  },
   ratingMeta: {
-    flex: 1,
-  },
-  ratingName: {
-    fontFamily: FONT.family.body,
-    color: COLORS.text,
-    fontSize: FONT.small,
+    width: 100,
   },
   ratingStars: {
     color: COLORS.nexoBlue,
-    fontSize: 11,
-    marginTop: 2,
+    fontSize: 10,
   },
+  ratingName: {
+    fontFamily: FONT.family.body,
+    color: COLORS.textSecondary,
+    fontSize: FONT.caption,
+    marginTop: 1,
+  },
+  ratingBarTrack: {
+    flex: 1,
+    height: 4,
+    backgroundColor: COLORS.surface4,
+    borderRadius: RADIUS.round,
+    overflow: 'hidden',
+  },
+  ratingBarFill: {
+    height: 4,
+    borderRadius: RADIUS.round,
+  },
+  ratingValue: {
+    fontFamily: FONT.family.display,
+    fontSize: FONT.caption,
+    width: 28,
+    textAlign: 'right',
+  },
+
+  activityCard: {
+    flexDirection: 'row',
+    backgroundColor: COLORS.surface2,
+    borderRadius: RADIUS.lg,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    overflow: 'hidden',
+  },
+  activityAccent: {
+    width: 3,
+  },
+  activityThumb: {
+    width: 56,
+    height: 84,
+  },
+  activityContent: {
+    flex: 1,
+    padding: SPACING.sm,
+    gap: 3,
+  },
+  activityTitle: {
+    fontFamily: FONT.family.heading,
+    color: COLORS.text,
+    fontSize: FONT.text,
+    letterSpacing: 1,
+  },
+  activityStars: {
+    fontSize: FONT.caption,
+  },
+  activityAction: {
+    fontFamily: FONT.family.body,
+    color: COLORS.textSecondary,
+    fontSize: FONT.small,
+  },
+  activityMeta: {
+    fontFamily: FONT.family.body,
+    color: COLORS.textMuted,
+    fontSize: FONT.caption,
+  },
+
   horizontalList: {
     gap: SPACING.sm,
   },

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Modal, View, Text, TextInput, Pressable, StyleSheet, ActivityIndicator } from 'react-native';
 import { COLORS, SPACING, RADIUS, FONT } from '../constants';
 import { useAuth } from '../context/AuthContext';
@@ -9,31 +9,40 @@ import { ApiError } from '../services/api';
 type CreateListModalProps = {
   visible: boolean;
   onClose: () => void;
-  onCreated: (list: LibraryListDTO) => void;
+  onSaved: (list: LibraryListDTO) => void;
+  /** When provided, the modal edits this list instead of creating a new one. */
+  list?: { id: number; name: string; isPublic: boolean };
 };
 
-export default function CreateListModal({ visible, onClose, onCreated }: CreateListModalProps) {
+export default function CreateListModal({ visible, onClose, onSaved, list }: CreateListModalProps) {
   const { token } = useAuth();
   const { showError } = useToast();
   const [name, setName] = useState('');
   const [isPublic, setIsPublic] = useState(true);
   const [saving, setSaving] = useState(false);
+  const isEditing = Boolean(list);
 
-  function reset() {
-    setName('');
-    setIsPublic(true);
-  }
+  useEffect(() => {
+    if (!visible) return;
+    setName(list?.name ?? '');
+    setIsPublic(list?.isPublic ?? true);
+  }, [visible, list]);
 
-  async function handleCreate() {
+  async function handleSave() {
     if (!token || !name.trim() || saving) return;
     setSaving(true);
     try {
-      const { list } = await libraryApi.createList(token, { name: name.trim(), isPublic });
-      onCreated(list);
-      reset();
+      const result = isEditing
+        ? await libraryApi.updateList(token, list!.id, { name: name.trim(), isPublic })
+        : await libraryApi.createList(token, { name: name.trim(), isPublic });
+      onSaved(result.list);
       onClose();
     } catch (error) {
-      showError(error instanceof ApiError ? error.message : 'Não foi possível criar a lista.');
+      showError(
+        error instanceof ApiError
+          ? error.message
+          : `Não foi possível ${isEditing ? 'salvar' : 'criar'} a lista.`,
+      );
     } finally {
       setSaving(false);
     }
@@ -43,7 +52,7 @@ export default function CreateListModal({ visible, onClose, onCreated }: CreateL
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
       <Pressable style={styles.backdrop} onPress={onClose}>
         <Pressable style={styles.card} onPress={(e) => e.stopPropagation()}>
-          <Text style={styles.title}>NOVA LISTA</Text>
+          <Text style={styles.title}>{isEditing ? 'EDITAR LISTA' : 'NOVA LISTA'}</Text>
 
           <TextInput
             style={styles.input}
@@ -80,13 +89,13 @@ export default function CreateListModal({ visible, onClose, onCreated }: CreateL
             </Pressable>
             <Pressable
               style={[styles.createButton, !name.trim() && styles.createButtonDisabled]}
-              onPress={handleCreate}
+              onPress={handleSave}
               disabled={!name.trim() || saving}
             >
               {saving ? (
                 <ActivityIndicator color={COLORS.bodyBackground} size="small" />
               ) : (
-                <Text style={styles.createText}>CRIAR</Text>
+                <Text style={styles.createText}>{isEditing ? 'SALVAR' : 'CRIAR'}</Text>
               )}
             </Pressable>
           </View>

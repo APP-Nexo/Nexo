@@ -1,5 +1,6 @@
 import { apiFetch } from './api';
 import { toQuery } from './games';
+import type { UserGameStatus } from './library';
 
 export type FeedItem = {
   id: number;
@@ -15,6 +16,7 @@ export type FeedItem = {
     gameCover: string | null;
     rating: number;
     text: string | null;
+    progressStatus: UserGameStatus | null;
   };
 };
 
@@ -32,6 +34,12 @@ export const socialApi = {
   },
   unfollow(token: string, username: string) {
     return apiFetch<{ message: string }>(`/social/${username}/follow`, {
+      method: 'DELETE',
+      token,
+    });
+  },
+  removeFollower(token: string, username: string) {
+    return apiFetch<{ message: string }>(`/social/${username}/followers`, {
       method: 'DELETE',
       token,
     });

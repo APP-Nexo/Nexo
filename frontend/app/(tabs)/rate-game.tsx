@@ -9,13 +9,12 @@ import {
   StatusBar,
   ActivityIndicator,
 } from 'react-native';
-import { Image } from 'expo-image';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
 import { COLORS, SPACING, RADIUS, FONT, GLOW } from '../../constants';
 import PrimaryButton from '../../components/PrimaryButton';
-import eldenRingBanner from '../../assets/images/Elden_Ring_capa.jpg';
+import GameCover from '../../components/GameCover';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import { gamesApi } from '../../services/games';
@@ -23,18 +22,18 @@ import { reviewsApi } from '../../services/reviews';
 import { libraryApi, type UserGameStatus } from '../../services/library';
 import { ApiError } from '../../services/api';
 
-type ProgressId = 'zerado' | 'ate-onde-parei' | 'so-experimentei';
+type ProgressId = 'zerado' | 'jogando' | 'so-experimentei';
 
 const PROGRESS_TO_STATUS: Record<ProgressId, UserGameStatus> = {
   zerado: 'completed',
-  'ate-onde-parei': 'playing',
+  'jogando': 'playing',
   'so-experimentei': 'tried',
 };
 
 const STATUS_TO_PROGRESS: Partial<Record<UserGameStatus, ProgressId>> = {
   completed: 'zerado',
-  playing: 'ate-onde-parei',
-  abandoned: 'ate-onde-parei',
+  playing: 'jogando',
+  abandoned: 'jogando',
   tried: 'so-experimentei',
 };
 
@@ -63,11 +62,11 @@ const PROGRESS_OPTIONS: ProgressOptionData[] = [
     description: 'Finalizei o jogo completamente',
   },
   {
-    id: 'ate-onde-parei',
+    id: 'jogando',
     iconFamily: 'MaterialCommunityIcons',
-    icon: 'bomb',
-    title: 'ATÉ ONDE PAREI',
-    description: 'Joguei por um tempo mas não terminei',
+    icon: 'controller-classic',
+    title: 'ESTOU JOGANDO',
+    description: 'Ainda estou jogando, não terminei',
   },
   {
     id: 'so-experimentei',
@@ -229,12 +228,12 @@ export default function RateGameScreen() {
   const [progress, setProgress] = useState<ProgressId>('zerado');
   const [review, setReview] = useState('');
   const [title, setTitle] = useState(titleParam ?? '');
-  const [bannerImage, setBannerImage] = useState<{ uri: string } | typeof eldenRingBanner>(
-    eldenRingBanner,
-  );
+  const [bannerCover, setBannerCover] = useState<string | null>(null);
   const [existingReviewId, setExistingReviewId] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const isEditing = existingReviewId !== null;
 
   useEffect(() => {
     if (!id) {
@@ -247,7 +246,7 @@ export default function RateGameScreen() {
         const detail = await gamesApi.detail(id, token);
         if (cancelled) return;
         setTitle(detail.title);
-        if (detail.cover) setBannerImage({ uri: detail.cover });
+        setBannerCover(detail.cover);
         if (detail.viewer?.review) {
           setRating(detail.viewer.review.rating);
           setReview(detail.viewer.review.text ?? '');
@@ -269,7 +268,7 @@ export default function RateGameScreen() {
   }, [id, token]);
 
   async function handleSubmit() {
-    if (!id || !token || submitting) return;
+    if (!id || !token || submitting || deleting) return;
     setSubmitting(true);
     try {
       if (existingReviewId) {
@@ -278,12 +277,26 @@ export default function RateGameScreen() {
         await reviewsApi.create(token, id, { rating, text: review || null });
       }
       await libraryApi.upsertGame(token, id, { status: PROGRESS_TO_STATUS[progress] });
-      showSuccess('Avaliação publicada!');
+      showSuccess(isEditing ? 'Avaliação atualizada!' : 'Avaliação publicada!');
       router.replace(`/games/${id}`);
     } catch (error) {
       showError(error instanceof ApiError ? error.message : 'Não foi possível publicar sua avaliação.');
     } finally {
       setSubmitting(false);
+    }
+  }
+
+  async function handleDelete() {
+    if (!id || !token || !existingReviewId || submitting || deleting) return;
+    setDeleting(true);
+    try {
+      await reviewsApi.remove(token, existingReviewId);
+      showSuccess('Avaliação excluída.');
+      router.replace(`/games/${id}`);
+    } catch (error) {
+      showError(error instanceof ApiError ? error.message : 'Não foi possível excluir sua avaliação.');
+    } finally {
+      setDeleting(false);
     }
   }
 
@@ -303,8 +316,10 @@ export default function RateGameScreen() {
         </Pressable>
 
         <View style={styles.headerText}>
-          <Text style={styles.headerTitle}>AVALIAR</Text>
-          <Text style={styles.headerSubtitle}>{title || '...'}</Text>
+          <Text style={styles.headerTitle}>{isEditing ? 'EDITAR AVALIAÇÃO' : 'AVALIAR'}</Text>
+          <Text style={styles.headerSubtitle} numberOfLines={1} ellipsizeMode="tail">
+            {title || '...'}
+          </Text>
         </View>
       </View>
 
@@ -322,14 +337,11 @@ export default function RateGameScreen() {
         keyboardShouldPersistTaps="handled"
       >
         <View style={styles.bannerContainer}>
-          <Image
-            source={bannerImage}
-            style={styles.bannerImage}
-            contentFit="cover"
-            transition={300}
-          />
+          <GameCover uri={bannerCover} style={styles.bannerImage} radius={0} iconSize={36} />
           <View style={styles.bannerOverlay}>
-            <Text style={styles.bannerTitle}>{title}</Text>
+            <Text style={styles.bannerTitle} numberOfLines={1} ellipsizeMode="tail">
+              {title}
+            </Text>
           </View>
         </View>
 
@@ -371,10 +383,27 @@ export default function RateGameScreen() {
         </View>
 
         <PrimaryButton
-          title={submitting ? 'PUBLICANDO...' : 'PUBLICAR AVALIAÇÃO'}
+          title={
+            submitting
+              ? (isEditing ? 'SALVANDO...' : 'PUBLICANDO...')
+              : (isEditing ? 'SALVAR ALTERAÇÕES' : 'PUBLICAR AVALIAÇÃO')
+          }
           onPress={handleSubmit}
-          style={{ opacity: submitting ? 0.6 : 1 }}
+          style={{ opacity: submitting || deleting ? 0.6 : 1 }}
         />
+
+        {isEditing && (
+          <Pressable
+            onPress={handleDelete}
+            disabled={submitting || deleting}
+            style={styles.deleteButton}
+            hitSlop={8}
+          >
+            <Text style={styles.deleteButtonText}>
+              {deleting ? 'EXCLUINDO...' : 'EXCLUIR AVALIAÇÃO'}
+            </Text>
+          </Pressable>
+        )}
       </ScrollView>
       )}
     </View>
@@ -492,5 +521,15 @@ const styles = StyleSheet.create({
     color: COLORS.textMuted,
     textAlign: 'right',
     marginTop: SPACING.xxs,
+  },
+  deleteButton: {
+    alignItems: 'center',
+    paddingVertical: SPACING.sm,
+  },
+  deleteButtonText: {
+    fontFamily: FONT.family.display,
+    color: COLORS.nexoPink,
+    fontSize: FONT.caption,
+    letterSpacing: 1,
   },
 });

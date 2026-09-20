@@ -138,7 +138,7 @@ export default function AddToListModal({ visible, onClose, gameId }: AddToListMo
         </Pressable>
       </Modal>
 
-      <CreateListModal visible={createOpen} onClose={() => setCreateOpen(false)} onCreated={handleCreated} />
+      <CreateListModal visible={createOpen} onClose={() => setCreateOpen(false)} onSaved={handleCreated} />
     </>
   );
 }

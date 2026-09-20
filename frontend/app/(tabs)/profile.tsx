@@ -1,13 +1,13 @@
 import { useCallback, useRef, useState } from 'react';
 import {
   ScrollView,
+  FlatList,
   StyleSheet,
   Text,
   View,
   Pressable,
   StatusBar,
   ActivityIndicator,
-  useWindowDimensions,
 } from 'react-native';
 import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
@@ -16,14 +16,14 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { COLORS, SPACING, RADIUS, FONT } from '../../constants';
 import ErrorState from '../../components/ErrorState';
 import CreateListModal from '../../components/CreateListModal';
+import GameCover from '../../components/GameCover';
 import { useAuth } from '../../context/AuthContext';
 import { meApi, type MeResponse } from '../../services/me';
 import { usersApi, type PublicUserReview, type UserStatsDTO } from '../../services/users';
 import { libraryApi, type LibraryGameDTO, type LibraryListDTO } from '../../services/library';
 
 const MAX_RATING = 5;
-const LOG_COLUMNS = 3;
-const FALLBACK_IMAGE = require('../../assets/images/Elden_Ring_capa.jpg');
+const PREVIEW_COUNT = 5;
 
 function renderStars(rating: number): string {
   const filled = Math.round(rating);
@@ -47,7 +47,6 @@ function timeAgo(iso: string): string {
 export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const { width: screenWidth } = useWindowDimensions();
   const { token, logout } = useAuth();
   const [createListOpen, setCreateListOpen] = useState(false);
 
@@ -59,14 +58,17 @@ export default function ProfileScreen() {
   const [me, setMe] = useState<MeResponse | null>(null);
   const [stats, setStats] = useState<UserStatsDTO | null>(null);
   const [favorites, setFavorites] = useState<LibraryGameDTO[]>([]);
+  const [favoritesCursor, setFavoritesCursor] = useState<number | null>(null);
+  const [favoritesLoadingMore, setFavoritesLoadingMore] = useState(false);
   const [reviews, setReviews] = useState<PublicUserReview[]>([]);
+  const [reviewsCursor, setReviewsCursor] = useState<number | null>(null);
+  const [reviewsLoadingMore, setReviewsLoadingMore] = useState(false);
   const [lists, setLists] = useState<LibraryListDTO[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [notasExpanded, setNotasExpanded] = useState(false);
+  const [atividadeExpanded, setAtividadeExpanded] = useState(false);
   const hasLoadedOnce = useRef(false);
-
-  const logItemWidth =
-    (screenWidth - SPACING.lg * 2 - SPACING.xs * (LOG_COLUMNS - 1)) / LOG_COLUMNS;
 
   const load = useCallback(async () => {
     if (!token) return;
@@ -87,7 +89,9 @@ export default function ProfileScreen() {
       ]);
       setStats(statsResponse);
       setFavorites(favoritesResponse.games);
+      setFavoritesCursor(favoritesResponse.nextCursor);
       setReviews(reviewsResponse.reviews);
+      setReviewsCursor(reviewsResponse.nextCursor);
       setLists(listsResponse.lists);
     } catch {
       setError(true);
@@ -102,6 +106,40 @@ export default function ProfileScreen() {
       load();
     }, [load]),
   );
+
+  async function loadMoreFavorites() {
+    if (!token || favoritesCursor === null || favoritesLoadingMore) return;
+    setFavoritesLoadingMore(true);
+    try {
+      const page = await libraryApi.favorites(token, { limit: 20, cursor: favoritesCursor });
+      setFavorites((prev) => [...prev, ...page.games]);
+      setFavoritesCursor(page.nextCursor);
+    } catch {
+      // best-effort; onEndReached will simply fire again on next scroll
+    } finally {
+      setFavoritesLoadingMore(false);
+    }
+  }
+
+  async function loadMoreReviews() {
+    if (!token || !me || reviewsCursor === null || reviewsLoadingMore) return;
+    setReviewsLoadingMore(true);
+    try {
+      const page = await usersApi.reviews(token, me.username, reviewsCursor);
+      setReviews((prev) => [...prev, ...page.reviews]);
+      setReviewsCursor(page.nextCursor);
+    } catch {
+      // best-effort; the button just stays put so the user can retry
+    } finally {
+      setReviewsLoadingMore(false);
+    }
+  }
+
+  function toggleAtividadeExpanded() {
+    const next = !atividadeExpanded;
+    setAtividadeExpanded(next);
+    if (next) loadMoreReviews();
+  }
 
   if (loading) {
     return (
@@ -123,7 +161,9 @@ export default function ProfileScreen() {
   }
 
   const initials = me.username.slice(0, 2).toUpperCase();
-  const ratingsSorted = [...reviews].sort((a, b) => b.rating - a.rating).slice(0, 8);
+  const ratingsSorted = [...reviews].sort((a, b) => b.rating - a.rating);
+  const ratingsVisible = notasExpanded ? ratingsSorted : ratingsSorted.slice(0, PREVIEW_COUNT);
+  const activityVisible = atividadeExpanded ? reviews : reviews.slice(0, PREVIEW_COUNT);
 
   return (
     <View style={[styles.screen, { paddingTop: insets.top }]}>
@@ -169,9 +209,17 @@ export default function ProfileScreen() {
           <View style={styles.statDivider} />
           <StatBox value={stats?.totalReviews ?? 0} label="REVIEWS" />
           <View style={styles.statDivider} />
-          <StatBox value={stats?.followingCount ?? 0} label="SEGUINDO" />
+          <StatBox
+            value={stats?.followingCount ?? 0}
+            label="SEGUINDO"
+            onPress={() => router.push({ pathname: '/social/[username]', params: { username: me.username, type: 'following' } })}
+          />
           <View style={styles.statDivider} />
-          <StatBox value={stats?.followersCount ?? 0} label="SEGUIDORES" />
+          <StatBox
+            value={stats?.followersCount ?? 0}
+            label="SEGUIDORES"
+            onPress={() => router.push({ pathname: '/social/[username]', params: { username: me.username, type: 'followers' } })}
+          />
         </View>
 
         <View style={styles.section}>
@@ -179,15 +227,21 @@ export default function ProfileScreen() {
           {favorites.length === 0 ? (
             <Text style={styles.emptyText}>Você ainda não favoritou nenhum jogo.</Text>
           ) : (
-            <ScrollView
+            <FlatList
               horizontal
+              data={favorites}
+              keyExtractor={(item) => String(item.id)}
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={styles.horizontalList}
-            >
-              {favorites.map((entry) => (
-                <FavoriteCard key={entry.id} entry={entry} />
-              ))}
-            </ScrollView>
+              onEndReachedThreshold={0.4}
+              onEndReached={loadMoreFavorites}
+              renderItem={({ item }) => <FavoriteCard entry={item} />}
+              ListFooterComponent={
+                favoritesLoadingMore ? (
+                  <ActivityIndicator color={COLORS.nexoBlue} style={styles.horizontalFooterSpinner} />
+                ) : null
+              }
+            />
           )}
         </View>
 
@@ -196,16 +250,25 @@ export default function ProfileScreen() {
           {ratingsSorted.length === 0 ? (
             <Text style={styles.emptyText}>Você ainda não avaliou nenhum jogo.</Text>
           ) : (
-            <View style={styles.ratingChart}>
-              {ratingsSorted.map((entry, index) => (
-                <RatingRow
-                  key={entry.id}
-                  entry={entry}
-                  barColor={ratingBarColor(index)}
-                  isLast={index === ratingsSorted.length - 1}
+            <>
+              <View style={styles.ratingChart}>
+                {ratingsVisible.map((entry, index) => (
+                  <RatingRow
+                    key={entry.id}
+                    entry={entry}
+                    barColor={ratingBarColor(index)}
+                    isLast={index === ratingsVisible.length - 1}
+                  />
+                ))}
+              </View>
+              {ratingsSorted.length > PREVIEW_COUNT && (
+                <ToggleMoreButton
+                  expanded={notasExpanded}
+                  hiddenCount={ratingsSorted.length - PREVIEW_COUNT}
+                  onPress={() => setNotasExpanded((v) => !v)}
                 />
-              ))}
-            </View>
+              )}
+            </>
           )}
         </View>
 
@@ -214,22 +277,23 @@ export default function ProfileScreen() {
           {reviews.length === 0 ? (
             <Text style={styles.emptyText}>Nenhuma atividade recente.</Text>
           ) : (
-            reviews.slice(0, 6).map((entry) => (
-              <ActivityItem key={entry.id} entry={entry} username={me.username} />
-            ))
-          )}
-        </View>
-
-        <View style={styles.section}>
-          <SectionHeader title="LOG DE JOGOS" />
-          {reviews.length === 0 ? (
-            <Text style={styles.emptyText}>Nenhum jogo no seu log ainda.</Text>
-          ) : (
-            <View style={styles.logGrid}>
-              {reviews.map((entry) => (
-                <LogCard key={entry.id} entry={entry} itemWidth={logItemWidth} />
+            <>
+              {activityVisible.map((entry) => (
+                <ActivityItem key={entry.id} entry={entry} username={me.username} />
               ))}
-            </View>
+              {reviewsLoadingMore ? (
+                <ActivityIndicator color={COLORS.nexoBlue} style={{ marginTop: SPACING.xs }} />
+              ) : (
+                (reviews.length > PREVIEW_COUNT || reviewsCursor !== null) && (
+                  <ToggleMoreButton
+                    expanded={atividadeExpanded}
+                    hiddenCount={Math.max(reviews.length - PREVIEW_COUNT, 0)}
+                    hasMoreOnServer={reviewsCursor !== null}
+                    onPress={toggleAtividadeExpanded}
+                  />
+                )
+              )}
+            </>
           )}
         </View>
 
@@ -261,18 +325,34 @@ export default function ProfileScreen() {
       <CreateListModal
         visible={createListOpen}
         onClose={() => setCreateListOpen(false)}
-        onCreated={(list) => setLists((prev) => [list, ...prev])}
+        onSaved={(list) => setLists((prev) => [list, ...prev])}
       />
     </View>
   );
 }
 
-function StatBox({ value, label }: { value: number; label: string }) {
-  return (
-    <View style={styles.statBox}>
+function StatBox({
+  value,
+  label,
+  onPress,
+}: {
+  value: number;
+  label: string;
+  onPress?: () => void;
+}) {
+  const content = (
+    <>
       <Text style={styles.statValue}>{value}</Text>
       <Text style={styles.statLabel}>{label}</Text>
-    </View>
+    </>
+  );
+  if (!onPress) {
+    return <View style={styles.statBox}>{content}</View>;
+  }
+  return (
+    <Pressable style={styles.statBox} onPress={onPress} hitSlop={4}>
+      {content}
+    </Pressable>
   );
 }
 
@@ -284,19 +364,36 @@ function SectionHeader({ title }: { title: string }) {
   );
 }
 
-function FavoriteCard({ entry }: { entry: LibraryGameDTO }) {
+function ToggleMoreButton({
+  expanded,
+  hiddenCount,
+  hasMoreOnServer,
+  onPress,
+}: {
+  expanded: boolean;
+  hiddenCount: number;
+  hasMoreOnServer?: boolean;
+  onPress: () => void;
+}) {
   return (
-    <View style={styles.favoriteCard}>
-      <Image
-        source={entry.game.cover ? { uri: entry.game.cover } : FALLBACK_IMAGE}
-        style={styles.favoritePoster}
-        contentFit="cover"
-      />
-      <Text style={styles.favoriteTitle} numberOfLines={2}>
+    <Pressable style={styles.toggleMoreButton} onPress={onPress} hitSlop={8}>
+      <Text style={styles.toggleMoreText}>
+        {expanded ? 'ESCONDER' : `CARREGAR MAIS (${hiddenCount}${hasMoreOnServer ? '+' : ''})`}
+      </Text>
+    </Pressable>
+  );
+}
+
+function FavoriteCard({ entry }: { entry: LibraryGameDTO }) {
+  const router = useRouter();
+  return (
+    <Pressable style={styles.favoriteCard} onPress={() => router.push(`/games/${entry.game.id}`)}>
+      <GameCover uri={entry.game.cover} style={styles.favoritePoster} radius={RADIUS.lg} />
+      <Text style={styles.favoriteTitle} numberOfLines={2} ellipsizeMode="tail">
         {entry.game.title}
       </Text>
       <Text style={styles.favoriteStars}>{renderStars(entry.game.averageRating)}</Text>
-    </View>
+    </Pressable>
   );
 }
 
@@ -310,12 +407,16 @@ function RatingRow({
   isLast: boolean;
 }) {
   const fillPercent = `${((entry.rating / MAX_RATING) * 100).toFixed(0)}%` as `${number}%`;
+  const router = useRouter();
 
   return (
-    <View style={[styles.ratingRow, isLast && styles.ratingRowLast]}>
+    <Pressable
+      style={[styles.ratingRow, isLast && styles.ratingRowLast]}
+      onPress={() => router.push(`/games/${entry.game.id}`)}
+    >
       <View style={styles.ratingMeta}>
         <Text style={styles.ratingStars}>{renderStars(entry.rating)}</Text>
-        <Text style={styles.ratingName} numberOfLines={1}>
+        <Text style={styles.ratingName} numberOfLines={1} ellipsizeMode="tail">
           {entry.game.title}
         </Text>
       </View>
@@ -325,21 +426,20 @@ function RatingRow({
         />
       </View>
       <Text style={[styles.ratingValue, { color: barColor }]}>{entry.rating.toFixed(1)}</Text>
-    </View>
+    </Pressable>
   );
 }
 
 function ActivityItem({ entry, username }: { entry: PublicUserReview; username: string }) {
+  const router = useRouter();
   return (
-    <View style={styles.activityCard}>
+    <Pressable style={styles.activityCard} onPress={() => router.push(`/games/${entry.game.id}`)}>
       <View style={[styles.activityAccent, { backgroundColor: COLORS.nexoBlue }]} />
-      <Image
-        source={entry.game.cover ? { uri: entry.game.cover } : FALLBACK_IMAGE}
-        style={styles.activityThumb}
-        contentFit="cover"
-      />
+      <GameCover uri={entry.game.cover} style={styles.activityThumb} radius={0} />
       <View style={styles.activityContent}>
-        <Text style={styles.activityTitle}>{entry.game.title}</Text>
+        <Text style={styles.activityTitle} numberOfLines={1} ellipsizeMode="tail">
+          {entry.game.title}
+        </Text>
         <Text style={[styles.activityStars, { color: COLORS.nexoBlue }]}>
           {renderStars(entry.rating)}
         </Text>
@@ -348,23 +448,7 @@ function ActivityItem({ entry, username }: { entry: PublicUserReview; username: 
           {username} • {timeAgo(entry.createdAt)}
         </Text>
       </View>
-    </View>
-  );
-}
-
-function LogCard({ entry, itemWidth }: { entry: PublicUserReview; itemWidth: number }) {
-  return (
-    <View style={{ width: itemWidth }}>
-      <Image
-        source={entry.game.cover ? { uri: entry.game.cover } : FALLBACK_IMAGE}
-        style={[styles.logPoster, { width: itemWidth }]}
-        contentFit="cover"
-      />
-      <Text style={styles.logTitle} numberOfLines={2}>
-        {entry.game.title}
-      </Text>
-      <Text style={styles.logStars}>{renderStars(entry.rating)}</Text>
-    </View>
+    </Pressable>
   );
 }
 
@@ -372,7 +456,7 @@ function ListCard({ list }: { list: LibraryListDTO }) {
   const router = useRouter();
   return (
     <Pressable style={styles.listCard} onPress={() => router.push(`/list/${list.id}`)}>
-      <Text style={styles.listCardTitle} numberOfLines={2}>
+      <Text style={styles.listCardTitle} numberOfLines={2} ellipsizeMode="tail">
         {list.name}
       </Text>
       <Text style={styles.listCardCount}>{list.itemCount} jogos</Text>
@@ -393,6 +477,20 @@ const styles = StyleSheet.create({
     padding: SPACING.lg,
     gap: SPACING.xl,
     paddingBottom: SPACING.xxxl,
+  },
+  horizontalFooterSpinner: {
+    marginLeft: SPACING.sm,
+  },
+  toggleMoreButton: {
+    alignSelf: 'center',
+    paddingVertical: SPACING.xs,
+    paddingHorizontal: SPACING.md,
+  },
+  toggleMoreText: {
+    fontFamily: FONT.family.display,
+    color: COLORS.nexoBlue,
+    fontSize: FONT.caption,
+    letterSpacing: 1,
   },
 
   section: {
@@ -641,29 +739,6 @@ const styles = StyleSheet.create({
     fontFamily: FONT.family.body,
     color: COLORS.textMuted,
     fontSize: FONT.caption,
-  },
-
-  logGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: SPACING.xs,
-  },
-  logPoster: {
-    height: 120,
-    borderRadius: RADIUS.md,
-    marginBottom: SPACING.xxs,
-  },
-  logTitle: {
-    fontFamily: FONT.family.body,
-    color: COLORS.text,
-    fontSize: FONT.caption,
-    textTransform: 'uppercase',
-    lineHeight: 14,
-  },
-  logStars: {
-    color: COLORS.nexoBlue,
-    fontSize: 9,
-    marginTop: 1,
   },
 
   listsHeaderRow: {

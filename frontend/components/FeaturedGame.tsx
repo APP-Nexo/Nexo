@@ -5,7 +5,6 @@ import {
   ImageBackground,
   StyleSheet,
   TouchableOpacity,
-  ImageSourcePropType,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -25,7 +24,7 @@ const COLOR_TEXT_REVIEW = '#999999';
 const COLOR_OVERLAY_BACK_BTN = 'rgba(0,0,0,0.45)';
 const COLOR_OVERLAY_FAV_BTN = 'rgba(0,0,0,0.35)';
 const COLOR_LOGO_BG = 'rgba(255,255,255,0.12)';
-const COLOR_GENRE_BG = 'rgba(255,255,255,0.14)';
+const COLOR_GENRE_BG = 'rgba(0,0,0,0.45)';
 
 const GRADIENT_COLORS = [
   'rgba(0,0,0,0)',
@@ -35,7 +34,7 @@ const GRADIENT_COLORS = [
 
 type FeaturedGameProps = Readonly<{
   title: string;
-  image: string | ImageSourcePropType;
+  cover: string | null;
   rating: number;
   genres?: string[];
   onFavoritePress?: () => void;
@@ -112,7 +111,9 @@ function HeroInfo({ title, rating, genres }: HeroInfoProps) {
         ))}
       </View>
 
-      <Text style={styles.title}>{title}</Text>
+      <Text style={styles.title} numberOfLines={2} ellipsizeMode="tail">
+        {title}
+      </Text>
 
       <View style={styles.ratingContainer}>
         <Text style={styles.stars}>★★★★★</Text>
@@ -125,7 +126,7 @@ function HeroInfo({ title, rating, genres }: HeroInfoProps) {
 
 export default function FeaturedGame({
   title,
-  image,
+  cover,
   rating,
   genres = [],
   onFavoritePress,
@@ -133,35 +134,41 @@ export default function FeaturedGame({
   isFavorited = false,
   topInset = DEFAULT_TOP_INSET,
 }: FeaturedGameProps) {
-  const imageSource = useMemo<ImageSourcePropType>(
-    () => (typeof image === 'string' ? { uri: image } : image),
-    [image]
-  );
-
   const logoInitials = useMemo(
     () => title.slice(0, LOGO_INITIALS_LENGTH).toUpperCase(),
     [title]
   );
 
+  const overlayAndContent = (
+    <>
+      <LinearGradient colors={GRADIENT_COLORS} style={styles.overlay} />
+
+      <HeroTopBar
+        topInset={topInset}
+        initials={logoInitials}
+        isFavorited={isFavorited}
+        onBackPress={onBackPress}
+        onFavoritePress={onFavoritePress}
+      />
+
+      <HeroInfo title={title} rating={rating} genres={genres} />
+    </>
+  );
+
   return (
     <View style={styles.container}>
-      <ImageBackground
-        source={imageSource}
-        style={styles.background}
-        resizeMode="cover"
-      >
-        <LinearGradient colors={GRADIENT_COLORS} style={styles.overlay} />
-
-        <HeroTopBar
-          topInset={topInset}
-          initials={logoInitials}
-          isFavorited={isFavorited}
-          onBackPress={onBackPress}
-          onFavoritePress={onFavoritePress}
-        />
-
-        <HeroInfo title={title} rating={rating} genres={genres} />
-      </ImageBackground>
+      {cover ? (
+        <ImageBackground source={{ uri: cover }} style={styles.background} resizeMode="cover">
+          {overlayAndContent}
+        </ImageBackground>
+      ) : (
+        <View style={[styles.background, styles.backgroundPlaceholder]}>
+          <View style={styles.placeholderIconWrap} pointerEvents="none">
+            <Ionicons name="image-outline" size={64} color={COLORS.textMuted} />
+          </View>
+          {overlayAndContent}
+        </View>
+      )}
     </View>
   );
 }
@@ -175,6 +182,14 @@ const styles = StyleSheet.create({
   background: {
     flex: 1,
     justifyContent: 'space-between',
+  },
+  backgroundPlaceholder: {
+    backgroundColor: HERO_BG,
+  },
+  placeholderIconWrap: {
+    ...StyleSheet.absoluteFill,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   overlay: {
     ...StyleSheet.absoluteFill,

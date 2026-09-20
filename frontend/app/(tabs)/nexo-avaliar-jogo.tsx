@@ -5,27 +5,28 @@ import {
   StyleSheet,
   TextInput,
   FlatList,
-  Dimensions,
+  useWindowDimensions,
   ActivityIndicator,
   Pressable,
 } from 'react-native';
-import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { COLORS, SPACING, FONT } from '../../constants';
+import { COLORS, SPACING, FONT, RADIUS } from '../../constants';
 import ErrorState from '../../components/ErrorState';
+import GameCover from '../../components/GameCover';
 import { gamesApi, type GameResponse } from '../../services/games';
 
-const { width } = Dimensions.get('window');
-const CARD_WIDTH = (width - 48) / 2;
-const FALLBACK_IMAGE = require('../../assets/images/Elden_Ring_capa.jpg');
 const SEARCH_DEBOUNCE_MS = 400;
 
 export default function GamesScreen() {
   const router = useRouter();
+  const { width } = useWindowDimensions();
+  const cardWidth = (width - 48) / 2;
   const { q: initialQuery } = useLocalSearchParams<{ q?: string }>();
   const [query, setQuery] = useState(initialQuery ?? '');
   const [games, setGames] = useState<GameResponse[]>([]);
+  const [cursor, setCursor] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState(false);
 
   useEffect(() => {
@@ -36,8 +37,9 @@ export default function GamesScreen() {
     setLoading(true);
     setError(false);
     try {
-      const page = await gamesApi.list({ q: q.trim() || undefined, limit: 30 });
+      const page = await gamesApi.list({ q: q.trim() || undefined, limit: 20 });
       setGames(page.data);
+      setCursor(page.nextCursor);
     } catch {
       setError(true);
     } finally {
@@ -49,6 +51,20 @@ export default function GamesScreen() {
     const timer = setTimeout(() => load(query), SEARCH_DEBOUNCE_MS);
     return () => clearTimeout(timer);
   }, [query, load]);
+
+  async function loadMore() {
+    if (cursor === null || loadingMore || loading) return;
+    setLoadingMore(true);
+    try {
+      const page = await gamesApi.list({ q: query.trim() || undefined, limit: 20, cursor });
+      setGames((prev) => [...prev, ...page.data]);
+      setCursor(page.nextCursor);
+    } catch {
+      // best-effort; onEndReached will simply fire again on next scroll
+    } finally {
+      setLoadingMore(false);
+    }
+  }
 
   return (
     <View style={styles.container}>
@@ -77,22 +93,30 @@ export default function GamesScreen() {
           numColumns={2}
           columnWrapperStyle={{ justifyContent: 'space-between' }}
           contentContainerStyle={{ paddingBottom: 40 }}
+          onEndReachedThreshold={0.4}
+          onEndReached={loadMore}
+          ListFooterComponent={
+            loadingMore ? (
+              <ActivityIndicator color={COLORS.nexoBlue} style={{ marginTop: SPACING.md }} />
+            ) : null
+          }
           renderItem={({ item }) => (
-            <Pressable style={styles.card} onPress={() => router.push(`/games/${item.id}`)}>
-              <View style={styles.imageContainer}>
-                <Image
-                  source={item.cover ? { uri: item.cover } : FALLBACK_IMAGE}
-                  style={styles.image}
-                  contentFit="cover"
-                  transition={200}
-                />
-              </View>
+            <Pressable
+              style={[styles.card, { width: cardWidth }]}
+              onPress={() => router.push(`/games/${item.id}`)}
+            >
+              <GameCover
+                uri={item.cover}
+                style={[styles.image, { width: cardWidth }]}
+                radius={0}
+                iconSize={32}
+              />
 
               <View style={styles.infoContainer}>
-                <Text style={styles.cardTitle} numberOfLines={2}>
+                <Text style={styles.cardTitle} numberOfLines={2} ellipsizeMode="tail">
                   {item.title.toUpperCase()}
                 </Text>
-                <Text style={styles.genre} numberOfLines={1}>
+                <Text style={styles.genre} numberOfLines={1} ellipsizeMode="tail">
                   {item.genres.slice(0, 2).join(' • ').toUpperCase() || 'SEM GÊNERO'}
                 </Text>
 
@@ -143,25 +167,20 @@ const styles = StyleSheet.create({
   },
 
   card: {
-    width: CARD_WIDTH,
     marginBottom: 20,
   },
 
   image: {
-    width: '100%',
     height: 180,
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
+    borderTopLeftRadius: RADIUS.xl,
+    borderTopRightRadius: RADIUS.xl,
   },
 
   cardTitle: {
     color: '#FFFFFF',
     fontSize: 13,
     fontWeight: '600',
-  },
-
-  imageContainer: {
-    position: 'relative',
+    lineHeight: 16,
   },
 
   infoContainer: {
@@ -169,19 +188,17 @@ const styles = StyleSheet.create({
     padding: 10,
     borderBottomLeftRadius: 16,
     borderBottomRightRadius: 16,
-    minHeight: 100,
-    justifyContent: 'space-around',
+    height: 106,
+    justifyContent: 'space-between',
   },
 
   genre: {
     color: '#6B7280',
     fontSize: 10,
-    marginTop: 4,
   },
 
   stars: {
     color: '#00E0FF',
-    marginTop: 6,
     fontSize: 12,
   },
 });

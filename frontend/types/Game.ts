@@ -1,10 +1,8 @@
-import type { ImageSourcePropType } from 'react-native';
-
 export type Game = {
   id: string;
   title: string;
   category: string;
-  image: string | ImageSourcePropType;
+  cover: string | null;
   isNew?: boolean;
   rating: number;
   genres: string[];

@@ -1,4 +1,5 @@
 import { apiFetch } from './api';
+import type { UserGameStatus } from './library';
 
 export type GameResponse = {
   id: number;
@@ -52,6 +53,7 @@ export type GameReviewResponse = {
   rating: number;
   text: string | null;
   status: 'approved';
+  progressStatus: UserGameStatus | null;
   createdAt: string;
   updatedAt: string;
   user: { id: number; username: string; photo: string | null };

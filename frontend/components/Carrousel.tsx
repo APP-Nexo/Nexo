@@ -12,12 +12,12 @@ import {
     StyleSheet,
     useWindowDimensions,
     ViewStyle,
-    ImageSourcePropType,
     TouchableOpacity,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
 import type { Game } from '../types/Game';
-import { COLORS, SPACING, RADIUS, FONT } from '../constants';
+import { COLORS, SPACING, RADIUS, FONT, NATIVE_DRIVER } from '../constants';
 
 type Props = {
     data: Game[];
@@ -67,7 +67,7 @@ function Carousel({ data, style, onPressItem }: Props) {
         () =>
             Animated.event(
                 [{ nativeEvent: { contentOffset: { x: scrollX } } }],
-                { useNativeDriver: true }
+                { useNativeDriver: NATIVE_DRIVER }
             ),
         [scrollX]
     );
@@ -119,10 +119,30 @@ function Carousel({ data, style, onPressItem }: Props) {
             extrapolate: 'clamp',
             });
 
-            const imageSource: ImageSourcePropType =
-                typeof item.image === 'string'
-                    ? { uri: item.image }
-                    : item.image;
+            const overlayContent = (
+                <>
+                    <LinearGradient
+                        colors={['transparent', 'rgba(0,0,0,0.85)']}
+                        style={styles.gradient}
+                    />
+
+                    <View style={styles.content}>
+                        {item.isNew && (
+                            <View style={styles.badge}>
+                                <Text style={styles.badgeText}>NOVO</Text>
+                            </View>
+                        )}
+
+                        <Text style={styles.category} numberOfLines={1}>
+                            {item.category}
+                        </Text>
+
+                        <Text style={styles.title} numberOfLines={2}>
+                            {item.title}
+                        </Text>
+                    </View>
+                </>
+            );
 
             return (
                 <Animated.View
@@ -141,35 +161,20 @@ function Carousel({ data, style, onPressItem }: Props) {
                         style={{ flex: 1 }}
                         onPress={() => onPressItem?.(item)}
                     >
-                        <ImageBackground
-                            source={imageSource}
-                            style={styles.image}
-                            imageStyle={styles.imageRadius}
-                        >
-                            <LinearGradient
-                                colors={['transparent', 'rgba(0,0,0,0.85)']}
-                                style={styles.gradient}
-                            />
-
-                            <View style={styles.content}>
-                                {item.isNew && (
-                                    <View style={styles.badge}>
-                                        <Text style={styles.badgeText}>NOVO</Text>
-                                    </View>
-                                )}
-
-                                <Text style={styles.category}>
-                                    {item.category}
-                                </Text>
-
-                                <Text
-                                    style={styles.title}
-                                    numberOfLines={2}
-                                >
-                                    {item.title}
-                                </Text>
+                        {item.cover ? (
+                            <ImageBackground
+                                source={{ uri: item.cover }}
+                                style={styles.image}
+                                imageStyle={styles.imageRadius}
+                            >
+                                {overlayContent}
+                            </ImageBackground>
+                        ) : (
+                            <View style={[styles.image, styles.imagePlaceholder, styles.imageRadius]}>
+                                <Ionicons name="image-outline" size={36} color={COLORS.textMuted} />
+                                {overlayContent}
                             </View>
-                        </ImageBackground>
+                        )}
                     </TouchableOpacity>
                 </Animated.View>
             );
@@ -216,6 +221,11 @@ const styles = StyleSheet.create({
     image: {
         flex: 1,
         justifyContent: 'flex-end',
+    } as const,
+    imagePlaceholder: {
+        backgroundColor: COLORS.surface3,
+        alignItems: 'center',
+        justifyContent: 'center',
     } as const,
     imageRadius: {
         borderRadius: RADIUS.xxl,
