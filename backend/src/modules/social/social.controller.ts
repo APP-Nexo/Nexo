@@ -19,6 +19,13 @@ export class SocialController {
         return reply.status(200).send(response);
     }
 
+    static async removeFollower(req: FastifyRequest, reply: FastifyReply) {
+        const { username } = req.params as { username: string };
+        const tokenUser = req.user as UserTokenPayload;
+        const response = await SocialService.removeFollower(tokenUser.id, username);
+        return reply.status(200).send(response);
+    }
+
     static async getFollowers(req: FastifyRequest, reply: FastifyReply) {
         const { username } = req.params as { username: string };
         const { cursor } = req.query as PaginationQuery;

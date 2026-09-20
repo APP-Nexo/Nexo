@@ -8,6 +8,13 @@ const nullableDateTimeSchema = {
     anyOf: [{ type: 'string', format: 'date-time' }, { type: 'null' }],
 };
 
+const nullableProgressStatusSchema = {
+    anyOf: [
+        { type: 'string', enum: ['want_to_play', 'playing', 'completed', 'tried', 'abandoned'] },
+        { type: 'null' },
+    ],
+};
+
 const gameProperties = {
     id: { type: 'integer', minimum: 1 },
     source: { type: 'string' },
@@ -173,6 +180,7 @@ const reviewSchema = {
         'rating',
         'text',
         'status',
+        'progressStatus',
         'createdAt',
         'updatedAt',
         'user',
@@ -184,6 +192,7 @@ const reviewSchema = {
         rating: { type: 'integer' },
         text: nullableStringSchema,
         status: { type: 'string', enum: ['approved'] },
+        progressStatus: nullableProgressStatusSchema,
         createdAt: { type: 'string', format: 'date-time' },
         updatedAt: { type: 'string', format: 'date-time' },
         user: {

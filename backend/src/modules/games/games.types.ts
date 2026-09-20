@@ -66,6 +66,7 @@ export type GameReviewResponse = {
     rating: number;
     text: string | null;
     status: 'approved';
+    progressStatus: 'want_to_play' | 'playing' | 'completed' | 'tried' | 'abandoned' | null;
     createdAt: string;
     updatedAt: string;
     user: {

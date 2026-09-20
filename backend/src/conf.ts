@@ -67,7 +67,11 @@ function isProfileUpload(req: FastifyRequest) {
 
 await app.register(rateLimit, {
     global: true,
-    max: (req) => (isProfileUpload(req) ? 5 : 40),
+    // 40/min was tripping during normal use: a single screen can fan out
+    // into 3-5 parallel requests (e.g. profile = stats + favorites + reviews
+    // + lists), and this key is shared per-IP across every device/tab behind
+    // the same NAT, so a couple of people browsing at once exhausts it fast.
+    max: (req) => (isProfileUpload(req) ? 5 : 300),
     timeWindow: (req) => (isProfileUpload(req) ? 60 * 60 * 1000 : 60 * 1000),
     keyGenerator: (req: FastifyRequest) =>
         `${isProfileUpload(req) ? 'upload' : 'global'}:${req.ip}`,

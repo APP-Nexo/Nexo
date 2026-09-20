@@ -12,12 +12,13 @@ const db = vi.hoisted(() => {
     const userProfile = { update: vi.fn(), updateMany: vi.fn() };
     const notification = { create: vi.fn(), deleteMany: vi.fn() };
     const review = { findMany: vi.fn() };
+    const userGame = { findMany: vi.fn() };
     const tx = { user, userFollow, userProfile, notification };
     const transaction = vi.fn(async (operation: (client: typeof tx) => Promise<unknown>) =>
         operation(tx),
     );
 
-    return { user, userFollow, userProfile, notification, review, tx, transaction };
+    return { user, userFollow, userProfile, notification, review, userGame, tx, transaction };
 });
 
 vi.mock('../shared/utils/prisma/prisma_conn.js', () => ({
@@ -27,6 +28,7 @@ vi.mock('../shared/utils/prisma/prisma_conn.js', () => ({
         userProfile: db.userProfile,
         notification: db.notification,
         review: db.review,
+        userGame: db.userGame,
         $transaction: db.transaction,
     },
 }));
@@ -91,6 +93,7 @@ beforeEach(() => {
     db.userProfile.updateMany.mockResolvedValue({ count: 1 });
     db.notification.create.mockResolvedValue({});
     db.notification.deleteMany.mockResolvedValue({ count: 1 });
+    db.userGame.findMany.mockResolvedValue([]);
 });
 
 describe('Social routes', () => {
@@ -225,6 +228,52 @@ describe('Social routes', () => {
         });
     });
 
+    it('removes a follower with reversed guarded decrements', async () => {
+        db.user.findUnique.mockResolvedValueOnce({ id: 2, username: 'other' });
+        db.userFollow.deleteMany.mockResolvedValueOnce({ count: 1 });
+
+        const response = await app.inject({
+            method: 'DELETE',
+            url: '/api/social/other/followers',
+            headers: { authorization: 'Bearer token' },
+        });
+
+        expect(response.statusCode).toBe(200);
+        expect(db.userFollow.deleteMany).toHaveBeenCalledWith({
+            where: { followerId: 2, followingId: 1 },
+        });
+        expect(db.userProfile.updateMany).toHaveBeenNthCalledWith(1, {
+            where: { userId: 2, followingCount: { gt: 0 } },
+            data: { followingCount: { decrement: 1 } },
+        });
+        expect(db.userProfile.updateMany).toHaveBeenNthCalledWith(2, {
+            where: { userId: 1, followersCount: { gt: 0 } },
+            data: { followersCount: { decrement: 1 } },
+        });
+        expect(db.notification.deleteMany).toHaveBeenCalledWith({
+            where: {
+                type: 'follow',
+                toUserId: 1,
+                fromUserId: 2,
+                read: false,
+            },
+        });
+    });
+
+    it('rejects removing a follower that does not follow the caller', async () => {
+        db.user.findUnique.mockResolvedValueOnce({ id: 2, username: 'other' });
+        db.userFollow.deleteMany.mockResolvedValueOnce({ count: 0 });
+
+        const response = await app.inject({
+            method: 'DELETE',
+            url: '/api/social/other/followers',
+            headers: { authorization: 'Bearer token' },
+        });
+
+        expect(response.statusCode).toBe(404);
+        expect(db.userProfile.updateMany).not.toHaveBeenCalled();
+    });
+
     it('preserves follow ordering and serializes complete follower objects', async () => {
         db.user.findUnique.mockResolvedValueOnce(activeUser());
         db.userFollow.findMany
@@ -303,6 +352,7 @@ describe('Social routes', () => {
                         gameCover: '/covers/10.jpg',
                         rating: 5,
                         text: 'Excelente',
+                        progressStatus: null,
                     },
                 },
             ],
@@ -322,10 +372,13 @@ describe('Social routes', () => {
                     status: 'approved',
                     deletedAt: null,
                     user: { activate: true, deletedAt: null, blockedUser: null },
-                    userId: { not: 1 },
                 },
                 orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
             }),
         );
+        expect(db.userGame.findMany).toHaveBeenCalledWith({
+            where: { OR: [{ userId: 4, gameId: 10 }] },
+            select: { userId: true, gameId: true, status: true },
+        });
     });
 });

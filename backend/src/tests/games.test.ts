@@ -15,6 +15,7 @@ const prismaMock = vi.hoisted(() => ({
     },
     userGame: {
         findUnique: vi.fn(),
+        findMany: vi.fn(),
     },
     user: {
         findUnique: vi.fn(),
@@ -100,6 +101,7 @@ function database() {
         },
         userGame: {
             findUnique: vi.fn(),
+            findMany: vi.fn(),
         },
         $transaction: vi.fn(async (operations: Promise<unknown>[]) => Promise.all(operations)),
     };

@@ -113,6 +113,45 @@ export class SocialService {
         return { message: `Você deixou de seguir ${target.username}.` };
     }
 
+    static async removeFollower(userId: number, followerUsername: string) {
+        const follower = await prisma.user.findUnique({
+            where: { username: followerUsername },
+            select: { id: true, username: true },
+        });
+        if (!follower) AppError.throw('Usuário não encontrado.', 404);
+        if (follower.id === userId) {
+            AppError.throw('Ação inválida.', 400);
+        }
+
+        await runSerializableTransaction(prisma, async (tx) => {
+            const removed = await tx.userFollow.deleteMany({
+                where: { followerId: follower.id, followingId: userId },
+            });
+            if (removed.count === 0) {
+                AppError.throw('Este usuário não te segue.', 404);
+            }
+
+            await tx.userProfile.updateMany({
+                where: { userId: follower.id, followingCount: { gt: 0 } },
+                data: { followingCount: { decrement: 1 } },
+            });
+            await tx.userProfile.updateMany({
+                where: { userId, followersCount: { gt: 0 } },
+                data: { followersCount: { decrement: 1 } },
+            });
+            await tx.notification.deleteMany({
+                where: {
+                    type: 'follow',
+                    toUserId: userId,
+                    fromUserId: follower.id,
+                    read: false,
+                },
+            });
+        });
+
+        return { message: `Você removeu ${follower.username} dos seus seguidores.` };
+    }
+
     static async getFollowers(username: string, currentUserId?: number, cursor?: Cursor) {
         const user = await findActiveUser(username);
 
@@ -228,9 +267,11 @@ export class SocialService {
                             ? ACTIVE_USER_FILTER
                             : {
                                   ...ACTIVE_USER_FILTER,
-                                  followers: { some: { followerId: userId } },
+                                  OR: [
+                                      { followers: { some: { followerId: userId } } },
+                                      { id: userId },
+                                  ],
                               },
-                        ...(discovery ? { userId: { not: userId } } : {}),
                     },
                     include: {
                         user: {
@@ -248,6 +289,16 @@ export class SocialService {
             cursor: normalizePrismaCursor(cursor),
         });
 
+        const libraryEntries = data.length
+            ? await prisma.userGame.findMany({
+                  where: { OR: data.map((review) => ({ userId: review.userId, gameId: review.gameId })) },
+                  select: { userId: true, gameId: true, status: true },
+              })
+            : [];
+        const statusByPair = new Map(
+            libraryEntries.map((entry) => [`${entry.userId}:${entry.gameId}`, entry.status]),
+        );
+
         const feed = data.map((review) => ({
             id: review.id,
             type: 'review' as const,
@@ -262,6 +313,7 @@ export class SocialService {
                 gameCover: review.game.cover,
                 rating: review.rating,
                 text: review.text,
+                progressStatus: statusByPair.get(`${review.userId}:${review.gameId}`) ?? null,
             },
         }));
 

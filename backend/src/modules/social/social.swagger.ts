@@ -46,7 +46,7 @@ const socialUserSchema = {
 const feedReviewSchema = {
     type: 'object',
     additionalProperties: false,
-    required: ['id', 'gameId', 'gameTitle', 'gameCover', 'rating', 'text'],
+    required: ['id', 'gameId', 'gameTitle', 'gameCover', 'rating', 'text', 'progressStatus'],
     properties: {
         id: { type: 'integer', minimum: 1 },
         gameId: { type: 'integer', minimum: 1 },
@@ -54,6 +54,10 @@ const feedReviewSchema = {
         gameCover: { type: ['string', 'null'] },
         rating: { type: 'integer', minimum: 1, maximum: 5 },
         text: { type: ['string', 'null'] },
+        progressStatus: {
+            type: ['string', 'null'],
+            enum: ['want_to_play', 'playing', 'completed', 'tried', 'abandoned', null],
+        },
     },
 };
 
@@ -86,6 +90,16 @@ export const unfollowUserSchemaSwagger = {
     schema: {
         tags: ['Social'],
         summary: '/social/:username/follow',
+        security: [{ bearerAuth: [] }],
+        params: usernameParamsSchema,
+        response: { 200: messageSchema, 400: errorSchema, 401: errorSchema, 404: errorSchema },
+    },
+};
+
+export const removeFollowerSchemaSwagger = {
+    schema: {
+        tags: ['Social'],
+        summary: '/social/:username/followers',
         security: [{ bearerAuth: [] }],
         params: usernameParamsSchema,
         response: { 200: messageSchema, 400: errorSchema, 401: errorSchema, 404: errorSchema },

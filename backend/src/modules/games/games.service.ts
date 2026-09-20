@@ -315,6 +315,16 @@ export class GamesService {
         });
 
         const page = reviews.slice(0, limit);
+
+        const reviewerIds = [...new Set(page.map((review) => review.userId))];
+        const libraryEntries = reviewerIds.length
+            ? await this.database.userGame.findMany({
+                  where: { gameId: id, userId: { in: reviewerIds } },
+                  select: { userId: true, status: true },
+              })
+            : [];
+        const statusByUserId = new Map(libraryEntries.map((entry) => [entry.userId, entry.status]));
+
         return {
             data: page.map((review) => ({
                 id: review.id,
@@ -323,6 +333,7 @@ export class GamesService {
                 rating: review.rating,
                 text: review.text,
                 status: 'approved',
+                progressStatus: statusByUserId.get(review.userId) ?? null,
                 createdAt: iso(review.createdAt),
                 updatedAt: iso(review.updatedAt),
                 user: {

@@ -6,6 +6,7 @@ import {
     getFeedSchemaSwagger,
     getFollowersSchemaSwagger,
     getFollowingSchemaSwagger,
+    removeFollowerSchemaSwagger,
     unfollowUserSchemaSwagger,
 } from './social.swagger.js';
 
@@ -24,6 +25,11 @@ export async function socialRoutes(app: FastifyInstance) {
         '/:username/followers',
         { ...getFollowersSchemaSwagger, preHandler: [checkToken] },
         SocialController.getFollowers,
+    );
+    app.delete(
+        '/:username/followers',
+        { ...removeFollowerSchemaSwagger, preHandler: [checkToken] },
+        SocialController.removeFollower,
     );
     app.get(
         '/:username/following',
