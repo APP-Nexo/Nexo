@@ -1,5 +1,15 @@
 import { useEffect, useState } from 'react';
-import { Modal, View, Text, TextInput, Pressable, StyleSheet, ActivityIndicator } from 'react-native';
+import {
+  Modal,
+  View,
+  Text,
+  TextInput,
+  Pressable,
+  StyleSheet,
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
+} from 'react-native';
 import { COLORS, SPACING, RADIUS, FONT } from '../constants';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
@@ -50,6 +60,10 @@ export default function CreateListModal({ visible, onClose, onSaved, list }: Cre
 
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      >
       <Pressable style={styles.backdrop} onPress={onClose}>
         <Pressable style={styles.card} onPress={(e) => e.stopPropagation()}>
           <Text style={styles.title}>{isEditing ? 'EDITAR LISTA' : 'NOVA LISTA'}</Text>
@@ -101,6 +115,7 @@ export default function CreateListModal({ visible, onClose, onSaved, list }: Cre
           </View>
         </Pressable>
       </Pressable>
+      </KeyboardAvoidingView>
     </Modal>
   );
 }

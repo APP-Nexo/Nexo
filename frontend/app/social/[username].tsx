@@ -13,11 +13,12 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { COLORS, SPACING, RADIUS, FONT } from '../../constants';
 import ErrorState from '../../components/ErrorState';
+import ConfirmModal from '../../components/ConfirmModal';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import { meApi } from '../../services/me';
 import { socialApi, type SocialUser } from '../../services/social';
-import { ApiError } from '../../services/api';
+import { ApiError, resolveMediaUrl } from '../../services/api';
 import { useSafeBack } from '../../hooks/useSafeBack';
 
 type ListType = 'followers' | 'following';
@@ -39,6 +40,7 @@ export default function SocialListScreen() {
   const [error, setError] = useState(false);
   const [followSavingId, setFollowSavingId] = useState<number | null>(null);
   const [removingId, setRemovingId] = useState<number | null>(null);
+  const [confirmTarget, setConfirmTarget] = useState<SocialUser | null>(null);
   const hasLoadedOnce = useRef(false);
   const isOwnFollowersList = type === 'followers' && myUsername !== null && myUsername === username;
 
@@ -121,6 +123,7 @@ export default function SocialListScreen() {
       showError(error instanceof ApiError ? error.message : 'Não foi possível remover este seguidor.');
     } finally {
       setRemovingId(null);
+      setConfirmTarget(null);
     }
   }
 
@@ -190,51 +193,67 @@ export default function SocialListScreen() {
           renderItem={({ item }) => {
             const isSelf = myUsername === item.username;
             const initials = item.username.slice(0, 2).toUpperCase();
+            const showActions = !isSelf;
             return (
               <Pressable style={styles.row} onPress={() => goToProfile(item.username)}>
-                <View style={styles.avatar}>
-                  {item.photo ? (
-                    <Image source={{ uri: item.photo }} style={styles.avatarImage} contentFit="cover" />
-                  ) : (
-                    <Text style={styles.avatarText}>{initials}</Text>
-                  )}
-                </View>
-                <Text style={styles.rowUsername} numberOfLines={1} ellipsizeMode="tail">
-                  {item.username}
-                </Text>
-                {!isSelf && (
-                  <Pressable
-                    style={[styles.followButton, item.isFollowing && styles.followButtonActive]}
-                    onPress={() => toggleFollow(item)}
-                    disabled={followSavingId === item.id}
-                    hitSlop={8}
-                  >
-                    <Text
-                      style={[styles.followButtonText, item.isFollowing && styles.followButtonTextActive]}
-                    >
-                      {item.isFollowing ? 'SEGUINDO' : 'SEGUIR'}
-                    </Text>
-                  </Pressable>
-                )}
-                {isOwnFollowersList && !isSelf && (
-                  <Pressable
-                    style={styles.removeButton}
-                    onPress={() => removeFollower(item)}
-                    disabled={removingId === item.id}
-                    hitSlop={8}
-                  >
-                    {removingId === item.id ? (
-                      <ActivityIndicator color={COLORS.nexoPink} size="small" />
+                <View style={styles.rowTop}>
+                  <View style={styles.avatar}>
+                    {item.photo ? (
+                      <Image source={{ uri: resolveMediaUrl(item.photo)! }} style={styles.avatarImage} contentFit="cover" />
                     ) : (
-                      <Text style={styles.removeButtonText}>REMOVER</Text>
+                      <Text style={styles.avatarText}>{initials}</Text>
                     )}
-                  </Pressable>
+                  </View>
+                  <Text style={styles.rowUsername}>{item.username}</Text>
+                </View>
+                {showActions && (
+                  <View style={styles.rowActions}>
+                    <Pressable
+                      style={[styles.followButton, item.isFollowing && styles.followButtonActive]}
+                      onPress={() => toggleFollow(item)}
+                      disabled={followSavingId === item.id}
+                      hitSlop={8}
+                    >
+                      <Text
+                        style={[styles.followButtonText, item.isFollowing && styles.followButtonTextActive]}
+                      >
+                        {item.isFollowing ? 'SEGUINDO' : 'SEGUIR'}
+                      </Text>
+                    </Pressable>
+                    {isOwnFollowersList && (
+                      <Pressable
+                        style={styles.removeButton}
+                        onPress={() => setConfirmTarget(item)}
+                        disabled={removingId === item.id}
+                        hitSlop={8}
+                      >
+                        {removingId === item.id ? (
+                          <ActivityIndicator color={COLORS.nexoPink} size="small" />
+                        ) : (
+                          <Text style={styles.removeButtonText}>REMOVER</Text>
+                        )}
+                      </Pressable>
+                    )}
+                  </View>
                 )}
               </Pressable>
             );
           }}
         />
       )}
+
+      <ConfirmModal
+        visible={confirmTarget !== null}
+        title="REMOVER SEGUIDOR"
+        message={
+          confirmTarget
+            ? `Tem certeza que quer remover ${confirmTarget.username} da sua lista de seguidores?`
+            : ''
+        }
+        loading={confirmTarget !== null && removingId === confirmTarget.id}
+        onCancel={() => setConfirmTarget(null)}
+        onConfirm={() => confirmTarget && removeFollower(confirmTarget)}
+      />
     </View>
   );
 }
@@ -321,14 +340,23 @@ const styles = StyleSheet.create({
     marginTop: SPACING.md,
   },
   row: {
-    flexDirection: 'row',
-    alignItems: 'center',
     gap: SPACING.sm,
     backgroundColor: COLORS.surface2,
     borderRadius: RADIUS.lg,
     borderWidth: 1,
     borderColor: COLORS.border,
     padding: SPACING.sm,
+  },
+  rowTop: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.sm,
+  },
+  rowActions: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: SPACING.sm,
+    marginLeft: 44 + SPACING.sm,
   },
   avatar: {
     width: 44,

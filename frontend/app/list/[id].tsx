@@ -15,6 +15,7 @@ import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { COLORS, SPACING, RADIUS, FONT } from '../../constants';
 import ErrorState from '../../components/ErrorState';
 import CreateListModal from '../../components/CreateListModal';
+import ConfirmModal from '../../components/ConfirmModal';
 import GameCover from '../../components/GameCover';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
@@ -57,6 +58,7 @@ export default function ListDetailScreen() {
   const [error, setError] = useState(false);
   const [removingId, setRemovingId] = useState<number | null>(null);
   const [editOpen, setEditOpen] = useState(false);
+  const [confirmTarget, setConfirmTarget] = useState<ListItemView | null>(null);
 
   const load = useCallback(async () => {
     if (!token || !id) return;
@@ -121,6 +123,7 @@ export default function ListDetailScreen() {
       showError(error instanceof ApiError ? error.message : 'Não foi possível remover o jogo.');
     } finally {
       setRemovingId(null);
+      setConfirmTarget(null);
     }
   }
 
@@ -194,7 +197,7 @@ export default function ListDetailScreen() {
               {isOwnList && (
                 <Pressable
                   style={styles.removeButton}
-                  onPress={() => removeGame(item.gameId)}
+                  onPress={() => setConfirmTarget(item)}
                   disabled={removingId !== null}
                 >
                   {removingId === item.gameId ? (
@@ -214,6 +217,19 @@ export default function ListDetailScreen() {
         onClose={() => setEditOpen(false)}
         list={list}
         onSaved={(updated) => setList({ ...updated, items: list.items })}
+      />
+
+      <ConfirmModal
+        visible={confirmTarget !== null}
+        title="REMOVER JOGO"
+        message={
+          confirmTarget
+            ? `Tem certeza que quer remover "${confirmTarget.game.title}" desta lista?`
+            : ''
+        }
+        loading={confirmTarget !== null && removingId === confirmTarget.gameId}
+        onCancel={() => setConfirmTarget(null)}
+        onConfirm={() => confirmTarget && removeGame(confirmTarget.gameId)}
       />
     </View>
   );

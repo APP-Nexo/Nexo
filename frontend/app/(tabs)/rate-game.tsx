@@ -8,6 +8,8 @@ import {
   TextInput,
   StatusBar,
   ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -15,6 +17,7 @@ import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
 import { COLORS, SPACING, RADIUS, FONT, GLOW } from '../../constants';
 import PrimaryButton from '../../components/PrimaryButton';
 import GameCover from '../../components/GameCover';
+import ConfirmModal from '../../components/ConfirmModal';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import { gamesApi } from '../../services/games';
@@ -233,6 +236,7 @@ export default function RateGameScreen() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
   const isEditing = existingReviewId !== null;
 
   useEffect(() => {
@@ -297,6 +301,7 @@ export default function RateGameScreen() {
       showError(error instanceof ApiError ? error.message : 'Não foi possível excluir sua avaliação.');
     } finally {
       setDeleting(false);
+      setConfirmDeleteOpen(false);
     }
   }
 
@@ -323,6 +328,11 @@ export default function RateGameScreen() {
         </View>
       </View>
 
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'android' ? -100 : 0}
+      >
       {loading ? (
         <View style={styles.loadingBox}>
           <ActivityIndicator color={COLORS.nexoBlue} />
@@ -394,7 +404,7 @@ export default function RateGameScreen() {
 
         {isEditing && (
           <Pressable
-            onPress={handleDelete}
+            onPress={() => setConfirmDeleteOpen(true)}
             disabled={submitting || deleting}
             style={styles.deleteButton}
             hitSlop={8}
@@ -406,6 +416,17 @@ export default function RateGameScreen() {
         )}
       </ScrollView>
       )}
+      </KeyboardAvoidingView>
+
+      <ConfirmModal
+        visible={confirmDeleteOpen}
+        title="EXCLUIR AVALIAÇÃO"
+        message="Tem certeza que quer excluir sua avaliação? Essa ação não pode ser desfeita."
+        confirmLabel="EXCLUIR"
+        loading={deleting}
+        onCancel={() => setConfirmDeleteOpen(false)}
+        onConfirm={handleDelete}
+      />
     </View>
   );
 }

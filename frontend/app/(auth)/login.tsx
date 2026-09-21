@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import Logo from '../../components/logo';
 import {
-  Alert,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -17,11 +16,13 @@ import { Link, useRouter } from 'expo-router';
 import { COLORS, SPACING, FONT } from '../../constants';
 import PrimaryButton from '@/components/PrimaryButton';
 import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../context/ToastContext';
 import { ApiError } from '../../services/api';
 
 export default function LoginScreen() {
   const router = useRouter();
   const { login } = useAuth();
+  const { showError } = useToast();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -34,7 +35,7 @@ export default function LoginScreen() {
   async function handleLogin() {
     if (isSubmitting) return;
     if (!email.trim() || !password.trim()) {
-      Alert.alert('Campos obrigatórios', 'Preencha e-mail e senha.');
+      showError('Preencha e-mail e senha.');
       return;
     }
 
@@ -45,18 +46,14 @@ export default function LoginScreen() {
     } catch (error) {
       const message =
         error instanceof ApiError ? error.message : 'Não foi possível entrar. Tente novamente.';
-      Alert.alert('Erro ao entrar', message);
+      showError(message);
     } finally {
       setIsSubmitting(false);
     }
   }
 
-  function handleCreateAccount() {
-    Alert.alert('Criar conta', 'Depois vocês podem navegar para a tela de cadastro.');
-  }
-
   function handleForgotPassword() {
-    Alert.alert('Recuperar senha', 'Fluxo de recuperação ainda não implementado.');
+    showError('Fluxo de recuperação de senha ainda não implementado.');
   }
 
   return (
@@ -65,9 +62,14 @@ export default function LoginScreen() {
 
       <KeyboardAvoidingView
         style={styles.keyboardArea}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'android' ? -100 : 0}
       >
-        <View style={styles.container}>
+        <ScrollView
+          contentContainerStyle={styles.container}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
           <View style={styles.phoneFrame}>
               <View style={styles.container}>
                 <View style={styles.card}>
@@ -139,17 +141,17 @@ export default function LoginScreen() {
 
                     <View style={styles.footer}>
                       <Text style={styles.footerText}>Novo por aqui?</Text>
-                      <Pressable onPress={handleCreateAccount}>
-                        <Link href="../register">
+                      <Link href="../register" asChild>
+                        <Pressable>
                           <Text style={styles.createAccountText}>CRIAR CONTA</Text>
-                        </Link>
-                      </Pressable>
+                        </Pressable>
+                      </Link>
                     </View>
                    </View>
                 </View>
               </View>
           </View>
-        </View>
+        </ScrollView>
       </KeyboardAvoidingView>
     </View>
   );

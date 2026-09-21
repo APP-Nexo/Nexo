@@ -73,7 +73,6 @@ function Layout() {
           <Stack.Screen name="(auth)/register" />
           <Stack.Screen name="(tabs)" />
           <Stack.Screen name="games/[id]" />
-          <Stack.Screen name="user/[username]" />
           <Stack.Screen name="list/[id]" />
         </Stack>
       </ToastProvider>

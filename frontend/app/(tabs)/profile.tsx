@@ -19,6 +19,7 @@ import CreateListModal from '../../components/CreateListModal';
 import GameCover from '../../components/GameCover';
 import { useAuth } from '../../context/AuthContext';
 import { meApi, type MeResponse } from '../../services/me';
+import { resolveMediaUrl } from '../../services/api';
 import { usersApi, type PublicUserReview, type UserStatsDTO } from '../../services/users';
 import { libraryApi, type LibraryGameDTO, type LibraryListDTO } from '../../services/library';
 
@@ -177,7 +178,7 @@ export default function ProfileScreen() {
           <View style={styles.headerMain}>
             <View style={styles.avatar}>
               {me.profile?.photo ? (
-                <Image source={{ uri: me.profile.photo }} style={styles.avatarImage} contentFit="cover" />
+                <Image source={{ uri: resolveMediaUrl(me.profile.photo)! }} style={styles.avatarImage} contentFit="cover" />
               ) : (
                 <Text style={styles.avatarText}>{initials}</Text>
               )}
@@ -191,7 +192,7 @@ export default function ProfileScreen() {
           </View>
 
           <View style={styles.headerActions}>
-            <Pressable style={styles.editButton}>
+            <Pressable style={styles.editButton} onPress={() => router.push('/edit-profile')}>
               <Text style={styles.editButtonText}>EDITAR</Text>
             </Pressable>
 
@@ -443,6 +444,11 @@ function ActivityItem({ entry, username }: { entry: PublicUserReview; username: 
         <Text style={[styles.activityStars, { color: COLORS.nexoBlue }]}>
           {renderStars(entry.rating)}
         </Text>
+        {entry.text ? (
+          <Text style={styles.activityComment} numberOfLines={2} ellipsizeMode="tail">
+            "{entry.text}"
+          </Text>
+        ) : null}
         <Text style={styles.activityAction}>review publicada</Text>
         <Text style={styles.activityMeta}>
           {username} • {timeAgo(entry.createdAt)}
@@ -739,6 +745,12 @@ const styles = StyleSheet.create({
     fontFamily: FONT.family.body,
     color: COLORS.textMuted,
     fontSize: FONT.caption,
+  },
+  activityComment: {
+    fontFamily: FONT.family.body,
+    color: COLORS.textSecondary,
+    fontSize: FONT.small,
+    lineHeight: 16,
   },
 
   listsHeaderRow: {

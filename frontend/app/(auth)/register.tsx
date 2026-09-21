@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import {
-  Alert,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -17,11 +16,13 @@ import { COLORS, SPACING, FONT } from '../../constants';
 import Logo from '../../components/logo';
 import PrimaryButton from '@/components/PrimaryButton';
 import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../context/ToastContext';
 import { ApiError } from '../../services/api';
 
 export default function RegisterScreen() {
   const router = useRouter();
   const { register } = useAuth();
+  const { showError } = useToast();
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -34,12 +35,12 @@ export default function RegisterScreen() {
     if (isSubmitting) return;
 
     if (!username.trim() || !email.trim() || !password.trim() || !confirmPassword.trim()) {
-      Alert.alert('Campos obrigatórios', 'Preencha todos os campos.');
+      showError('Preencha todos os campos.');
       return;
     }
 
     if (password !== confirmPassword) {
-      Alert.alert('Senha inválida', 'As senhas não coincidem.');
+      showError('As senhas não coincidem.');
       return;
     }
 
@@ -52,7 +53,7 @@ export default function RegisterScreen() {
         error instanceof ApiError
           ? error.message
           : 'Não foi possível criar sua conta. Tente novamente.';
-      Alert.alert('Erro ao cadastrar', message);
+      showError(message);
     } finally {
       setIsSubmitting(false);
     }
@@ -84,9 +85,14 @@ export default function RegisterScreen() {
 
       <KeyboardAvoidingView
         style={styles.keyboardArea}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'android' ? -100 : 0}
       >
-        <View style={styles.container}>
+        <ScrollView
+          contentContainerStyle={styles.container}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
           <View style={styles.phoneFrame}>
             <View style={styles.card}>
               <View style={styles.logoBox}>
@@ -201,8 +207,8 @@ export default function RegisterScreen() {
               </View>
             </View>
           </View>
-        </View>
-      </KeyboardAvoidingView> 
+        </ScrollView>
+      </KeyboardAvoidingView>
     </View>
   );
 }

@@ -20,7 +20,7 @@ import { useToast } from '@/context/ToastContext';
 import { meApi } from '@/services/me';
 import { usersApi, type UserPublicProfile, type UserStatsDTO, type PublicUserReview, type PublicUserList } from '@/services/users';
 import { socialApi } from '@/services/social';
-import { ApiError } from '@/services/api';
+import { ApiError, resolveMediaUrl } from '@/services/api';
 import { useSafeBack } from '@/hooks/useSafeBack';
 
 const MAX_RATING = 5;
@@ -187,7 +187,7 @@ export default function PublicProfileScreen() {
           <View style={styles.headerMain}>
             <View style={styles.avatar}>
               {profile.photo ? (
-                <Image source={{ uri: profile.photo }} style={styles.avatarImage} contentFit="cover" />
+                <Image source={{ uri: resolveMediaUrl(profile.photo)! }} style={styles.avatarImage} contentFit="cover" />
               ) : (
                 <Text style={styles.avatarText}>{initials}</Text>
               )}
@@ -402,6 +402,11 @@ function ActivityItem({ entry, username }: { entry: PublicUserReview; username: 
         <Text style={[styles.activityStars, { color: COLORS.nexoBlue }]}>
           {renderStars(entry.rating)}
         </Text>
+        {entry.text ? (
+          <Text style={styles.activityComment} numberOfLines={2} ellipsizeMode="tail">
+            "{entry.text}"
+          </Text>
+        ) : null}
         <Text style={styles.activityAction}>review publicada</Text>
         <Text style={styles.activityMeta}>
           {username} • {timeAgo(entry.createdAt)}
@@ -648,6 +653,12 @@ const styles = StyleSheet.create({
     fontFamily: FONT.family.body,
     color: COLORS.textMuted,
     fontSize: FONT.caption,
+  },
+  activityComment: {
+    fontFamily: FONT.family.body,
+    color: COLORS.textSecondary,
+    fontSize: FONT.small,
+    lineHeight: 16,
   },
 
   horizontalList: {

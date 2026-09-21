@@ -2,6 +2,16 @@ const DEFAULT_API_URL = 'http://localhost:3000/api';
 
 export const API_URL = process.env.EXPO_PUBLIC_API_URL?.trim() || DEFAULT_API_URL;
 
+// Uploaded files (avatars, banners) are served from the API's origin, not
+// under /api — the backend returns paths like `/uploads/avatars/x.jpg`.
+export const API_ORIGIN = API_URL.replace(/\/api\/?$/, '');
+
+export function resolveMediaUrl(path: string | null | undefined): string | null {
+  if (!path) return null;
+  if (/^https?:\/\//i.test(path)) return path;
+  return `${API_ORIGIN}${path}`;
+}
+
 export class ApiError extends Error {
   code: string;
   status: number;
@@ -31,15 +41,18 @@ export function setUnauthorizedHandler(handler: UnauthorizedHandler | null) {
 }
 
 async function rawFetch(path: string, method: string, body: unknown, token?: string | null) {
+  const isFormData = typeof FormData !== 'undefined' && body instanceof FormData;
   const headers: Record<string, string> = {};
-  if (body !== undefined) headers['Content-Type'] = 'application/json';
+  // FormData bodies must NOT get an explicit Content-Type: fetch needs to set
+  // it itself (multipart/form-data; boundary=...) based on the actual parts.
+  if (body !== undefined && !isFormData) headers['Content-Type'] = 'application/json';
   if (token) headers.Authorization = `Bearer ${token}`;
 
   try {
     return await fetch(`${API_URL}${path}`, {
       method,
       headers,
-      body: body !== undefined ? JSON.stringify(body) : undefined,
+      body: body === undefined ? undefined : isFormData ? (body as FormData) : JSON.stringify(body),
     });
   } catch {
     throw new ApiError(

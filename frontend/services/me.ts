@@ -24,6 +24,9 @@ export const meApi = {
   update(token: string, body: { username?: string; bio?: string }) {
     return apiFetch<MeResponse>('/me', { method: 'PUT', token, body });
   },
+  updateMedia(token: string, formData: FormData) {
+    return apiFetch<MeResponse>('/me', { method: 'PUT', token, body: formData });
+  },
   changePassword(token: string, body: { currentPassword: string; newPassword: string }) {
     return apiFetch<{ message: string }>('/me/password', { method: 'PUT', token, body });
   },
