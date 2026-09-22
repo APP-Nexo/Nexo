@@ -253,6 +253,67 @@ describe('Me Routes', () => {
             );
         });
 
+        it('rejects a reserved username with a clear message', async () => {
+            vi.mocked(prisma.user.findUnique).mockResolvedValueOnce({
+                role: { role: 'user' },
+            } as never);
+
+            const response = await app.inject({
+                method: 'PUT',
+                url: '/api/me',
+                remoteAddress: nextClientAddress(),
+                headers: { authorization: 'Bearer token' },
+                payload: { username: 'master' },
+            });
+
+            expect(response.statusCode).toBe(400);
+            expect(response.json().message).toBe('Este nome de usuário é reservado e não pode ser usado.');
+            expect(prisma.user.update).not.toHaveBeenCalled();
+        });
+
+        it.each(['master', 'somethingelse'])(
+            'blocks the master account from changing its username (to %s)',
+            async (newUsername) => {
+                vi.mocked(prisma.user.findUnique).mockResolvedValueOnce({
+                    role: { role: 'master' },
+                } as never);
+
+                const response = await app.inject({
+                    method: 'PUT',
+                    url: '/api/me',
+                    remoteAddress: nextClientAddress(),
+                    headers: { authorization: 'Bearer token' },
+                    payload: { username: newUsername },
+                });
+
+                expect(response.statusCode).toBe(400);
+                expect(response.json().message).toBe(
+                    'O nome de usuário da conta master não pode ser alterado.',
+                );
+                expect(prisma.user.update).not.toHaveBeenCalled();
+            },
+        );
+
+        it('lets the master account update its bio without touching the username', async () => {
+            vi.mocked(prisma.user.update).mockResolvedValueOnce(
+                meRecord({ username: 'master', profile: profile({ bio: 'Still master' }) }) as never,
+            );
+
+            const response = await app.inject({
+                method: 'PUT',
+                url: '/api/me',
+                remoteAddress: nextClientAddress(),
+                headers: { authorization: 'Bearer token' },
+                payload: { bio: 'Still master' },
+            });
+
+            expect(response.statusCode).toBe(200);
+            expect(prisma.user.findUnique).not.toHaveBeenCalled();
+            expect(prisma.user.update).toHaveBeenCalledWith(
+                expect.objectContaining({ data: { profile: { upsert: { create: { bio: 'Still master' }, update: { bio: 'Still master' } } } } }),
+            );
+        });
+
         it('rejects a case-insensitive username collision', async () => {
             vi.mocked(prisma.user.findFirst).mockResolvedValueOnce({ id: 2 } as never);
 
@@ -287,6 +348,8 @@ describe('Me Routes', () => {
             [{ roleId: 99 }, 400],
             [{ username: '   ' }, 400],
             [{ bio: 'x'.repeat(501) }, 400],
+            [{ photo: 'https://evil.example/x.jpg' }, 400],
+            [{ banner: '' }, 400],
         ])('rejects an invalid profile payload', async (payload, statusCode) => {
             const response = await app.inject({
                 method: 'PUT',
@@ -298,6 +361,71 @@ describe('Me Routes', () => {
 
             expect(response.statusCode).toBe(statusCode);
             expect(prisma.user.update).not.toHaveBeenCalled();
+        });
+
+        it('removes the current photo and banner, deleting the old files', async () => {
+            vi.mocked(prisma.user.findUnique).mockResolvedValueOnce({
+                profile: {
+                    photo: '/uploads/avatars/1_old-photo.jpg',
+                    banner: '/uploads/banners/1_old-banner.jpg',
+                },
+            } as never);
+            vi.mocked(prisma.user.update).mockResolvedValueOnce(
+                meRecord({ profile: profile({ photo: null, banner: null }) }) as never,
+            );
+
+            const response = await app.inject({
+                method: 'PUT',
+                url: '/api/me',
+                remoteAddress: nextClientAddress(),
+                headers: { authorization: 'Bearer token' },
+                payload: { photo: null, banner: null },
+            });
+
+            expect(response.statusCode).toBe(200);
+            expect(response.json()).toEqual(
+                expect.objectContaining({
+                    profile: expect.objectContaining({ photo: null, banner: null }),
+                }),
+            );
+            expect(prisma.user.update).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    data: expect.objectContaining({
+                        profile: { upsert: { create: { photo: null, banner: null }, update: { photo: null, banner: null } } },
+                    }),
+                }),
+            );
+            expect(fs.unlink).toHaveBeenCalledTimes(2);
+            const unlinkedPaths = vi.mocked(fs.unlink).mock.calls.map((call) => call[0]);
+            expect(unlinkedPaths.some((p) => String(p).endsWith('1_old-photo.jpg'))).toBe(true);
+            expect(unlinkedPaths.some((p) => String(p).endsWith('1_old-banner.jpg'))).toBe(true);
+        });
+
+        it('removing only the photo leaves the banner untouched', async () => {
+            vi.mocked(prisma.user.findUnique).mockResolvedValueOnce({
+                profile: { photo: '/uploads/avatars/1_old-photo.jpg', banner: null },
+            } as never);
+            vi.mocked(prisma.user.update).mockResolvedValueOnce(
+                meRecord({ profile: profile({ photo: null }) }) as never,
+            );
+
+            const response = await app.inject({
+                method: 'PUT',
+                url: '/api/me',
+                remoteAddress: nextClientAddress(),
+                headers: { authorization: 'Bearer token' },
+                payload: { photo: null },
+            });
+
+            expect(response.statusCode).toBe(200);
+            expect(prisma.user.update).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    data: expect.objectContaining({
+                        profile: { upsert: { create: { photo: null }, update: { photo: null } } },
+                    }),
+                }),
+            );
+            expect(fs.unlink).toHaveBeenCalledTimes(1);
         });
     });
 

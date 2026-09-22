@@ -34,6 +34,10 @@ export function isValidUsername(value: string) {
     );
 }
 
+export function isReservedUsername(value: string) {
+    return RESERVED_USERNAMES.has(value);
+}
+
 export function hashOpaqueToken(token: string) {
     return createHash('sha256').update(token, 'utf8').digest('hex');
 }

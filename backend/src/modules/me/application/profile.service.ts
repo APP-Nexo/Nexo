@@ -6,6 +6,7 @@ import { comparePassword } from '../../../shared/utils/argon2/compare_password.j
 import {
     USERNAME_MAX_LENGTH as AUTH_USERNAME_MAX_LENGTH,
     USERNAME_MIN_LENGTH as AUTH_USERNAME_MIN_LENGTH,
+    isReservedUsername,
     isValidUsername,
     normalizeUsername,
 } from '../../../shared/utils/auth/auth_values.js';
@@ -24,7 +25,7 @@ import {
     USERNAME_MIN_LENGTH,
 } from '../me.interfaces.js';
 
-const TEXT_FIELDS = new Set(['username', 'bio']);
+const JSON_FIELDS = new Set(['username', 'bio', 'photo', 'banner']);
 
 const PROFILE_SELECT = {
     friendlyId: true,
@@ -84,7 +85,7 @@ function normalizeUpdatePayload(payload: UpdateMePayload, allowEmpty = false): U
 
     const input = payload as Record<string, unknown>;
     const keys = Object.keys(input);
-    if (keys.some((key) => !TEXT_FIELDS.has(key))) {
+    if (keys.some((key) => !JSON_FIELDS.has(key))) {
         AppError.throw('Campo de perfil inválido.', 400);
     }
     if (!allowEmpty && keys.length === 0) {
@@ -99,6 +100,9 @@ function normalizeUpdatePayload(payload: UpdateMePayload, allowEmpty = false): U
 
         const username = normalizeUsername(input.username);
         if (!isValidUsername(username)) {
+            if (isReservedUsername(username)) {
+                AppError.throw('Este nome de usuário é reservado e não pode ser usado.', 400);
+            }
             AppError.throw(
                 `O username deve ter entre ${USERNAME_MIN_LENGTH} e ${USERNAME_MAX_LENGTH} caracteres e usar apenas letras, números, ponto, hífen ou underscore.`,
                 400,
@@ -114,10 +118,50 @@ function normalizeUpdatePayload(payload: UpdateMePayload, allowEmpty = false): U
         normalized.bio = input.bio;
     }
 
-    if (!allowEmpty && normalized.username === undefined && normalized.bio === undefined) {
+    // photo/banner can only be *set* via multipart upload; here they can only
+    // be cleared, so the only value this JSON path accepts is null.
+    if (Object.hasOwn(input, 'photo')) {
+        if (input.photo !== null) {
+            AppError.throw('Envie um upload para definir a foto, ou null para remover.', 400);
+        }
+        normalized.photo = null;
+    }
+    if (Object.hasOwn(input, 'banner')) {
+        if (input.banner !== null) {
+            AppError.throw('Envie um upload para definir o banner, ou null para remover.', 400);
+        }
+        normalized.banner = null;
+    }
+
+    if (
+        !allowEmpty &&
+        normalized.username === undefined &&
+        normalized.bio === undefined &&
+        normalized.photo === undefined &&
+        normalized.banner === undefined
+    ) {
         AppError.throw('Informe ao menos um campo para atualizar.', 400);
     }
     return normalized;
+}
+
+function payloadHasUsername(payload: UpdateMePayload): boolean {
+    return typeof (payload as Record<string, unknown>).username === 'string';
+}
+
+async function isMasterAccount(userId: number): Promise<boolean> {
+    const user = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { role: { select: { role: true } } },
+    });
+    return user?.role.role === 'master';
+}
+
+async function ensureUsernameChangeAllowed(userId: number, payload: UpdateMePayload) {
+    if (!payloadHasUsername(payload)) return;
+    if (await isMasterAccount(userId)) {
+        AppError.throw('O nome de usuário da conta master não pode ser alterado.', 400);
+    }
 }
 
 async function ensureUsernameAvailable(userId: number, username: string | undefined) {
@@ -139,8 +183,10 @@ function buildUpdateData(
     payload: UpdateMePayload,
     uploads: readonly StagedUpload[] = [],
 ): Prisma.UserUpdateInput {
-    const profileData: { bio?: string; photo?: string; banner?: string } = {};
+    const profileData: { bio?: string; photo?: string | null; banner?: string | null } = {};
     if (payload.bio !== undefined) profileData.bio = payload.bio;
+    if (payload.photo === null) profileData.photo = null;
+    if (payload.banner === null) profileData.banner = null;
     for (const upload of uploads) profileData[upload.field] = upload.url;
 
     return {
@@ -171,15 +217,34 @@ export class MeProfileService {
     }
 
     static async updateMe(userId: number, payload: UpdateMePayload) {
+        await ensureUsernameChangeAllowed(userId, payload);
         const normalized = normalizeUpdatePayload(payload);
         await ensureUsernameAvailable(userId, normalized.username);
 
+        const removingPhoto = normalized.photo === null;
+        const removingBanner = normalized.banner === null;
+
         try {
+            const current =
+                removingPhoto || removingBanner
+                    ? await prisma.user.findUnique({
+                          where: { id: userId },
+                          select: { profile: { select: { photo: true, banner: true } } },
+                      })
+                    : null;
+
             const updated = await prisma.user.update({
                 where: { id: userId },
                 data: buildUpdateData(normalized),
                 select: ME_SELECT,
             });
+
+            const oldFiles = [
+                removingPhoto ? localProfileFilePath(current?.profile?.photo, 'avatars') : null,
+                removingBanner ? localProfileFilePath(current?.profile?.banner, 'banners') : null,
+            ].filter((path): path is string => path !== null);
+            if (oldFiles.length > 0) await removeProfileFiles(oldFiles);
+
             return toMeResponse(updated);
         } catch (error) {
             mapUpdateError(error);
@@ -188,6 +253,7 @@ export class MeProfileService {
 
     static async updateMeMultipart(userId: number, req: FastifyRequest) {
         const parsed = await parseProfileMultipart(req, userId);
+        await ensureUsernameChangeAllowed(userId, parsed.payload);
         const payload = normalizeUpdatePayload(parsed.payload, true);
         const staged = parsed.uploads;
 

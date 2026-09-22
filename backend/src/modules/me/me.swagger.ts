@@ -87,7 +87,8 @@ export const updateMeSchemaSwagger = {
         tags: ['Me'],
         summary: '/me',
         description:
-            'Accepts application/json or multipart/form-data with only photo, banner, username and bio.',
+            'Accepts application/json or multipart/form-data with only photo, banner, username and bio. ' +
+            'Over JSON, photo/banner may only be set to null, to remove the current one — setting one requires a multipart upload.',
         security: [{ bearerAuth: [] }],
         consumes: ['application/json', 'multipart/form-data'],
         body: {
@@ -98,8 +99,8 @@ export const updateMeSchemaSwagger = {
             properties: {
                 username: usernameSchema,
                 bio: { type: 'string', maxLength: BIO_MAX_LENGTH },
-                photo: { type: 'string', contentEncoding: 'binary' },
-                banner: { type: 'string', contentEncoding: 'binary' },
+                photo: { type: ['string', 'null'], contentEncoding: 'binary' },
+                banner: { type: ['string', 'null'], contentEncoding: 'binary' },
             },
         },
         response: {

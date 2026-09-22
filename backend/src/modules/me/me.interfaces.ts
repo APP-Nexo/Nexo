@@ -7,6 +7,8 @@ export const PASSWORD_MAX_LENGTH = 128;
 export type UpdateMePayload = {
     username?: string;
     bio?: string;
+    photo?: null;
+    banner?: null;
 };
 
 export type ChangePasswordPayload = {
