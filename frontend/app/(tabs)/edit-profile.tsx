@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -12,7 +12,7 @@ import {
   Platform,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
@@ -25,8 +25,42 @@ import { useSafeBack } from '../../hooks/useSafeBack';
 import { meApi } from '../../services/me';
 import { ApiError, resolveMediaUrl } from '../../services/api';
 
-function assetToFormPart(asset: ImagePicker.ImagePickerAsset): Blob | { uri: string; name: string; type: string } {
-  if (Platform.OS === 'web' && asset.file) return asset.file;
+// expo-image-picker's web implementation ignores the `quality`/`allowsEditing`
+// options entirely and hands back the original file as-is — a real phone
+// photo easily lands well above the backend's 5MB upload limit. Re-encode it
+// through a canvas so web uploads stay small regardless of the source file.
+const WEB_UPLOAD_MAX_DIMENSION = 1200;
+const WEB_UPLOAD_QUALITY = 0.8;
+
+async function compressImageForWeb(file: File): Promise<Blob> {
+  const bitmap = await createImageBitmap(file);
+  const scale = Math.min(1, WEB_UPLOAD_MAX_DIMENSION / Math.max(bitmap.width, bitmap.height));
+  const width = Math.round(bitmap.width * scale);
+  const height = Math.round(bitmap.height * scale);
+
+  const canvas = document.createElement('canvas');
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return file;
+  ctx.drawImage(bitmap, 0, 0, width, height);
+
+  const blob = await new Promise<Blob | null>((resolve) =>
+    canvas.toBlob(resolve, 'image/jpeg', WEB_UPLOAD_QUALITY),
+  );
+  return blob ?? file;
+}
+
+async function assetToFormPart(
+  asset: ImagePicker.ImagePickerAsset,
+): Promise<Blob | { uri: string; name: string; type: string }> {
+  if (Platform.OS === 'web' && asset.file) {
+    try {
+      return await compressImageForWeb(asset.file);
+    } catch {
+      return asset.file;
+    }
+  }
   return {
     uri: asset.uri,
     name: asset.fileName ?? `upload-${Date.now()}.jpg`,
@@ -66,36 +100,68 @@ export default function EditProfileScreen() {
   const [showConfirmNewPassword, setShowConfirmNewPassword] = useState(false);
   const [changingPassword, setChangingPassword] = useState(false);
 
+  const [removingPhoto, setRemovingPhoto] = useState(false);
+  const [removingBanner, setRemovingBanner] = useState(false);
+
   const [dangerExpanded, setDangerExpanded] = useState(false);
   const [deletePassword, setDeletePassword] = useState('');
   const [showDeletePassword, setShowDeletePassword] = useState(false);
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
+  // This screen lives inside the tabs navigator, so it never unmounts when
+  // the user navigates away — it just loses focus. `token` also changes in
+  // the background (~every 15min, on refresh) while the user might still be
+  // actively editing here. We need to load fresh data on every genuine
+  // re-visit (e.g. after a failed save, the fields must show the real saved
+  // values again, not the rejected attempt) WITHOUT reloading on every token
+  // refresh while the user stays put (which would clobber in-progress
+  // edits). `useFocusEffect` with a stable (empty-deps) callback gives us
+  // exactly that: it only fires on real navigation focus/blur, never just
+  // because `token` changed — so the token is read from a ref instead of a
+  // dependency.
+  const tokenRef = useRef(token);
   useEffect(() => {
-    if (!token) return;
-    let cancelled = false;
-    (async () => {
-      try {
-        const me = await meApi.get(token);
-        if (cancelled) return;
-        setEmail(me.email);
-        setUsername(me.username);
-        setOriginalUsername(me.username);
-        setBio(me.profile?.bio ?? '');
-        setOriginalBio(me.profile?.bio ?? '');
-        setPhotoUrl(me.profile?.photo ?? null);
-        setBannerUrl(me.profile?.banner ?? null);
-      } catch {
-        showError('Não foi possível carregar seus dados.');
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
+    tokenRef.current = token;
   }, [token]);
+
+  const hasLoadedRef = useRef(false);
+
+  useFocusEffect(
+    useCallback(() => {
+      let cancelled = false;
+      const currentToken = tokenRef.current;
+      if (currentToken && !hasLoadedRef.current) {
+        (async () => {
+          try {
+            const me = await meApi.get(currentToken);
+            if (cancelled) return;
+            hasLoadedRef.current = true;
+            setEmail(me.email);
+            setUsername(me.username);
+            setOriginalUsername(me.username);
+            setBio(me.profile?.bio ?? '');
+            setOriginalBio(me.profile?.bio ?? '');
+            setPhotoUrl(me.profile?.photo ?? null);
+            setBannerUrl(me.profile?.banner ?? null);
+            // A fresh load reflects what's actually saved — any unsaved
+            // pending pick (e.g. from a failed save) is abandoned once the
+            // user has left and come back.
+            setPhotoAsset(null);
+            setBannerAsset(null);
+          } catch {
+            if (!cancelled) showError('Não foi possível carregar seus dados.');
+          } finally {
+            if (!cancelled) setLoading(false);
+          }
+        })();
+      }
+      return () => {
+        cancelled = true;
+        hasLoadedRef.current = false;
+      };
+    }, []),
+  );
 
   async function pickImage(target: 'photo' | 'banner') {
     try {
@@ -115,6 +181,42 @@ export default function EditProfileScreen() {
       else setBannerAsset(result.assets[0]);
     } catch {
       showError('Não foi possível selecionar a imagem.');
+    }
+  }
+
+  async function removePhoto() {
+    if (photoAsset) {
+      setPhotoAsset(null);
+      return;
+    }
+    if (!token || !photoUrl || removingPhoto) return;
+    setRemovingPhoto(true);
+    try {
+      await meApi.update(token, { photo: null });
+      setPhotoUrl(null);
+      showSuccess('Foto removida.');
+    } catch (error) {
+      showError(error instanceof ApiError ? error.message : 'Não foi possível remover a foto.');
+    } finally {
+      setRemovingPhoto(false);
+    }
+  }
+
+  async function removeBanner() {
+    if (bannerAsset) {
+      setBannerAsset(null);
+      return;
+    }
+    if (!token || !bannerUrl || removingBanner) return;
+    setRemovingBanner(true);
+    try {
+      await meApi.update(token, { banner: null });
+      setBannerUrl(null);
+      showSuccess('Banner removido.');
+    } catch (error) {
+      showError(error instanceof ApiError ? error.message : 'Não foi possível remover o banner.');
+    } finally {
+      setRemovingBanner(false);
     }
   }
 
@@ -140,8 +242,8 @@ export default function EditProfileScreen() {
         const formData = new FormData();
         if (usernameChanged) formData.append('username', trimmedUsername);
         formData.append('bio', bio);
-        if (photoAsset) formData.append('photo', assetToFormPart(photoAsset) as never);
-        if (bannerAsset) formData.append('banner', assetToFormPart(bannerAsset) as never);
+        if (photoAsset) formData.append('photo', (await assetToFormPart(photoAsset)) as never);
+        if (bannerAsset) formData.append('banner', (await assetToFormPart(bannerAsset)) as never);
         const updated = await meApi.updateMedia(token, formData);
         setPhotoUrl(updated.profile?.photo ?? null);
         setBannerUrl(updated.profile?.banner ?? null);
@@ -152,8 +254,13 @@ export default function EditProfileScreen() {
         if (usernameChanged) payload.username = trimmedUsername;
         await meApi.update(token, payload);
       }
+      // This screen lives inside the tabs navigator and never unmounts, so
+      // these need to be resynced explicitly — otherwise a later visit would
+      // compare against the pre-save values again.
+      setOriginalUsername(trimmedUsername);
+      setOriginalBio(bio);
       showSuccess('Perfil atualizado!');
-      goBack();
+      router.replace('/(tabs)/profile');
     } catch (error) {
       showError(error instanceof ApiError ? error.message : 'Não foi possível salvar seu perfil.');
     } finally {
@@ -283,6 +390,25 @@ export default function EditProfileScreen() {
                   </View>
                 </Pressable>
               </View>
+
+              {(photoUrl || photoAsset || bannerUrl || bannerAsset) && (
+                <View style={styles.removeMediaRow}>
+                  {(photoUrl || photoAsset) && (
+                    <Pressable onPress={removePhoto} disabled={removingPhoto} hitSlop={8}>
+                      <Text style={styles.removeMediaText}>
+                        {removingPhoto ? 'REMOVENDO...' : 'REMOVER FOTO'}
+                      </Text>
+                    </Pressable>
+                  )}
+                  {(bannerUrl || bannerAsset) && (
+                    <Pressable onPress={removeBanner} disabled={removingBanner} hitSlop={8}>
+                      <Text style={styles.removeMediaText}>
+                        {removingBanner ? 'REMOVENDO...' : 'REMOVER BANNER'}
+                      </Text>
+                    </Pressable>
+                  )}
+                </View>
+              )}
 
               <View style={styles.inputGroup}>
                 <Text style={styles.label}>E-MAIL</Text>
@@ -588,6 +714,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderWidth: 2,
     borderColor: COLORS.bodyBackground,
+  },
+  removeMediaRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: SPACING.lg,
+  },
+  removeMediaText: {
+    fontFamily: FONT.family.display,
+    color: COLORS.nexoPink,
+    fontSize: FONT.caption,
+    letterSpacing: 0.5,
   },
   inputGroup: {
     gap: 8,

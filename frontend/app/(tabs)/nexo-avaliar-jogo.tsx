@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -9,7 +9,7 @@ import {
   ActivityIndicator,
   Pressable,
 } from 'react-native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { COLORS, SPACING, FONT, RADIUS } from '../../constants';
 import ErrorState from '../../components/ErrorState';
 import GameCover from '../../components/GameCover';
@@ -51,6 +51,31 @@ export default function GamesScreen() {
     const timer = setTimeout(() => load(query), SEARCH_DEBOUNCE_MS);
     return () => clearTimeout(timer);
   }, [query, load]);
+
+  // Ratings/covers can change on other screens (rating a game). On refocus,
+  // update the already-visible games in place instead of replacing the whole
+  // list — a full replace would reset scroll position and drop any pages
+  // loaded via "load more".
+  const refreshVisible = useCallback(async (q: string) => {
+    try {
+      const page = await gamesApi.list({ q: q.trim() || undefined, limit: 20 });
+      setGames((prev) => {
+        if (prev.length === 0) return prev;
+        const freshById = new Map(page.data.map((g) => [g.id, g]));
+        return prev.map((g) => freshById.get(g.id) ?? g);
+      });
+    } catch {
+      // best-effort silent refresh; a manual reload picks up fresh data
+    }
+  }, []);
+
+  const hasFocusedOnce = useRef(false);
+  useFocusEffect(
+    useCallback(() => {
+      if (hasFocusedOnce.current) refreshVisible(query);
+      hasFocusedOnce.current = true;
+    }, [refreshVisible, query]),
+  );
 
   async function loadMore() {
     if (cursor === null || loadingMore || loading) return;

@@ -21,7 +21,10 @@ export const meApi = {
   get(token: string) {
     return apiFetch<MeResponse>('/me', { token });
   },
-  update(token: string, body: { username?: string; bio?: string }) {
+  update(
+    token: string,
+    body: { username?: string; bio?: string; photo?: null; banner?: null },
+  ) {
     return apiFetch<MeResponse>('/me', { method: 'PUT', token, body });
   },
   updateMedia(token: string, formData: FormData) {

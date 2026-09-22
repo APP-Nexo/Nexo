@@ -62,7 +62,8 @@ export default function Home() {
     // Only show the full-screen spinner on the very first load; a refocus
     // (e.g. coming back from rating a game) refreshes quietly so the feed
     // doesn't flash back to a loading state the user already saw.
-    if (!hasLoadedOnce.current) setLoading(true);
+    const isRefocus = hasLoadedOnce.current;
+    if (!isRefocus) setLoading(true);
     setError(false);
     try {
       const [trendingPage, feedPage, me] = await Promise.all([
@@ -71,8 +72,18 @@ export default function Home() {
         token ? meApi.get(token).catch(() => null) : Promise.resolve(null),
       ]);
       setTrending(trendingPage.data.map(toCarouselGame));
-      setFeed(feedPage.feed);
-      setFeedCursor(feedPage.nextCursor);
+      if (isRefocus) {
+        // Update in place instead of replacing — a full replace would reset
+        // scroll position and drop any pages loaded via "load more".
+        setFeed((prev) => {
+          if (prev.length === 0) return prev;
+          const freshById = new Map(feedPage.feed.map((item) => [item.id, item]));
+          return prev.map((item) => freshById.get(item.id) ?? item);
+        });
+      } else {
+        setFeed(feedPage.feed);
+        setFeedCursor(feedPage.nextCursor);
+      }
       if (me) {
         setInitials(me.username.slice(0, 2).toUpperCase());
         setMyUserId(me.id);
