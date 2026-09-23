@@ -28,13 +28,22 @@ export const app = fastify({
 });
 
 await setupSwagger(app);
+// This machine's LAN IP changes whenever it switches networks, which would
+// otherwise mean updating CORS_ORIGINS by hand every time too. Since this
+// stack only ever runs on a private dev network (never a real public
+// deployment — see the example secrets/passwords throughout .env), any
+// private-range origin on the Expo web dev port is trusted automatically;
+// CORS_ORIGINS remains available for anything else (e.g. localhost).
+const LAN_DEV_ORIGIN_PATTERN =
+    /^http:\/\/(10(?:\.\d{1,3}){3}|172\.(?:1[6-9]|2\d|3[01])(?:\.\d{1,3}){2}|192\.168(?:\.\d{1,3}){2}):8081$/;
+
 await app.register(cors, {
     origin(origin, callback) {
         if (!origin || (!env.isProduction && env.corsOrigins.length === 0)) {
             callback(null, true);
             return;
         }
-        callback(null, env.corsOrigins.includes(origin));
+        callback(null, env.corsOrigins.includes(origin) || LAN_DEV_ORIGIN_PATTERN.test(origin));
     },
     methods: ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE'],
 });

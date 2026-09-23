@@ -1,6 +1,22 @@
+import Constants from 'expo-constants';
+
 const DEFAULT_API_URL = 'http://localhost:3000/api';
 
-export const API_URL = process.env.EXPO_PUBLIC_API_URL?.trim() || DEFAULT_API_URL;
+// The backend's LAN IP changes whenever the machine switches networks —
+// hardcoding it in EXPO_PUBLIC_API_URL means updating it by hand every time.
+// `hostUri` is the host:port the Expo dev server is *actually* being reached
+// at right now (set by the CLI, dev-only) — same LAN path a phone or browser
+// already used to load this bundle, so the API must be reachable there too.
+// An explicit EXPO_PUBLIC_API_URL (e.g. pointing at a deployed backend) still
+// wins when set.
+function resolveDevApiUrl(): string | null {
+  const hostUri = Constants.expoConfig?.hostUri;
+  const host = hostUri?.split(':')[0];
+  return host ? `http://${host}:3000/api` : null;
+}
+
+export const API_URL =
+  process.env.EXPO_PUBLIC_API_URL?.trim() || resolveDevApiUrl() || DEFAULT_API_URL;
 
 // Uploaded files (avatars, banners) are served from the API's origin, not
 // under /api — the backend returns paths like `/uploads/avatars/x.jpg`.

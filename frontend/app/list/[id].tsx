@@ -50,7 +50,7 @@ export default function ListDetailScreen() {
   const goBack = useSafeBack();
   const { id, username } = useLocalSearchParams<{ id: string; username?: string }>();
   const { token } = useAuth();
-  const { showError } = useToast();
+  const { showError, showSuccess } = useToast();
   const isOwnList = !username;
 
   const [list, setList] = useState<ListView | null>(null);
@@ -59,6 +59,8 @@ export default function ListDetailScreen() {
   const [removingId, setRemovingId] = useState<number | null>(null);
   const [editOpen, setEditOpen] = useState(false);
   const [confirmTarget, setConfirmTarget] = useState<ListItemView | null>(null);
+  const [deletingList, setDeletingList] = useState(false);
+  const [confirmDeleteListOpen, setConfirmDeleteListOpen] = useState(false);
 
   const load = useCallback(async () => {
     if (!token || !id) return;
@@ -127,6 +129,20 @@ export default function ListDetailScreen() {
     }
   }
 
+  async function deleteList() {
+    if (!isOwnList || !token || !list || deletingList) return;
+    setDeletingList(true);
+    try {
+      await libraryApi.deleteList(token, list.id);
+      showSuccess('Lista excluída.');
+      router.replace('/(tabs)/profile');
+    } catch (error) {
+      showError(error instanceof ApiError ? error.message : 'Não foi possível excluir a lista.');
+      setDeletingList(false);
+      setConfirmDeleteListOpen(false);
+    }
+  }
+
   if (loading) {
     return (
       <View style={[styles.screen, styles.centered, { paddingTop: insets.top }]}>
@@ -164,9 +180,18 @@ export default function ListDetailScreen() {
           </Text>
         </View>
         {isOwnList && (
-          <Pressable onPress={() => setEditOpen(true)} style={styles.backButton} hitSlop={8}>
-            <Ionicons name="pencil" size={16} color={COLORS.nexoBlue} />
-          </Pressable>
+          <>
+            <Pressable onPress={() => setEditOpen(true)} style={styles.backButton} hitSlop={8}>
+              <Ionicons name="pencil" size={16} color={COLORS.nexoBlue} />
+            </Pressable>
+            <Pressable
+              onPress={() => setConfirmDeleteListOpen(true)}
+              style={styles.backButton}
+              hitSlop={8}
+            >
+              <Ionicons name="trash-outline" size={16} color={COLORS.nexoPink} />
+            </Pressable>
+          </>
         )}
       </View>
 
@@ -230,6 +255,16 @@ export default function ListDetailScreen() {
         loading={confirmTarget !== null && removingId === confirmTarget.gameId}
         onCancel={() => setConfirmTarget(null)}
         onConfirm={() => confirmTarget && removeGame(confirmTarget.gameId)}
+      />
+
+      <ConfirmModal
+        visible={confirmDeleteListOpen}
+        title="EXCLUIR LISTA"
+        message={`Tem certeza que quer excluir "${list.name}"? Essa ação não pode ser desfeita.`}
+        confirmLabel="EXCLUIR"
+        loading={deletingList}
+        onCancel={() => setConfirmDeleteListOpen(false)}
+        onConfirm={deleteList}
       />
     </View>
   );
