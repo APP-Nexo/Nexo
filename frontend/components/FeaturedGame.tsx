@@ -117,7 +117,7 @@ function HeroInfo({ title, rating, genres }: HeroInfoProps) {
 
       <View style={styles.ratingContainer}>
         <Text style={styles.stars}>★★★★★</Text>
-        <Text style={styles.rating}>{rating}</Text>
+        <Text style={styles.rating}>{rating.toFixed(1)}</Text>
         <Text style={styles.reviewText}> USER SCORES</Text>
       </View>
     </View>
